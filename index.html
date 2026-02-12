@@ -180,12 +180,28 @@
             </div>
 
             <section class="glass rounded-2xl overflow-hidden">
-                <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                    <h3 class="font-bold text-lg">Historial de Transacciones</h3>
-                    <button onclick="app.exportExcel()" class="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 px-4 py-2 rounded-lg hover:bg-emerald-600/30 transition-all text-sm">
-                        <i data-lucide="download" class="w-4 h-4"></i> Exportar Excel
-                    </button>
-                </div>
+                <div class="p-6 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+    <h3 class="font-bold text-lg flex items-center gap-2">
+        <i data-lucide="history" class="w-5 h-5 text-blue-400"></i> Historial
+    </h3>
+    
+    <div class="flex gap-2 w-full md:w-auto">
+        <div class="relative flex-1 md:w-64">
+            <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-500"></i>
+            <input 
+                id="searchInput" 
+                onkeyup="app.render()" 
+                type="text" 
+                placeholder="Buscar (ej: Comida, Sueldo...)" 
+                class="w-full bg-slate-900 border border-slate-700 pl-9 pr-3 py-2 rounded-lg text-sm focus:ring-1 focus:ring-blue-500 outline-none placeholder-slate-600 transition-all"
+            >
+        </div>
+
+        <button onclick="app.exportExcel()" class="bg-emerald-600/20 text-emerald-400 px-3 py-2 rounded-lg hover:bg-emerald-600/30 transition-all">
+            <i data-lucide="download" class="w-5 h-5"></i>
+        </button>
+    </div>
+</div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-slate-800/50 text-slate-400 text-xs uppercase">
@@ -390,26 +406,46 @@ const app = {
         }
 
         // Generamos la tabla
+        // 1. OBTENEMOS LO QUE ESCRIBIÓ EL USUARIO
+        const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
+
+        // 2. FILTRAMOS LOS DATOS (Aquí está la magia)
+        const filteredRecords = this.data.records.filter(r => 
+            r.desc.toLowerCase().includes(searchTerm) || 
+            r.category.toLowerCase().includes(searchTerm)
+        );
+
+        // 3. GENERAMOS LA TABLA CON LOS DATOS FILTRADOS
         const tbody = document.getElementById("historyTable");
-        tbody.innerHTML = this.data.records.map(r => `
-            <tr class="hover:bg-white/5 transition-colors">
-                <td class="px-6 py-4 text-slate-500">${r.date}</td>
-                <td class="px-6 py-4 font-medium">${r.desc}</td>
-                <td class="px-6 py-4">
-                    <span class="px-2 py-1 rounded-md text-xs ${r.type === 'income' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-700 text-slate-300'}">
-                        ${r.category}
-                    </span>
-                </td>
-                <td class="px-6 py-4 text-right font-bold ${r.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
-                    ${r.type === 'income' ? '+' : '-'}${formatter.format(r.amount)}
-                </td>
-                <td class="px-6 py-4 text-center">
-                    <button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        
+        if(filteredRecords.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-500">No se encontraron resultados</td></tr>`;
+        } else {
+            tbody.innerHTML = filteredRecords.map(r => `
+                <tr class="hover:bg-white/5 transition-colors group border-b border-white/5 last:border-0">
+                    <td class="px-6 py-4 text-slate-500 text-xs">${r.date}</td>
+                    <td class="px-6 py-4 font-medium flex items-center gap-2">
+                        <span class="p-2 rounded-lg ${r.type === 'income' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">
+                            ${r.type === 'income' ? '<i data-lucide="trending-up" class="w-4 h-4"></i>' : '<i data-lucide="shopping-bag" class="w-4 h-4"></i>'}
+                        </span>
+                        ${r.desc}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold border ${r.type === 'income' ? 'border-emerald-500/20 text-emerald-400' : 'border-slate-600 text-slate-400'}">
+                            ${r.category}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-bold font-mono ${r.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
+                        ${r.type === 'income' ? '+' : '-'}${formatter.format(r.amount)}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="app.deleteRecord(${r.id})" class="p-2 hover:bg-rose-500/20 text-slate-500 hover:text-rose-500 rounded-lg transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
 
         // Generamos lista de tareas
         document.getElementById("taskList").innerHTML = this.data.tasks.map((t, i) => `
