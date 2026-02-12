@@ -223,12 +223,47 @@
                     <h2 class="text-3xl font-black tracking-tight text-white flex items-center gap-2">
                         <i data-lucide="globe-2" class="text-blue-500"></i> Mercado Internacional
                     </h2>
-                    <p class="text-slate-400">Cotizaciones vs Dólar (USD)</p>
+                    <p class="text-slate-400">Cotizaciones en tiempo real</p>
                 </div>
                 <div class="text-right">
                     <button onclick="app.fetchFullMarket()" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 p-3 rounded-xl transition-all">
                         <i data-lucide="refresh-cw" id="refreshIcon" class="w-6 h-6"></i>
                     </button>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-3xl mb-10 border-l-4 border-blue-500">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-blue-400 mb-4 flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-4 h-4"></i> Convertidor Universal
+                </h3>
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <div class="flex-1 w-full">
+                        <label class="text-xs text-slate-500 mb-1 block">Monto</label>
+                        <input id="calcAmount" type="number" value="1" onkeyup="app.calcCurrency()" class="w-full p-3 rounded-xl text-lg font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    </div>
+                    
+                    <div class="flex-1 w-full">
+                        <label class="text-xs text-slate-500 mb-1 block">De</label>
+                        <select id="calcFrom" onchange="app.calcCurrency()" class="w-full p-3 rounded-xl font-bold cursor-pointer outline-none focus:ring-2 focus:ring-blue-500">
+                            </select>
+                    </div>
+
+                    <div class="flex items-center justify-center pt-5">
+                        <button onclick="app.swapCalc()" class="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all">
+                            <i data-lucide="arrow-right-left" class="w-5 h-5 text-slate-400"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 w-full">
+                        <label class="text-xs text-slate-500 mb-1 block">A</label>
+                        <select id="calcTo" onchange="app.calcCurrency()" class="w-full p-3 rounded-xl font-bold cursor-pointer outline-none focus:ring-2 focus:ring-blue-500">
+                             </select>
+                    </div>
+
+                    <div class="flex-1 w-full bg-blue-600/10 p-3 rounded-xl border border-blue-500/20 text-center">
+                        <p class="text-xs text-blue-400 uppercase font-bold mb-1">Resultado</p>
+                        <p id="calcResult" class="text-2xl font-black text-white">...</p>
+                    </div>
                 </div>
             </div>
 
@@ -254,6 +289,7 @@ const app = {
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
     data: { records: [], budget: 0 },
+    rates: {}, // Almacén de cotizaciones para la calculadora
     charts: {},
 
     init() {
@@ -400,14 +436,23 @@ const app = {
         const gridWorld = document.getElementById("marketGridWorld");
         const icon = document.getElementById("refreshIcon");
         icon.classList.add("animate-spin");
+        
+        // Inicializar tasas base
+        this.rates = { 'USD': 1 }; 
 
-        // 1. ARGENTINA (Solo Blue y Oficial)
+        // 1. ARGENTINA
         try {
             const res = await fetch("https://dolarapi.com/v1/dolares");
             const data = await res.json();
-            // Filtramos solo Oficial y Blue
             const filtered = data.filter(d => d.casa === "oficial" || d.casa === "blue");
             
+            // Guardar tasas para calculadora (Valor en pesos por 1 dólar)
+            // Para simplificar, usamos el valor de VENTA
+            filtered.forEach(d => {
+                if(d.casa === 'blue') this.rates['ARS_BLUE'] = 1/d.venta; // Inverso porque la base es USD
+                if(d.casa === 'oficial') this.rates['ARS_OFICIAL'] = 1/d.venta;
+            });
+
             gridArg.innerHTML = filtered.map(d => `
                 <div class="glass p-6 rounded-3xl relative overflow-hidden group hover:bg-white/5 transition-all border border-emerald-500/30">
                     <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
@@ -429,38 +474,30 @@ const app = {
             `).join('');
         } catch (e) { console.error(e); }
 
-        // 2. MUNDO (API FRANKFURTER - Gratis y sin Key)
+        // 2. MUNDO (Forex)
         try {
-            // Base USD
             const res = await fetch("https://api.frankfurter.app/latest?from=USD");
             const data = await res.json();
-            const rates = data.rates;
-            
+            const r = data.rates;
+
+            // Unir tasas al objeto global
+            Object.assign(this.rates, r);
+
             const currencies = [
                 {code: 'EUR', name: 'Euro', flag: '🇪🇺'},
                 {code: 'GBP', name: 'Libra Esterlina', flag: '🇬🇧'},
                 {code: 'JPY', name: 'Yen Japonés', flag: '🇯🇵'},
                 {code: 'BRL', name: 'Real Brasil', flag: '🇧🇷'},
                 {code: 'CLP', name: 'Peso Chileno', flag: '🇨🇱'},
-                {code: 'UYU', name: 'Peso Uruguayo', flag: '🇺🇾'}, // A veces no está en Frankfurter, depende disponibilidad
                 {code: 'MXN', name: 'Peso Mexicano', flag: '🇲🇽'},
                 {code: 'CAD', name: 'Dólar Canadá', flag: '🇨🇦'},
                 {code: 'AUD', name: 'Dólar Austral', flag: '🇦🇺'},
                 {code: 'CNY', name: 'Yuan Chino', flag: '🇨🇳'},
-                {code: 'CHF', name: 'Franco Suizo', flag: '🇨🇭'},
-                {code: 'KRW', name: 'Won Coreano', flag: '🇰🇷'},
-                {code: 'INR', name: 'Rupia India', flag: '🇮🇳'},
-                {code: 'RUB', name: 'Rublo Ruso', flag: '🇷🇺'},
-                {code: 'ZAR', name: 'Rand Sudaf.', flag: '🇿🇦'},
-                {code: 'NZD', name: 'Dólar NZ', flag: '🇳🇿'},
-                {code: 'SGD', name: 'Dólar Singapur', flag: '🇸🇬'},
-                {code: 'HKD', name: 'Dólar HK', flag: '🇭🇰'},
-                {code: 'TRY', name: 'Lira Turca', flag: '🇹🇷'},
-                {code: 'ILS', name: 'Shekel Israel', flag: '🇮🇱'}
+                {code: 'CHF', name: 'Franco Suizo', flag: '🇨🇭'}
             ];
 
             gridWorld.innerHTML = currencies.map(c => {
-                const val = rates[c.code];
+                const val = r[c.code];
                 if(!val) return ''; 
                 return `
                 <div class="glass p-4 rounded-2xl hover:bg-white/5 transition-all border border-blue-500/10 hover:border-blue-500/40 group">
@@ -473,6 +510,9 @@ const app = {
                     <p class="text-[10px] text-slate-600">1 USD = ${val.toFixed(2)} ${c.code}</p>
                 </div>`;
             }).join('');
+            
+            // Llenar Selects de Calculadora
+            this.fillCalcSelects();
 
         } catch (e) { 
             console.error(e);
@@ -481,6 +521,80 @@ const app = {
 
         setTimeout(() => icon.classList.remove("animate-spin"), 1000);
         lucide.createIcons();
+    },
+
+    /* --- CALCULADORA LOGIC --- */
+    fillCalcSelects() {
+        const selFrom = document.getElementById("calcFrom");
+        const selTo = document.getElementById("calcTo");
+        
+        // Opciones customizadas
+        const options = [
+            {v: 'USD', t: '🇺🇸 Dólar (USD)'},
+            {v: 'ARS_BLUE', t: '🇦🇷 Peso Blue'}, // Invertimos lógica visualmente
+            {v: 'ARS_OFICIAL', t: '🇦🇷 Peso Oficial'},
+            {v: 'EUR', t: '🇪🇺 Euro'},
+            {v: 'BRL', t: '🇧🇷 Real'},
+            {v: 'GBP', t: '🇬🇧 Libra'},
+            {v: 'JPY', t: '🇯🇵 Yen'},
+            {v: 'CLP', t: '🇨🇱 Peso Chileno'},
+            {v: 'MXN', t: '🇲🇽 Peso Mexicano'}
+        ];
+
+        const html = options.map(o => `<option value="${o.v}">${o.t}</option>`).join('');
+        
+        if(selFrom.innerHTML === "") { // Solo llenar si está vacío
+            selFrom.innerHTML = html;
+            selTo.innerHTML = html;
+            selTo.value = 'EUR'; // Default
+        }
+    },
+
+    calcCurrency() {
+        const amount = parseFloat(document.getElementById("calcAmount").value) || 0;
+        const from = document.getElementById("calcFrom").value;
+        const to = document.getElementById("calcTo").value;
+        const resEl = document.getElementById("calcResult");
+
+        // Lógica especial para ARS (Como guardamos 1/venta, hay que manejarlo)
+        // Base es USD. 
+        // Si tengo 100 USD y quiero EUR: 100 * RateEUR
+        // Si tengo 100 EUR y quiero USD: 100 / RateEUR
+        
+        // Normalizamos todo a USD primero
+        let amountInUSD = 0;
+
+        if (from === 'USD') {
+            amountInUSD = amount;
+        } else if (from.includes('ARS')) {
+            // Caso ARS: stored rate is (1 / venta). So ARS * rate = USD
+             amountInUSD = amount * this.rates[from];
+        } else {
+            // Caso Forex: stored rate is per 1 USD. So Amount / Rate = USD
+            amountInUSD = amount / this.rates[from];
+        }
+
+        // Convertimos USD a Target
+        let finalAmount = 0;
+        if (to === 'USD') {
+            finalAmount = amountInUSD;
+        } else if (to.includes('ARS')) {
+            // USD / Rate (que es chiquito) = USD * Venta
+             finalAmount = amountInUSD / this.rates[to];
+        } else {
+            finalAmount = amountInUSD * this.rates[to];
+        }
+
+        resEl.textContent = finalAmount.toLocaleString(undefined, {maximumFractionDigits: 2});
+    },
+
+    swapCalc() {
+        const from = document.getElementById("calcFrom");
+        const to = document.getElementById("calcTo");
+        const temp = from.value;
+        from.value = to.value;
+        to.value = temp;
+        this.calcCurrency();
     },
 
     exportProExcel() {
