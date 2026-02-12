@@ -20,7 +20,6 @@
                     colors: { 
                         dark: '#0f172a',
                         primary: '#3b82f6',
-                        secondary: '#10b981'
                     }
                 }
             }
@@ -37,16 +36,13 @@
         .dark .glass { background: rgba(15, 23, 42, 0.7); border-color: rgba(255,255,255,0.05); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
         .light .glass { background: rgba(255, 255, 255, 0.8); border-color: rgba(0,0,0,0.05); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); }
 
-        /* Efectos */
         .hover-scale:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
         .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Scrollbar Invisible pero funcional */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Inputs Contrastados */
         .dark input, .dark select { background: #1e293b; color: #fff; border: 1px solid #334155; }
         .dark input::placeholder { color: #94a3b8; }
         .light input, .light select { background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; }
@@ -57,7 +53,8 @@
 
 <div id="loginScreen" class="fixed inset-0 z-[60] flex items-center justify-center bg-[#0B1121] transition-all duration-500">
     <div class="relative w-full max-w-md p-8 text-center fade-in">
-        <div class="absolute inset-0 bg-blue-600/20 blur-[100px] rounded-full"></div> <div class="glass relative p-10 rounded-3xl border border-white/10">
+        <div class="absolute inset-0 bg-blue-600/20 blur-[100px] rounded-full"></div>
+        <div class="glass relative p-10 rounded-3xl border border-white/10">
             <div class="mb-8 inline-flex p-5 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl shadow-2xl shadow-blue-600/20">
                 <i data-lucide="layout-dashboard" class="w-10 h-10 text-white"></i>
             </div>
@@ -107,7 +104,7 @@
                     <p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Capital en USD</p>
                     <div class="flex items-baseline gap-2">
                         <h2 class="text-3xl font-black text-white" id="capitalUsd">US$ 0</h2>
-                        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded" id="dolarRateTag">@ $...</span>
+                        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded" id="dolarRateTag">...</span>
                     </div>
                 </div>
             </div>
@@ -151,17 +148,28 @@
                             </div>
                         </div>
 
-                        <div class="mt-8 pt-6 border-t border-white/10">
-                            <div class="flex justify-between items-center mb-4">
-                                <h4 class="font-bold text-sm uppercase opacity-70">Presupuesto</h4>
-                                <span id="budgetPercent" class="text-xs font-bold bg-white/10 px-2 py-1 rounded">0%</span>
+                        <div class="mt-10 pt-8 border-t border-white/10">
+                            <div class="flex justify-between items-end mb-4">
+                                <div>
+                                    <h4 class="font-bold text-base text-blue-400 uppercase tracking-wide flex items-center gap-2">
+                                        <i data-lucide="target" class="w-5 h-5"></i> Presupuesto
+                                    </h4>
+                                    <p class="text-xs text-slate-500 mt-1">Progreso mensual</p>
+                                </div>
+                                <span id="budgetPercent" class="text-xl font-black text-white bg-blue-600 px-3 py-1 rounded-lg shadow-lg shadow-blue-600/20">0%</span>
                             </div>
-                            <div class="w-full bg-slate-700 rounded-full h-2 mb-2 overflow-hidden">
-                                <div id="budgetBar" class="bg-blue-500 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                            
+                            <div class="w-full bg-slate-700/50 rounded-full h-5 mb-4 overflow-hidden border border-white/5">
+                                <div id="budgetBar" class="bg-blue-500 h-5 rounded-full transition-all duration-1000 relative" style="width: 0%">
+                                    <div class="absolute inset-0 bg-white/20 animate-pulse"></div> </div>
                             </div>
-                            <div class="flex justify-between text-xs font-bold">
-                                <span id="budgetUsed" class="text-rose-400">$0 Usado</span>
-                                <input id="budgetInput" onchange="app.setBudget()" type="number" class="bg-transparent text-right outline-none w-24 text-emerald-400 placeholder-slate-500" placeholder="Fijar Meta">
+                            
+                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5">
+                                <span id="budgetUsed" class="text-sm font-bold text-rose-400">$0 Gastados</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-slate-400">Meta:</span>
+                                    <input id="budgetInput" onchange="app.setBudget()" type="number" class="bg-transparent text-right outline-none w-32 text-lg font-bold text-emerald-400 placeholder-slate-600 focus:border-b focus:border-emerald-400 transition-all" placeholder="$ Definir">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -239,10 +247,8 @@ const app = {
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
     data: { records: [], budget: 0 },
-    marketCache: [],
     charts: {},
 
-    /* --- INICIALIZACIÓN --- */
     init() {
         this.applyTheme();
         if (!this.user) {
@@ -250,17 +256,16 @@ const app = {
         } else {
             document.getElementById("loginScreen").classList.add("hidden");
             document.getElementById("mainApp").classList.remove("hidden");
-            setTimeout(() => document.getElementById("mainApp").classList.remove("opacity-0"), 100); // Fade in suave
+            setTimeout(() => document.getElementById("mainApp").classList.remove("opacity-0"), 100);
             
             this.loadData();
             this.render();
-            this.fetchDolarSimple(); // Para el dashboard
-            this.fetchFullMarket();  // Para la pestaña Mercado
+            this.fetchDolarSimple();
+            this.fetchFullMarket(); // Carga inicial mercado
             lucide.createIcons();
         }
     },
 
-    /* --- NAVEGACIÓN (TABS) --- */
     switchTab(tab) {
         this.currentTab = tab;
         const walletView = document.getElementById("viewWallet");
@@ -271,20 +276,17 @@ const app = {
         if (tab === 'wallet') {
             walletView.classList.remove("hidden");
             marketView.classList.add("hidden");
-            
             btnWallet.className = "px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-blue-600 text-white shadow-lg";
             btnMarket.className = "px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-white/5";
         } else {
             walletView.classList.add("hidden");
             marketView.classList.remove("hidden");
-
             btnWallet.className = "px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-white/5";
             btnMarket.className = "px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-blue-600 text-white shadow-lg";
-            this.fetchFullMarket(); // Actualizar al entrar
+            this.fetchFullMarket();
         }
     },
 
-    /* --- LÓGICA DE DATOS --- */
     loadData() {
         const prefix = this.user + "_";
         this.data.records = JSON.parse(localStorage.getItem(prefix + "records")) || [];
@@ -306,7 +308,6 @@ const app = {
         if (!desc || amount <= 0) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Faltan datos', showConfirmButton:false, timer:2000});
 
         this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), desc, amount, category, type });
-        
         document.getElementById("transDesc").value = "";
         document.getElementById("transAmount").value = "";
         this.save();
@@ -325,32 +326,26 @@ const app = {
         this.save();
     },
 
-    /* --- RENDERING (UI) --- */
     render() {
         const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-        
-        // Cálculos
         const totalInc = this.data.records.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
         const totalExp = this.data.records.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
         const balance = totalInc - totalExp;
         
-        // Actualizar KPIs Header
         document.getElementById("bIncome").textContent = formatter.format(totalInc);
         document.getElementById("bExpense").textContent = formatter.format(totalExp);
         document.getElementById("bNet").textContent = formatter.format(balance);
         document.getElementById("bNet").className = `text-3xl font-black ${balance >= 0 ? 'text-blue-500' : 'text-rose-500'}`;
 
-        // Barra de Presupuesto
         document.getElementById("budgetInput").value = this.data.budget || "";
         if(this.data.budget > 0) {
             const percent = Math.min((totalExp / this.data.budget) * 100, 100);
             document.getElementById("budgetBar").style.width = `${percent}%`;
-            document.getElementById("budgetBar").className = `h-2 rounded-full transition-all duration-1000 ${percent > 90 ? 'bg-rose-500' : percent > 50 ? 'bg-yellow-500' : 'bg-blue-500'}`;
+            document.getElementById("budgetBar").className = `h-5 rounded-full transition-all duration-1000 relative ${percent > 90 ? 'bg-rose-500' : percent > 50 ? 'bg-yellow-500' : 'bg-blue-500'}`;
             document.getElementById("budgetPercent").textContent = `${Math.round(percent)}%`;
-            document.getElementById("budgetUsed").textContent = `${formatter.format(totalExp)} Usado`;
+            document.getElementById("budgetUsed").textContent = `${formatter.format(totalExp)} Gastados`;
         }
 
-        // Tabla
         const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
         const filtered = this.data.records.filter(r => r.desc.toLowerCase().includes(searchTerm) || r.category.toLowerCase().includes(searchTerm));
         
@@ -368,9 +363,7 @@ const app = {
                         ${r.desc}
                     </td>
                     <td class="px-6 py-4"><span class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-white/10 opacity-80">${r.category}</span></td>
-                    <td class="px-6 py-4 text-right font-black ${r.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}">
-                        ${r.type === 'income' ? '+' : '-'}${formatter.format(r.amount)}
-                    </td>
+                    <td class="px-6 py-4 text-right font-black ${r.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}">${r.type === 'income' ? '+' : '-'}${formatter.format(r.amount)}</td>
                     <td class="px-6 py-4 text-center">
                         <button onclick="app.deleteRecord(${r.id})" class="text-slate-400 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
@@ -382,193 +375,126 @@ const app = {
         lucide.createIcons();
     },
 
-    /* --- API & MERCADO --- */
     async fetchDolarSimple() {
         try {
             const res = await fetch("https://dolarapi.com/v1/dolares/blue");
             const data = await res.json();
             document.getElementById("dolarRateTag").textContent = `@ $${data.venta}`;
-            
             const totalInc = this.data.records.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
             const totalExp = this.data.records.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
             const balance = totalInc - totalExp;
-            
-            if(data.venta > 0) {
-                document.getElementById("capitalUsd").textContent = `US$ ${(balance / data.venta).toLocaleString('en-US', {maximumFractionDigits: 0})}`;
-            }
+            if(data.venta > 0) document.getElementById("capitalUsd").textContent = `US$ ${(balance / data.venta).toLocaleString('en-US', {maximumFractionDigits: 0})}`;
         } catch(e) {}
     },
 
+    // --- CORRECCIÓN CLAVE: SISTEMA DE FETCH ROBUSTO ---
     async fetchFullMarket() {
         const grid = document.getElementById("marketGrid");
         const icon = document.getElementById("refreshIcon");
         icon.classList.add("animate-spin");
 
+        let cardsHTML = '';
+
+        // 1. DÓLARES (Array)
         try {
-            // 1. Traer Dólares
-            const resDol = await fetch("https://dolarapi.com/v1/dolares");
-            const dataDol = await resDol.json();
-            
-            // 2. Traer Euro y Real (Endpoints separados)
-            const resEur = await fetch("https://dolarapi.com/v1/euros/blue"); // Solo blue para simplificar visualización
-            const euroData = await resEur.json();
-            
-            const resBrl = await fetch("https://dolarapi.com/v1/reales/blue"); // Solo blue
-            const realData = await resBrl.json();
-            
-            // Normalizar datos para renderizar
-            let cards = dataDol.map(d => ({
-                nombre: `Dólar ${d.nombre}`,
-                compra: d.compra,
-                venta: d.venta,
-                fecha: d.fechaActualizacion,
-                icon: 'dollar-sign',
-                color: 'emerald'
-            }));
+            const res = await fetch("https://dolarapi.com/v1/dolares");
+            if(res.ok) {
+                const data = await res.json();
+                cardsHTML += data.map(d => this.createCard(`Dólar ${d.nombre}`, d.compra, d.venta, d.fechaActualizacion, 'dollar-sign', 'emerald')).join('');
+            }
+        } catch (e) { console.error("Error Dolares"); }
 
-            cards.push({ nombre: 'Euro Blue', compra: euroData.compra, venta: euroData.venta, fecha: euroData.fechaActualizacion, icon: 'euro', color: 'blue' });
-            cards.push({ nombre: 'Real Blue', compra: realData.compra, venta: realData.venta, fecha: realData.fechaActualizacion, icon: 'coins', color: 'yellow' });
+        // 2. EURO (Objeto)
+        try {
+            const res = await fetch("https://dolarapi.com/v1/euros/blue");
+            if(res.ok) {
+                const d = await res.json();
+                cardsHTML += this.createCard('Euro Blue', d.compra, d.venta, d.fechaActualizacion, 'euro', 'blue');
+            }
+        } catch (e) { console.error("Error Euro"); }
 
-            // Renderizar Grid
-            grid.innerHTML = cards.map(c => `
-                <div class="glass p-6 rounded-3xl relative overflow-hidden group hover:bg-white/5 transition-all border border-${c.color}-500/30">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-${c.color}-500/10 rounded-full blur-2xl group-hover:bg-${c.color}-500/20 transition-all"></div>
-                    
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="p-3 rounded-xl bg-${c.color}-500/20 text-${c.color}-400">
-                            <i data-lucide="${c.icon}" class="w-6 h-6"></i>
-                        </div>
-                        <h3 class="font-bold text-lg text-slate-200">${c.nombre}</h3>
-                    </div>
+        // 3. REAL (Objeto)
+        try {
+            const res = await fetch("https://dolarapi.com/v1/reales/blue");
+            if(res.ok) {
+                const d = await res.json();
+                cardsHTML += this.createCard('Real Blue', d.compra, d.venta, d.fechaActualizacion, 'coins', 'yellow');
+            }
+        } catch (e) { console.error("Error Real"); }
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="bg-black/20 p-3 rounded-xl">
-                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Compra</p>
-                            <p class="text-xl font-black text-white">$${c.compra}</p>
-                        </div>
-                        <div class="bg-black/20 p-3 rounded-xl border border-${c.color}-500/20">
-                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Venta</p>
-                            <p class="text-xl font-black text-${c.color}-400">$${c.venta}</p>
-                        </div>
-                    </div>
-                    
-                    <p class="text-xs text-slate-500 text-center font-mono">Actualizado: ${new Date(c.fecha).toLocaleTimeString()}</p>
-                </div>
-            `).join('');
-
-            lucide.createIcons();
-
-        } catch (e) {
-            console.error(e);
-            grid.innerHTML = `<div class="col-span-full text-center text-rose-500 font-bold p-10 glass rounded-3xl">Error conectando con el Mercado. Intente nuevamente.</div>`;
-        } finally {
-            setTimeout(() => icon.classList.remove("animate-spin"), 1000);
+        // Si no se cargó nada, mostrar error, si no, mostrar lo que hay
+        if (cardsHTML === '') {
+            grid.innerHTML = `<div class="col-span-full text-center text-rose-400 p-10 glass rounded-3xl">⚠️ Sin conexión al Mercado Financiero</div>`;
+        } else {
+            grid.innerHTML = cardsHTML;
         }
+
+        setTimeout(() => icon.classList.remove("animate-spin"), 1000);
+        lucide.createIcons();
     },
 
-    /* --- EXCEL CFO EDITION (NIVEL DIOS) --- */
+    createCard(nombre, compra, venta, fecha, icon, color) {
+        return `
+            <div class="glass p-6 rounded-3xl relative overflow-hidden group hover:bg-white/5 transition-all border border-${color}-500/30">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-${color}-500/10 rounded-full blur-2xl group-hover:bg-${color}-500/20 transition-all"></div>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-xl bg-${color}-500/20 text-${color}-400"><i data-lucide="${icon}" class="w-6 h-6"></i></div>
+                    <h3 class="font-bold text-lg text-slate-200">${nombre}</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-black/20 p-3 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Compra</p>
+                        <p class="text-xl font-black text-white">$${compra}</p>
+                    </div>
+                    <div class="bg-black/20 p-3 rounded-xl border border-${color}-500/20">
+                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Venta</p>
+                        <p class="text-xl font-black text-${color}-400">$${venta}</p>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 text-center font-mono">Act: ${new Date(fecha).toLocaleTimeString()}</p>
+            </div>`;
+    },
+
     exportProExcel() {
         const wb = XLSX.utils.book_new();
-        
-        // Estilos
-        const headerStyle = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } }, alignment: { horizontal: "center", vertical: "center" }, border: { bottom: { style: "medium", color: { rgb: "3B82F6" } } } };
-        const titleStyle = { font: { bold: true, sz: 18, color: { rgb: "3B82F6" } }, alignment: { horizontal: "left" } };
-        const moneyStyle = { numFmt: "$ #,##0" };
-        const moneyStyleRed = { numFmt: "$ #,##0", font: { color: { rgb: "EF4444" } } };
-        const moneyStyleGreen = { numFmt: "$ #,##0", font: { color: { rgb: "10B981" } } };
+        const headerStyle = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } }, alignment: { horizontal: "center", vertical: "center" } };
+        const titleStyle = { font: { bold: true, sz: 18, color: { rgb: "3B82F6" } } };
+        const moneyGreen = { numFmt: "$ #,##0", font: { color: { rgb: "10B981" } } };
+        const moneyRed = { numFmt: "$ #,##0", font: { color: { rgb: "EF4444" } } };
 
-        // --- HOJA 1: DASHBOARD ---
+        // HOJA 1
         const totalInc = this.data.records.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
         const totalExp = this.data.records.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
-        const ratioAhorro = totalInc > 0 ? ((totalInc - totalExp) / totalInc) : 0;
-
-        const dashData = [
-            ["INFORME EJECUTIVO - FORJAX TERMINAL"],
-            ["Generado por:", this.user.toUpperCase()],
-            ["Fecha:", new Date().toLocaleDateString()],
-            [""],
-            ["ESTADO DE RESULTADOS"],
-            ["Concepto", "Monto", "Notas"],
-            ["Ingresos Totales", totalInc, "Entradas operativas"],
-            ["Gastos Totales", totalExp, "Salidas operativas"],
-            ["BALANCE NETO", totalInc - totalExp, totalInc - totalExp > 0 ? "Superávit" : "Déficit"],
-            [""],
-            ["RATIOS FINANCIEROS"],
-            ["Margen de Ahorro", ratioAhorro, "Objetivo > 20%"]
-        ];
-
-        const wsDash = XLSX.utils.aoa_to_sheet(dashData);
-        wsDash['!cols'] = [{ wch: 25 }, { wch: 20 }, { wch: 30 }];
+        const wsDash = XLSX.utils.aoa_to_sheet([["REPORTE CFO"],["Generado por:", this.user],[""],["Ingresos", totalInc],["Gastos", totalExp],["Balance", totalInc - totalExp]]);
         wsDash['A1'].s = titleStyle;
-        wsDash['A6'].s = wsDash['B6'].s = wsDash['C6'].s = headerStyle;
-        wsDash['B7'].s = moneyStyleGreen; 
-        wsDash['B8'].s = moneyStyleRed;
-        wsDash['B9'].s = { font: { bold: true }, numFmt: "$ #,##0" };
-        wsDash['B12'].s = { numFmt: "0.00%" };
+        XLSX.utils.book_append_sheet(wb, wsDash, "Resumen");
 
-        XLSX.utils.book_append_sheet(wb, wsDash, "Resumen Gerencial");
-
-        // --- HOJA 2: TRANSACCIONES ---
-        const transData = [
-            ["REGISTRO DE OPERACIONES"],
-            [""],
-            ["FECHA", "DESCRIPCIÓN", "CATEGORÍA", "TIPO", "MONTO"]
-        ];
-        
-        this.data.records.forEach(r => {
-            transData.push([r.date, r.desc, r.category, r.type === 'income' ? 'INGRESO' : 'GASTO', r.amount]);
-        });
-
+        // HOJA 2
+        const transData = [["FECHA", "DESCRIPCIÓN", "CATEGORÍA", "TIPO", "MONTO"], ...this.data.records.map(r => [r.date, r.desc, r.category, r.type.toUpperCase(), r.amount])];
         const wsTrans = XLSX.utils.aoa_to_sheet(transData);
-        wsTrans['!cols'] = [{ wch: 12 }, { wch: 35 }, { wch: 15 }, { wch: 10 }, { wch: 15 }];
-        wsTrans['A1'].s = titleStyle;
+        wsTrans['A1'].s = wsTrans['B1'].s = wsTrans['C1'].s = wsTrans['D1'].s = wsTrans['E1'].s = headerStyle;
         
-        // Estilar Cabecera (Fila 3 -> index 2)
-        ["A3", "B3", "C3", "D3", "E3"].forEach(cell => wsTrans[cell].s = headerStyle);
-
-        // Estilar Filas de Datos
-        for (let i = 3; i < transData.length; i++) {
-            const isExpense = transData[i][3] === 'GASTO';
-            const cellMonto = XLSX.utils.encode_cell({ r: i, c: 4 });
-            wsTrans[cellMonto].s = isExpense ? moneyStyleRed : moneyStyleGreen;
+        for (let i = 1; i < transData.length; i++) {
+            wsTrans[XLSX.utils.encode_cell({ r: i, c: 4 })].s = transData[i][3] === 'GASTO' ? moneyRed : moneyGreen;
         }
 
-        XLSX.utils.book_append_sheet(wb, wsTrans, "Detalle Operativo");
-
-        // GUARDAR
-        XLSX.writeFile(wb, `FORJAX_Reporte_CFO_${this.user}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, wsTrans, "Detalle");
+        XLSX.writeFile(wb, `FORJAX_CFO_${this.user}.xlsx`);
     },
 
     updateCharts(inc, exp) {
         const ctxBar = document.getElementById("barChart").getContext("2d");
         const ctxPie = document.getElementById("pieChart").getContext("2d");
-        
         if (this.charts.bar) this.charts.bar.destroy();
         if (this.charts.pie) this.charts.pie.destroy();
-
-        const colors = { bg: this.theme === 'dark' ? '#94a3b8' : '#475569', grid: this.theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' };
-
-        this.charts.bar = new Chart(ctxBar, {
-            type: 'bar',
-            data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 6, barThickness: 40 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: colors.grid }, ticks: { color: colors.bg } }, x: { grid: { display: false }, ticks: { color: colors.bg } } } }
-        });
-
-        const catData = {};
-        this.data.records.filter(r => r.type === 'expense').forEach(r => { catData[r.category] = (catData[r.category] || 0) + r.amount; });
-        
-        this.charts.pie = new Chart(ctxPie, {
-            type: 'doughnut',
-            data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'], borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: colors.bg, boxWidth: 10, font: {size:10} } } }, cutout: '75%' }
-        });
+        const c = { bg: this.theme === 'dark' ? '#94a3b8' : '#475569' };
+        this.charts.bar = new Chart(ctxBar, { type: 'bar', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 6, barThickness: 40 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: c.bg } }, x: { grid: { display: false }, ticks: { color: c.bg } } } } });
+        const catData = {}; this.data.records.filter(r => r.type === 'expense').forEach(r => { catData[r.category] = (catData[r.category] || 0) + r.amount; });
+        this.charts.pie = new Chart(ctxPie, { type: 'doughnut', data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: c.bg, boxWidth: 10, font: {size:10} } } }, cutout: '75%' } });
     },
 
     toggleTheme() { this.theme = this.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem("theme", this.theme); this.init(); },
-    applyTheme() { 
-        document.documentElement.className = this.theme; 
-        document.getElementById("themeIcon").setAttribute('data-lucide', this.theme === 'dark' ? 'sun' : 'moon');
-    },
+    applyTheme() { document.documentElement.className = this.theme; document.getElementById("themeIcon").setAttribute('data-lucide', this.theme === 'dark' ? 'sun' : 'moon'); },
     initSession() { const v = document.getElementById("userInput").value; if(v.length>2) { localStorage.setItem("currentUser", v); location.reload(); } },
     logout() { localStorage.removeItem("currentUser"); location.reload(); }
 };
