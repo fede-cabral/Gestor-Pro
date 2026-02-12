@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es" class="dark"> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Pro - Nivel Dios</title>
+    <title>Gestor Pro - Ultra Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,59 +10,96 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0f172a',
+                        card: 'rgba(30, 41, 59, 0.7)',
+                        lightCard: 'rgba(255, 255, 255, 0.8)',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
         
         body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; /* Color de fondo oscuro (Slate 900) */
-            color: #f8fafc; 
+            font-family: 'Outfit', sans-serif; 
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Efecto Vidrio (Glassmorphism) */
+        /* Fondos base */
+        body.dark { background-color: #0f172a; color: #f8fafc; }
+        body.light { background-color: #f3f4f6; color: #1e293b; }
+
+        /* Clases Glassmorphism Dinámicas */
         .glass { 
-            background: rgba(30, 41, 59, 0.7); 
             backdrop-filter: blur(12px); 
             border: 1px solid rgba(255,255,255,0.1); 
+            transition: all 0.3s ease;
         }
 
-        /* Barra de desplazamiento personalizada */
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        /* En modo oscuro */
+        .dark .glass { background: rgba(30, 41, 59, 0.7); border-color: rgba(255,255,255,0.1); }
+        /* En modo claro */
+        .light .glass { background: rgba(255, 255, 255, 0.8); border-color: rgba(0,0,0,0.05); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+
+        /* Animación de entrada */
+        .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
         
-        /* Animación para el icono de carga */
-        .animate-spin-slow { animation: spin 3s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* Retardos para efecto cascada */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        .dark .custom-scroll::-webkit-scrollbar-thumb { background: #334155; }
     </style>
 </head>
-<body class="min-h-screen pb-10">
+<body class="min-h-screen pb-10 transition-colors duration-300">
 
-<div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
-    <div class="glass p-8 rounded-2xl w-full max-w-md shadow-2xl text-center">
-        <div class="mb-6 inline-flex p-4 bg-blue-600 rounded-full shadow-lg shadow-blue-500/50">
-            <i data-lucide="shield-check" class="w-8 h-8"></i>
+<button onclick="app.toggleTheme()" class="fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-xl transition-transform hover:scale-110 glass bg-blue-600 text-white">
+    <i id="themeIcon" data-lucide="sun" class="w-6 h-6"></i>
+</button>
+
+<div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-sm">
+    <div class="glass p-8 rounded-2xl w-full max-w-md shadow-2xl text-center fade-in-up">
+        <div class="mb-6 inline-flex p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg">
+            <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
         </div>
-        <h2 class="text-3xl font-bold mb-2">Bienvenido a ProManager</h2>
-        <p class="text-slate-400 mb-8">Gestión financiera de alto rendimiento</p>
-        <input id="userInput" type="text" placeholder="Tu Nombre" 
-               class="w-full bg-slate-800 border border-slate-700 p-3 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-        <button onclick="app.initSession()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all transform hover:scale-[1.02]">
-            Acceder al Sistema
+        <h2 class="text-3xl font-bold mb-2">ProManager V2</h2>
+        <p class="text-slate-400 mb-8">Sistema Financiero Inteligente</p>
+        <input id="userInput" type="text" placeholder="Ingresa tu nombre" 
+               class="w-full bg-slate-800/50 border border-slate-600 p-3 rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-center text-white">
+        <button onclick="app.initSession()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg">
+            INICIAR SESIÓN
         </button>
     </div>
 </div>
 
 <div id="mainApp" class="hidden">
     
-    <nav class="glass sticky top-0 z-40 px-6 py-4 mb-8 flex justify-between items-center border-b border-white/5">
+    <nav class="glass sticky top-0 z-40 px-6 py-4 mb-8 flex justify-between items-center border-b shadow-sm">
         <div class="flex items-center gap-2">
-            <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="trending-up" class="w-5 h-5"></i></div>
-            <span class="font-bold text-xl tracking-tight">FORJAX <span class="text-blue-500">PRO</span></span>
+            <div class="bg-gradient-to-tr from-blue-600 to-cyan-500 p-2 rounded-lg text-white shadow-lg">
+                <i data-lucide="trending-up" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-xl tracking-tight">FORJAX <span class="text-blue-500">ULTRA</span></span>
         </div>
         <div class="flex items-center gap-4">
-            <span id="userNameDisplay" class="text-slate-400 hidden md:block"></span>
-            <button onclick="app.logout()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">
-                Cerrar Sesión
+            <span id="userNameDisplay" class="font-semibold hidden md:block opacity-70"></span>
+            <button onclick="app.logout()" class="flex items-center gap-2 text-rose-500 hover:bg-rose-500/10 px-3 py-2 rounded-lg transition-colors text-sm font-medium">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Salir
             </button>
         </div>
     </nav>
@@ -72,148 +108,167 @@
         
         <div class="lg:col-span-4 space-y-6">
             
-            <section class="glass p-6 rounded-2xl">
-                <h3 class="flex items-center gap-2 text-lg font-semibold mb-4 text-blue-400">
-                    <i data-lucide="target" class="w-5 h-5"></i> Presupuesto Mensual
+            <section class="glass p-6 rounded-2xl fade-in-up">
+                <h3 class="flex items-center gap-2 text-lg font-bold mb-4 text-blue-500">
+                    <i data-lucide="target" class="w-5 h-5"></i> Objetivo Mensual
                 </h3>
                 <div class="flex gap-2">
-                    <input id="budgetInput" type="number" placeholder="Ej: 500000" class="flex-1 bg-slate-800 border border-slate-700 p-2 rounded-lg outline-none">
-                    <button onclick="app.setBudget()" class="bg-blue-600 px-4 rounded-lg hover:bg-blue-700 transition-colors">Fijar</button>
+                    <input id="budgetInput" type="number" placeholder="$ Meta" class="flex-1 bg-black/10 dark:bg-white/5 border border-transparent focus:border-blue-500 p-2 rounded-lg outline-none transition-all">
+                    <button onclick="app.setBudget()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg font-medium transition-colors shadow-md">Fijar</button>
                 </div>
                 <div class="mt-4 grid grid-cols-2 gap-4">
-                    <div class="bg-slate-800/50 p-3 rounded-xl">
-                        <p class="text-xs text-slate-400">Objetivo</p>
+                    <div class="p-3 rounded-xl bg-black/5 dark:bg-white/5">
+                        <p class="text-xs opacity-60 uppercase tracking-wider font-semibold">Meta</p>
                         <p class="text-lg font-bold" id="budgetTotal">$0</p>
                     </div>
-                    <div class="bg-slate-800/50 p-3 rounded-xl">
-                        <p class="text-xs text-slate-400">Disponible</p>
+                    <div class="p-3 rounded-xl bg-black/5 dark:bg-white/5">
+                        <p class="text-xs opacity-60 uppercase tracking-wider font-semibold">Disponible</p>
                         <p class="text-lg font-bold" id="budgetAvailable">$0</p>
                     </div>
                 </div>
             </section>
 
-            <section class="glass p-6 rounded-2xl">
-                <h3 class="flex items-center gap-2 text-lg font-semibold mb-4 text-emerald-400">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Nueva Operación
+            <section class="glass p-6 rounded-2xl fade-in-up delay-100">
+                <h3 class="flex items-center gap-2 text-lg font-bold mb-4 text-emerald-500">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Registrar Movimiento
                 </h3>
                 <div class="space-y-3">
-                    <input id="transDesc" type="text" placeholder="Descripción (Ej: Supermercado)" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg outline-none">
-                    <input id="transAmount" type="number" placeholder="Monto" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg outline-none">
-                    <select id="transCategory" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg outline-none">
-                        <option value="Ingreso">📈 Ingreso (Sueldo/Ventas)</option>
-                        <option value="Comida">🍔 Comida</option>
-                        <option value="Servicios">💡 Servicios</option>
-                        <option value="Transporte">🚗 Transporte</option>
-                        <option value="Estudio">📚 Estudio</option>
-                        <option value="Otros">📦 Otros</option>
-                    </select>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="app.addRecord('income')" class="bg-emerald-600 hover:bg-emerald-700 py-2 rounded-lg font-bold transition-all">Ingreso (+)</button>
-                        <button onclick="app.addRecord('expense')" class="bg-rose-600 hover:bg-rose-700 py-2 rounded-lg font-bold transition-all">Gasto (-)</button>
+                    <input id="transDesc" type="text" placeholder="¿Qué compraste/cobraste?" class="w-full bg-black/10 dark:bg-white/5 border border-transparent focus:border-emerald-500 p-3 rounded-xl outline-none transition-all">
+                    
+                    <div class="flex gap-2">
+                        <input id="transAmount" type="number" placeholder="$ Monto" class="w-1/2 bg-black/10 dark:bg-white/5 border border-transparent focus:border-emerald-500 p-3 rounded-xl outline-none transition-all">
+                        <select id="transCategory" class="w-1/2 bg-black/10 dark:bg-white/5 border border-transparent focus:border-emerald-500 p-3 rounded-xl outline-none transition-all cursor-pointer">
+                            <option value="Ingreso">📈 Ingreso</option>
+                            <option value="Comida">🍔 Comida</option>
+                            <option value="Servicios">💡 Servicios</option>
+                            <option value="Transporte">🚗 Transporte</option>
+                            <option value="Estudio">📚 Estudio</option>
+                            <option value="Otros">📦 Otros</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button onclick="app.addRecord('income')" class="bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-bold transition-all shadow-lg hover:-translate-y-1 flex justify-center items-center gap-2">
+                            <i data-lucide="arrow-up-circle" class="w-5 h-5"></i> Ingreso
+                        </button>
+                        <button onclick="app.addRecord('expense')" class="bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-xl font-bold transition-all shadow-lg hover:-translate-y-1 flex justify-center items-center gap-2">
+                            <i data-lucide="arrow-down-circle" class="w-5 h-5"></i> Gasto
+                        </button>
                     </div>
                 </div>
             </section>
 
-            <section class="glass p-6 rounded-2xl">
-                <h3 class="flex items-center gap-2 text-lg font-semibold mb-4 text-yellow-400">
-                    <i data-lucide="check-square" class="w-5 h-5"></i> Notas / Recordatorios
+            <section class="glass p-6 rounded-2xl fade-in-up delay-200">
+                <h3 class="flex items-center gap-2 text-lg font-bold mb-4 text-amber-500">
+                    <i data-lucide="sticky-note" class="w-5 h-5"></i> Notas Rápidas
                 </h3>
                 <div class="flex gap-2 mb-4">
-                    <input id="taskInput" type="text" placeholder="Pagar internet..." class="flex-1 bg-slate-800 border border-slate-700 p-2 rounded-lg outline-none text-sm">
-                    <button onclick="app.addTask()" class="bg-yellow-600 px-3 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                    <input id="taskInput" type="text" placeholder="Recordatorio..." class="flex-1 bg-black/10 dark:bg-white/5 border border-transparent focus:border-amber-500 p-2 rounded-lg outline-none text-sm">
+                    <button onclick="app.addTask()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 rounded-lg transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button>
                 </div>
-                <ul id="taskList" class="space-y-2 max-h-40 overflow-y-auto custom-scroll"></ul>
+                <ul id="taskList" class="space-y-2 max-h-48 overflow-y-auto custom-scroll pr-2"></ul>
             </section>
         </div>
 
         <div class="lg:col-span-8 space-y-6">
             
-            <section class="glass p-6 rounded-2xl border border-emerald-500/30 relative overflow-hidden">
-                <div class="flex justify-between items-start">
+            <section class="glass p-6 rounded-2xl border-l-4 border-emerald-500 relative overflow-hidden fade-in-up">
+                <div class="absolute top-0 right-0 p-6 opacity-5">
+                    <i data-lucide="globe" class="w-32 h-32"></i>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
                     <div>
-                        <h3 class="flex items-center gap-2 text-lg font-semibold mb-2 text-emerald-400">
-                            <i data-lucide="globe" class="w-5 h-5"></i> Mercado Cambiario
+                        <h3 class="flex items-center gap-2 text-xl font-bold text-emerald-500">
+                            <i data-lucide="refresh-cw" class="w-5 h-5 animate-spin-slow"></i> Mercado Cambiario
                         </h3>
-                        <p class="text-xs text-slate-400">Cotización Blue en tiempo real (API)</p>
+                        <p class="text-sm opacity-60">Cotización Blue en tiempo real (API)</p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-xs text-slate-400 uppercase">Tu Capital en USD</p>
-                        <p class="text-2xl font-bold text-emerald-300" id="balanceInUsd">US$ 0.00</p>
+                    <div class="text-right bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
+                        <p class="text-xs opacity-70 uppercase font-bold tracking-wider">Tu Capital en USD</p>
+                        <p class="text-3xl font-extrabold text-emerald-500" id="balanceInUsd">US$ 0.00</p>
                     </div>
                 </div>
                 
-                <div class="mt-4 flex items-center gap-4 bg-slate-900/50 p-3 rounded-xl border border-white/5 w-fit">
-                    <div class="bg-emerald-500/20 p-2 rounded-lg">
-                        <i data-lucide="banknote" class="w-6 h-6 text-emerald-400"></i>
+                <div class="mt-6 inline-flex items-center gap-3 bg-black/5 dark:bg-white/5 p-3 rounded-xl">
+                    <div class="bg-emerald-500 text-white p-2 rounded-lg shadow-sm">
+                        <i data-lucide="banknote" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <p class="text-xs text-slate-400 uppercase">Dólar Blue (Venta)</p>
-                        <p class="text-xl font-bold text-white" id="dolarPrice">Cargando...</p>
+                        <p class="text-xs opacity-60 uppercase font-semibold">Dólar Blue (Venta)</p>
+                        <p class="text-xl font-bold" id="dolarPrice">Cargando...</p>
                     </div>
                 </div>
             </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="glass p-5 rounded-2xl border-l-4 border-emerald-500">
-                    <p class="text-slate-400 text-sm">Ingresos Totales</p>
-                    <h2 class="text-2xl font-bold text-emerald-400" id="bIncome">$0</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in-up delay-100">
+                <div class="glass p-5 rounded-2xl border-b-4 border-emerald-500 hover:-translate-y-1 transition-transform">
+                    <p class="opacity-60 text-sm font-semibold uppercase">Ingresos</p>
+                    <h2 class="text-2xl font-bold text-emerald-500" id="bIncome">$0</h2>
                 </div>
-                <div class="glass p-5 rounded-2xl border-l-4 border-rose-500">
-                    <p class="text-slate-400 text-sm">Gastos Totales</p>
-                    <h2 class="text-2xl font-bold text-rose-400" id="bExpense">$0</h2>
+                <div class="glass p-5 rounded-2xl border-b-4 border-rose-500 hover:-translate-y-1 transition-transform">
+                    <p class="opacity-60 text-sm font-semibold uppercase">Gastos</p>
+                    <h2 class="text-2xl font-bold text-rose-500" id="bExpense">$0</h2>
                 </div>
-                <div class="glass p-5 rounded-2xl border-l-4 border-blue-500">
-                    <p class="text-slate-400 text-sm">Balance Neto (ARS)</p>
-                    <h2 class="text-2xl font-bold" id="bNet">$0</h2>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-6 rounded-2xl">
-                    <h4 class="text-sm font-semibold mb-4 text-slate-400 uppercase tracking-wider">Flujo de Caja</h4>
-                    <canvas id="barChart" height="200"></canvas>
-                </div>
-                <div class="glass p-6 rounded-2xl">
-                    <h4 class="text-sm font-semibold mb-4 text-slate-400 uppercase tracking-wider">Distribución de Gastos</h4>
-                    <canvas id="pieChart" height="200"></canvas>
+                <div class="glass p-5 rounded-2xl border-b-4 border-blue-500 hover:-translate-y-1 transition-transform">
+                    <p class="opacity-60 text-sm font-semibold uppercase">Balance Neto</p>
+                    <h2 class="text-2xl font-bold text-blue-500" id="bNet">$0</h2>
                 </div>
             </div>
 
-            <section class="glass rounded-2xl overflow-hidden">
-                <div class="p-6 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-    <h3 class="font-bold text-lg flex items-center gap-2">
-        <i data-lucide="history" class="w-5 h-5 text-blue-400"></i> Historial
-    </h3>
-    
-    <div class="flex gap-2 w-full md:w-auto">
-        <div class="relative flex-1 md:w-64">
-            <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-500"></i>
-            <input 
-                id="searchInput" 
-                onkeyup="app.render()" 
-                type="text" 
-                placeholder="Buscar (ej: Comida, Sueldo...)" 
-                class="w-full bg-slate-900 border border-slate-700 pl-9 pr-3 py-2 rounded-lg text-sm focus:ring-1 focus:ring-blue-500 outline-none placeholder-slate-600 transition-all"
-            >
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 fade-in-up delay-200">
+                <div class="glass p-6 rounded-2xl">
+                    <h4 class="text-sm font-bold opacity-70 mb-4 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Flujo de Caja
+                    </h4>
+                    <div class="h-64">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-2xl">
+                    <h4 class="text-sm font-bold opacity-70 mb-4 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4"></i> Gastos por Categoría
+                    </h4>
+                    <div class="h-64 flex justify-center">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
 
-        <button onclick="app.exportExcel()" class="bg-emerald-600/20 text-emerald-400 px-3 py-2 rounded-lg hover:bg-emerald-600/30 transition-all">
-            <i data-lucide="download" class="w-5 h-5"></i>
-        </button>
-    </div>
-</div>
+            <section class="glass rounded-2xl overflow-hidden fade-in-up delay-300">
+                <div class="p-6 border-b border-gray-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 bg-black/5 dark:bg-white/5">
+                    <h3 class="font-bold text-lg flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5 text-blue-500"></i> Historial
+                    </h3>
+                    
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-64">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 opacity-50"></i>
+                            <input 
+                                id="searchInput" 
+                                onkeyup="app.render()" 
+                                type="text" 
+                                placeholder="Buscar..." 
+                                class="w-full bg-white dark:bg-slate-900 border border-transparent focus:border-blue-500 pl-9 pr-3 py-2 rounded-lg text-sm shadow-sm outline-none transition-all"
+                            >
+                        </div>
+                        <button onclick="app.exportExcel()" class="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-bold">
+                            <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden sm:inline">Excel</span>
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
-                        <thead class="bg-slate-800/50 text-slate-400 text-xs uppercase">
+                        <thead class="bg-black/5 dark:bg-white/5 text-xs uppercase opacity-70 font-semibold">
                             <tr>
-                                <th class="px-6 py-3">Fecha</th>
-                                <th class="px-6 py-3">Descripción</th>
-                                <th class="px-6 py-3">Categoría</th>
-                                <th class="px-6 py-3 text-right">Monto</th>
-                                <th class="px-6 py-3 text-center">Acción</th>
+                                <th class="px-6 py-4">Fecha</th>
+                                <th class="px-6 py-4">Detalle</th>
+                                <th class="px-6 py-4">Categoría</th>
+                                <th class="px-6 py-4 text-right">Monto</th>
+                                <th class="px-6 py-4 text-center">Acción</th>
                             </tr>
                         </thead>
-                        <tbody id="historyTable" class="divide-y divide-white/5 text-sm">
+                        <tbody id="historyTable" class="divide-y divide-gray-200 dark:divide-white/5 text-sm">
                             </tbody>
                     </table>
                 </div>
@@ -221,85 +276,88 @@
         </div>
     </main>
 
-    <footer class="text-center mt-12 text-slate-500 text-sm">
-        <p>© 2026 FORJAX Premium Finance System. Desarrollado por Federico Cabral.</p>
+    <footer class="text-center mt-12 mb-6 opacity-50 text-sm">
+        <p>© 2026 FORJAX Ultra Finance System. Desarrollado por Federico Cabral.</p>
     </footer>
 </div>
 
 <script>
-/* ================= CEREBRO DE LA APLICACIÓN (JAVASCRIPT) ================= */
+/* ================= LÓGICA DE NEGOCIO ================= */
 
 const app = {
-    // Obtenemos el usuario guardado (si existe)
     user: localStorage.getItem("currentUser"),
-    
-    // Aquí guardamos toda la información en memoria
-    data: {
-        tasks: [],
-        records: [], // Lista de ingresos y gastos
-        budget: 0    // Presupuesto
-    },
-    
-    // Aquí guardamos los gráficos para poder actualizarlos
+    theme: localStorage.getItem("theme") || 'dark', // Tema por defecto
+    data: { tasks: [], records: [], budget: 0 },
     charts: {},
 
-    /* --- 1. FUNCIÓN DE INICIO (Se ejecuta al abrir) --- */
     init() {
+        this.applyTheme(); // Aplicar tema al iniciar
+        
         if (!this.user) {
-            // Si no hay usuario, mostramos Login
             document.getElementById("loginScreen").classList.remove("hidden");
         } else {
-            // Si hay usuario, mostramos la App
             document.getElementById("loginScreen").classList.add("hidden");
             document.getElementById("mainApp").classList.remove("hidden");
-            document.getElementById("userNameDisplay").textContent = `Agente: ${this.user.toUpperCase()}`;
+            document.getElementById("userNameDisplay").textContent = `Hola, ${this.user}`;
             
-            // Cargamos datos y dibujamos la pantalla
             this.loadData();
             this.render();
-            
-            // LLAMADA A LA API (Busca el dólar apenas entra)
             this.fetchDolar(); 
-            
-            // Inicia los iconos
             lucide.createIcons();
         }
     },
 
-    /* --- 2. FUNCIÓN CONEXIÓN API DOLAR (Lo Nuevo) --- */
+    /* --- GESTIÓN DE TEMAS (OSCURO/CLARO) --- */
+    toggleTheme() {
+        this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem("theme", this.theme);
+        this.applyTheme();
+    },
+
+    applyTheme() {
+        const html = document.documentElement;
+        const icon = document.getElementById("themeIcon");
+        
+        if (this.theme === 'dark') {
+            html.classList.add('dark');
+            html.classList.remove('light');
+            if(icon) icon.setAttribute('data-lucide', 'sun'); // Icono Sol
+        } else {
+            html.classList.add('light');
+            html.classList.remove('dark');
+            if(icon) icon.setAttribute('data-lucide', 'moon'); // Icono Luna
+        }
+        lucide.createIcons();
+        this.updateCharts(0,0); // Redibujar gráficos con nuevos colores
+    },
+
+    /* --- API --- */
     async fetchDolar() {
         try {
-            // A. Pedimos los datos a internet
             const response = await fetch("https://dolarapi.com/v1/dolares/blue");
             const data = await response.json();
-            const precioVenta = data.venta; // Sacamos el precio de venta
-
-            // B. Mostramos el precio en el cuadradito
+            const precioVenta = data.venta;
             document.getElementById("dolarPrice").textContent = `$${precioVenta}`;
 
-            // C. Calculamos cuánta plata tenés en total
             const totalInc = this.data.records.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
             const totalExp = this.data.records.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
             const balance = totalInc - totalExp;
 
-            // D. Si el precio es válido, dividimos tus pesos por el dolar
             if(precioVenta > 0) {
                 const usdBalance = balance / precioVenta;
-                // Formateamos para que se vea lindo (US$ 1,200.50)
                 document.getElementById("balanceInUsd").textContent = `US$ ${usdBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             }
-
         } catch (error) {
-            console.error("Error API Dolar:", error);
-            document.getElementById("dolarPrice").textContent = "Sin conexión";
+            console.error(error);
+            document.getElementById("dolarPrice").textContent = "Offline";
         }
     },
 
-    /* --- 3. GESTIÓN DE SESIÓN --- */
+    /* --- SESIÓN --- */
     initSession() {
         const val = document.getElementById("userInput").value.trim();
         if (val.length < 3) return Swal.fire("Error", "Nombre muy corto", "error");
-        localStorage.setItem("currentUser", val.toLowerCase());
+        localStorage.setItem("currentUser", val);
         location.reload();
     },
 
@@ -308,7 +366,7 @@ const app = {
         location.reload();
     },
 
-    /* --- 4. GUARDAR Y CARGAR DATOS (LocalStorage) --- */
+    /* --- DATA --- */
     loadData() {
         const prefix = this.user + "_";
         this.data.tasks = JSON.parse(localStorage.getItem(prefix + "tasks")) || [];
@@ -321,39 +379,30 @@ const app = {
         localStorage.setItem(prefix + "tasks", JSON.stringify(this.data.tasks));
         localStorage.setItem(prefix + "records", JSON.stringify(this.data.records));
         localStorage.setItem(prefix + "budget", this.data.budget);
-        
-        // Cada vez que guardamos, actualizamos la pantalla y el dólar
         this.render(); 
     },
 
-    /* --- 5. AGREGAR COSAS --- */
+    /* --- ACCIONES --- */
     addRecord(type) {
         const desc = document.getElementById("transDesc").value;
         const amount = Number(document.getElementById("transAmount").value);
         const category = document.getElementById("transCategory").value;
 
-        if (!desc || amount <= 0) return Swal.fire("Atención", "Faltan datos", "warning");
+        if (!desc || amount <= 0) return Swal.fire("Oops", "Faltan datos", "warning");
 
-        // Agregamos al principio del array (unshift)
         this.data.records.unshift({
-            id: Date.now(), // Usamos la hora como ID único
+            id: Date.now(),
             date: new Date().toLocaleDateString(),
-            desc,
-            amount,
-            category: type === 'income' ? 'Ingreso' : category,
-            type
+            desc, amount, category: type === 'income' ? 'Ingreso' : category, type
         });
 
-        // Limpiamos los inputs
         document.getElementById("transDesc").value = "";
         document.getElementById("transAmount").value = "";
-        
         this.save();
-        Swal.fire({ title: "Guardado", icon: "success", timer: 1000, showConfirmButton: false });
+        Swal.fire({ title: "¡Listo!", icon: "success", timer: 1000, showConfirmButton: false });
     },
 
     deleteRecord(id) {
-        // Filtramos para dejar todos MENOS el que queremos borrar
         this.data.records = this.data.records.filter(r => r.id !== id);
         this.save();
     },
@@ -377,69 +426,61 @@ const app = {
         this.save();
     },
 
-    /* --- 6. DIBUJAR EN PANTALLA (Render) --- */
+    /* --- RENDER --- */
     render() {
         const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
         
-        // Calculamos totales
         const totalInc = this.data.records.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
         const totalExp = this.data.records.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
         const balance = totalInc - totalExp;
         const available = this.data.budget - totalExp;
 
-        // Escribimos en el HTML
         document.getElementById("bIncome").textContent = formatter.format(totalInc);
         document.getElementById("bExpense").textContent = formatter.format(totalExp);
         
-        // Color del balance según si es positivo o negativo
         const bNetEl = document.getElementById("bNet");
         bNetEl.textContent = formatter.format(balance);
-        bNetEl.className = balance >= 0 ? "text-2xl font-bold text-emerald-400" : "text-2xl font-bold text-rose-400";
+        bNetEl.className = balance >= 0 ? "text-2xl font-bold text-emerald-500" : "text-2xl font-bold text-rose-500";
         
         document.getElementById("budgetTotal").textContent = formatter.format(this.data.budget);
         document.getElementById("budgetAvailable").textContent = formatter.format(available);
-        document.getElementById("budgetAvailable").style.color = available < 0 ? "#fb7185" : "#34d399";
+        document.getElementById("budgetAvailable").className = `text-lg font-bold ${available < 0 ? 'text-rose-500' : 'text-emerald-500'}`;
 
-        // Alerta si te pasaste del presupuesto
         if(this.data.budget > 0 && available < 0) {
-            Swal.fire({ toast: true, position: 'top-end', icon: 'warning', title: 'Presupuesto excedido', showConfirmButton: false, timer: 3000 });
+            Swal.fire({ toast: true, position: 'top-end', icon: 'warning', title: '¡Presupuesto excedido!', showConfirmButton: false, timer: 3000 });
         }
 
-        // Generamos la tabla
-        // 1. OBTENEMOS LO QUE ESCRIBIÓ EL USUARIO
+        // TABLA CON BUSCADOR
         const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
-
-        // 2. FILTRAMOS LOS DATOS (Aquí está la magia)
         const filteredRecords = this.data.records.filter(r => 
             r.desc.toLowerCase().includes(searchTerm) || 
             r.category.toLowerCase().includes(searchTerm)
         );
 
-        // 3. GENERAMOS LA TABLA CON LOS DATOS FILTRADOS
         const tbody = document.getElementById("historyTable");
         
         if(filteredRecords.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-500">No se encontraron resultados</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 opacity-50">No hay movimientos</td></tr>`;
         } else {
             tbody.innerHTML = filteredRecords.map(r => `
-                <tr class="hover:bg-white/5 transition-colors group border-b border-white/5 last:border-0">
-                    <td class="px-6 py-4 text-slate-500 text-xs">${r.date}</td>
+                <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
+                    <td class="px-6 py-4 opacity-70 text-xs">${r.date}</td>
                     <td class="px-6 py-4 font-medium flex items-center gap-2">
-                        <span class="p-2 rounded-lg ${r.type === 'income' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">
-                            ${r.type === 'income' ? '<i data-lucide="trending-up" class="w-4 h-4"></i>' : '<i data-lucide="shopping-bag" class="w-4 h-4"></i>'}
+                        <span class="p-2 rounded-full ${r.type === 'income' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'}">
+                            ${r.type === 'income' ? '<i data-lucide="arrow-up" class="w-3 h-3"></i>' : '<i data-lucide="shopping-bag" class="w-3 h-3"></i>'}
                         </span>
                         ${r.desc}
                     </td>
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold border ${r.type === 'income' ? 'border-emerald-500/20 text-emerald-400' : 'border-slate-600 text-slate-400'}">
+                        <span class="px-2 py-1 rounded-full text-xs font-bold border border-current opacity-70">
                             ${r.category}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-right font-bold font-mono ${r.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
+                    <td class="px-6 py-4 text-right font-bold ${r.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}">
                         ${r.type === 'income' ? '+' : '-'}${formatter.format(r.amount)}
                     </td>
                     <td class="px-6 py-4 text-center">
-                        <button onclick="app.deleteRecord(${r.id})" class="p-2 hover:bg-rose-500/20 text-slate-500 hover:text-rose-500 rounded-lg transition-colors">
+                        <button onclick="app.deleteRecord(${r.id})" class="p-2 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-500 rounded-lg transition-colors">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </td>
@@ -447,21 +488,18 @@ const app = {
             `).join('');
         }
 
-        // Generamos lista de tareas
         document.getElementById("taskList").innerHTML = this.data.tasks.map((t, i) => `
-            <li class="flex justify-between items-center bg-slate-800/40 p-2 rounded-lg border border-white/5 group">
-                <span class="text-sm">${t}</span>
-                <button onclick="app.deleteTask(${i})" class="opacity-0 group-hover:opacity-100 text-rose-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+            <li class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-3 rounded-lg group hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                <span class="text-sm font-medium">${t}</span>
+                <button onclick="app.deleteTask(${i})" class="text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="x" class="w-4 h-4"></i></button>
             </li>
         `).join('');
 
-        // Actualizamos gráficos y Dólar
         this.updateCharts(totalInc, totalExp);
         this.fetchDolar(); 
         lucide.createIcons();
     },
 
-    /* --- 7. GRÁFICOS --- */
     updateCharts(inc, exp) {
         const ctxBar = document.getElementById("barChart").getContext("2d");
         const ctxPie = document.getElementById("pieChart").getContext("2d");
@@ -469,7 +507,11 @@ const app = {
         if (this.charts.bar) this.charts.bar.destroy();
         if (this.charts.pie) this.charts.pie.destroy();
 
-        // Gráfico de Barras
+        // Colores según tema
+        const isDark = this.theme === 'dark';
+        const textColor = isDark ? '#94a3b8' : '#475569';
+        const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
         this.charts.bar = new Chart(ctxBar, {
             type: 'bar',
             data: {
@@ -477,13 +519,21 @@ const app = {
                 datasets: [{
                     data: [inc, exp],
                     backgroundColor: ['#10b981', '#f43f5e'],
-                    borderRadius: 8
+                    borderRadius: 8,
+                    barThickness: 50
                 }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { display: false } } }
+            options: { 
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { grid: { color: gridColor }, ticks: { color: textColor } },
+                    x: { grid: { display: false }, ticks: { color: textColor } }
+                } 
+            }
         });
 
-        // Gráfico de Torta (Gastos por categoría)
         const catData = {};
         this.data.records.filter(r => r.type === 'expense').forEach(r => {
             catData[r.category] = (catData[r.category] || 0) + r.amount;
@@ -499,11 +549,16 @@ const app = {
                     borderWidth: 0
                 }]
             },
-            options: { plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12 } } } }
+            options: { 
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { position: 'right', labels: { color: textColor, boxWidth: 12, font: { size: 11 } } } 
+                } 
+            }
         });
     },
 
-    /* --- 8. EXCEL --- */
     exportExcel() {
         const exportData = this.data.records.map(r => ({
             Fecha: r.date,
@@ -520,7 +575,6 @@ const app = {
     }
 };
 
-// --- PUNTO DE PARTIDA ---
 app.init();
 </script>
 </body>
