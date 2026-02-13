@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V9 Crypto King</title>
+    <title>FORJAX Terminal - V10 The Auditor</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,7 +49,6 @@
         .dark option { background-color: #0f172a; color: white; }
         .light input, .light select { background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; }
         
-        /* Animación pulso cripto */
         .crypto-pulse { animation: cryptoPulse 2s infinite; }
         @keyframes cryptoPulse { 0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(168, 85, 247, 0); } 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); } }
     </style>
@@ -133,10 +132,18 @@
                                 <button onclick="app.addRecord('expense')" class="bg-rose-600 hover:bg-rose-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg active:scale-95 flex justify-center items-center gap-2"><i data-lucide="minus"></i> GASTO</button>
                             </div>
                         </div>
-                        <div class="mt-10 pt-8 border-t border-white/10">
-                            <div class="flex justify-between items-end mb-4"><div><h4 class="font-bold text-base text-blue-400 uppercase tracking-wide flex items-center gap-2"><i data-lucide="target" class="w-5 h-5"></i> Presupuesto</h4><p class="text-xs text-slate-500 mt-1">Mensual</p></div><span id="budgetPercent" class="text-xl font-black text-white bg-blue-600 px-3 py-1 rounded-lg shadow-lg shadow-blue-600/20">0%</span></div>
-                            <div class="w-full bg-slate-700/50 rounded-full h-5 mb-4 overflow-hidden border border-white/5"><div id="budgetBar" class="bg-blue-500 h-5 rounded-full transition-all duration-1000 relative" style="width: 0%"><div class="absolute inset-0 bg-white/20 animate-pulse"></div></div></div>
-                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5"><span id="budgetUsed" class="text-sm font-bold text-rose-400">$0 Gastados</span><div class="flex items-center gap-2"><span class="text-xs text-slate-400">Meta:</span><input id="budgetInput" onchange="app.setBudget()" type="number" class="bg-transparent text-right outline-none w-32 text-lg font-bold text-emerald-400 placeholder-slate-600 focus:border-b focus:border-emerald-400 transition-all" placeholder="$ Definir"></div></div>
+                        
+                        <div class="mt-8 pt-6 border-t border-white/10">
+                            <div class="flex justify-between items-end mb-2"><div><h4 class="font-bold text-base text-blue-400 uppercase tracking-wide flex items-center gap-2"><i data-lucide="target" class="w-4 h-4"></i> Presupuesto</h4></div><span id="budgetPercent" class="text-lg font-black text-white bg-blue-600 px-2 py-0.5 rounded-lg">0%</span></div>
+                            <div class="w-full bg-slate-700/50 rounded-full h-4 mb-3 overflow-hidden border border-white/5"><div id="budgetBar" class="bg-blue-500 h-4 rounded-full transition-all duration-1000 relative" style="width: 0%"><div class="absolute inset-0 bg-white/20 animate-pulse"></div></div></div>
+                            <div class="flex items-center justify-between bg-black/20 p-2 rounded-xl border border-white/5"><span id="budgetUsed" class="text-xs font-bold text-rose-400">$0</span><input id="budgetInput" onchange="app.setBudget()" type="number" class="bg-transparent text-right outline-none w-24 text-sm font-bold text-emerald-400 placeholder-slate-600" placeholder="$ Global"></div>
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-white/10">
+                            <h4 class="font-bold text-base text-amber-500 uppercase tracking-wide flex items-center gap-2 mb-4"><i data-lucide="siren" class="w-4 h-4"></i> Auditoría de Gastos</h4>
+                            <p class="text-xs text-slate-400 mb-3">Toca una categoría para fijar su límite.</p>
+                            <div id="limitsGrid" class="space-y-3 max-h-[300px] overflow-y-auto custom-scroll pr-1">
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -210,12 +217,9 @@
             </div>
 
             <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-purple-500 flex items-center gap-2">🚀 Criptomonedas (Live)</h3>
-            <div id="marketGridCrypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                 </div>
-
+            <div id="marketGridCrypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10"></div>
             <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-emerald-500">🇦🇷 Argentina</h3>
             <div id="marketGridArg" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10"></div>
-
             <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-blue-500">🌎 Divisas Mundiales (Forex)</h3>
             <div id="marketGridWorld" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
         </div>
@@ -231,9 +235,8 @@ const app = {
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
     timeFilter: 'month', 
-    data: { records: [], budget: 0, subs: [], goals: [] },
-    rates: {}, 
-    charts: {},
+    data: { records: [], budget: 0, subs: [], goals: [], limits: {} }, // V10: limits added
+    rates: {}, charts: {},
 
     init() {
         this.applyTheme();
@@ -255,7 +258,6 @@ const app = {
         }
     },
 
-    /* --- NAVEGACIÓN --- */
     switchTab(tab) {
         this.currentTab = tab;
         const views = { wallet: document.getElementById("viewWallet"), subs: document.getElementById("viewSubs"), goals: document.getElementById("viewGoals"), market: document.getElementById("viewMarket") };
@@ -270,8 +272,6 @@ const app = {
         btns[tab].className = baseClass + activeClass;
 
         if (tab === 'market') this.fetchFullMarket();
-        if (tab === 'subs') this.renderSubs();
-        if (tab === 'goals') this.renderGoals();
     },
 
     setFilter(filter) {
@@ -283,13 +283,13 @@ const app = {
         this.render();
     },
 
-    /* --- DATA ENGINE --- */
     loadData() {
         const prefix = this.user + "_";
         this.data.records = JSON.parse(localStorage.getItem(prefix + "records")) || [];
         this.data.budget = Number(localStorage.getItem(prefix + "budget")) || 0;
         this.data.subs = JSON.parse(localStorage.getItem(prefix + "subs")) || [];
         this.data.goals = JSON.parse(localStorage.getItem(prefix + "goals")) || [];
+        this.data.limits = JSON.parse(localStorage.getItem(prefix + "limits")) || {}; // Cargar Limites
     },
 
     save() {
@@ -298,21 +298,111 @@ const app = {
         localStorage.setItem(prefix + "budget", this.data.budget);
         localStorage.setItem(prefix + "subs", JSON.stringify(this.data.subs));
         localStorage.setItem(prefix + "goals", JSON.stringify(this.data.goals));
+        localStorage.setItem(prefix + "limits", JSON.stringify(this.data.limits)); // Guardar Limites
         this.render();
     },
 
-    /* --- WALLET --- */
+    /* --- WALLET LOGIC --- */
     addRecord(type) {
         const desc = document.getElementById("transDesc").value;
         const amount = Number(document.getElementById("transAmount").value);
         const category = document.getElementById("transCategory").value;
         if (!desc || amount <= 0) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Faltan datos', showConfirmButton:false, timer:2000});
+        
+        // CHECK LIMITS (V10 Feature)
+        if(type === 'expense' && this.data.limits[category]) {
+            const currentSpent = this.getCategorySpent(category);
+            const limit = this.data.limits[category];
+            if(currentSpent + amount > limit) {
+                Swal.fire({
+                    title: '¡ALERTA DE GASTO!',
+                    text: `Te estás pasando del límite de ${category} ($${limit})`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Gastar igual',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) this.executeAddRecord(desc, amount, category, type);
+                });
+                return;
+            }
+        }
+        this.executeAddRecord(desc, amount, category, type);
+    },
+
+    executeAddRecord(desc, amount, category, type) {
         this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), desc, amount, category, type });
         document.getElementById("transDesc").value = ""; document.getElementById("transAmount").value = ""; this.save();
-        Swal.fire({toast:true, position:'bottom-end', icon:'success', title:'Operación Registrada', showConfirmButton:false, timer:3000});
+        Swal.fire({toast:true, position:'bottom-end', icon:'success', title:'Operación Registrada', showConfirmButton:false, timer:2000});
     },
+
     deleteRecord(id) { this.data.records = this.data.records.filter(r => r.id !== id); this.save(); },
     setBudget() { this.data.budget = Number(document.getElementById("budgetInput").value); this.save(); },
+
+    /* --- V10 AUDITOR LOGIC --- */
+    async setCategoryLimit(cat) {
+        const { value: limit } = await Swal.fire({
+            title: `Límite para ${cat}`,
+            input: 'number',
+            inputValue: this.data.limits[cat] || '',
+            inputPlaceholder: 'Monto máximo mensual',
+            showCancelButton: true,
+            confirmButtonText: 'Guardar'
+        });
+
+        if (limit !== undefined) {
+            if(limit === "") delete this.data.limits[cat];
+            else this.data.limits[cat] = Number(limit);
+            this.save();
+        }
+    },
+
+    getCategorySpent(cat) {
+        // Siempre calcula gasto del MES ACTUAL para los límites
+        const now = new Date();
+        const m = now.getMonth();
+        const y = now.getFullYear();
+        return this.data.records.filter(r => {
+            const [d, rm, ry] = r.date.split('/').map(Number);
+            return r.category === cat && r.type === 'expense' && (rm - 1) === m && ry === y;
+        }).reduce((a,c) => a + c.amount, 0);
+    },
+
+    renderCategoryLimits() {
+        const container = document.getElementById("limitsGrid");
+        const categories = ["Hogar", "Comida", "Servicios", "Transporte", "Ocio", "Salud", "Educación", "Otros"];
+        const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+
+        container.innerHTML = categories.map(cat => {
+            const limit = this.data.limits[cat] || 0;
+            const spent = this.getCategorySpent(cat);
+            const percent = limit > 0 ? (spent / limit) * 100 : 0;
+            
+            // Color logic
+            let color = "bg-blue-500";
+            let textColor = "text-slate-400";
+            if(limit > 0) {
+                if(percent > 100) { color = "bg-rose-500"; textColor = "text-rose-500 font-bold"; }
+                else if(percent > 80) { color = "bg-amber-500"; textColor = "text-amber-500 font-bold"; }
+                else { color = "bg-emerald-500"; textColor = "text-emerald-500"; }
+            }
+
+            return `
+            <div onclick="app.setCategoryLimit('${cat}')" class="bg-black/20 p-3 rounded-xl border border-white/5 hover:bg-white/5 cursor-pointer transition-all group">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-sm text-white group-hover:text-blue-400 transition-colors">${cat}</span>
+                    <span class="text-xs ${textColor}">${limit > 0 ? (percent > 100 ? 'EXCEDIDO' : Math.round(percent)+'%') : 'Sin Límite'}</span>
+                </div>
+                <div class="w-full bg-slate-700/50 h-2 rounded-full overflow-hidden mb-2">
+                    <div class="${color} h-full transition-all" style="width: ${Math.min(percent, 100)}%"></div>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-400">${formatter.format(spent)}</span>
+                    <span class="text-slate-500">${limit > 0 ? formatter.format(limit) : '-'}</span>
+                </div>
+            </div>`;
+        }).join('');
+    },
 
     /* --- SUBS --- */
     toggleSubForm() { document.getElementById("subForm").classList.toggle("hidden"); },
@@ -328,6 +418,8 @@ const app = {
     deleteSub(id) { Swal.fire({title: '¿Eliminar?', showCancelButton: true, confirmButtonColor: '#d33'}).then((r) => { if (r.isConfirmed) { this.data.subs = this.data.subs.filter(s => s.id !== id); this.save(); this.renderSubs(); }}); },
     paySub(id) {
         const sub = this.data.subs.find(s => s.id === id); if(!sub) return;
+        this.addRecord('expense', `Pago: ${sub.name}`, sub.amount, 'Servicios'); // Reuse updated addRecord logic? No, direct push better for automation to avoid alerts loop or handle differently.
+        // Direct push for subs to avoid prompt loop, but we want it recorded.
         this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), desc: `Pago: ${sub.name}`, amount: sub.amount, category: 'Servicios', type: 'expense' });
         this.save(); this.renderSubs(); this.render(); Swal.fire({toast:true, position:'top-end', icon:'success', title:`¡${sub.name} Pagado!`, showConfirmButton:false, timer:2000});
     },
@@ -366,7 +458,7 @@ const app = {
         }).join(''); lucide.createIcons();
     },
 
-    /* --- HELPERS & RENDER --- */
+    /* --- RENDER --- */
     getFilteredRecords() {
         if (this.timeFilter === 'all') return this.data.records;
         const now = new Date(); const m = now.getMonth(); const y = now.getFullYear();
@@ -383,7 +475,9 @@ const app = {
         const s = document.getElementById("searchInput")?.value.toLowerCase() || ""; const filt = rec.filter(r => r.desc.toLowerCase().includes(s) || r.category.toLowerCase().includes(s));
         const tb = document.getElementById("historyTable"); if (filt.length === 0) tb.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 font-bold text-lg">SIN DATOS</td></tr>`;
         else tb.innerHTML = filt.map(r => `<tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-all group border-b border-white/5 last:border-0"><td class="px-6 py-4 opacity-70 text-xs font-bold">${r.date}</td><td class="px-6 py-4 font-bold flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center ${r.type === 'income' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-rose-500/20 text-rose-500'}"><i data-lucide="${r.type === 'income' ? 'arrow-up' : 'shopping-bag'}" class="w-4 h-4"></i></div>${r.desc}</td><td class="px-6 py-4"><span class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-white/10 opacity-80">${r.category}</span></td><td class="px-6 py-4 text-right font-black ${r.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}">${r.type === 'income' ? '+' : '-'}${formatter.format(r.amount)}</td><td class="px-6 py-4 text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-400 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`).join('');
-        if(s === "") this.updateCharts(inc, exp, rec); lucide.createIcons();
+        if(s === "") this.updateCharts(inc, exp, rec); 
+        this.renderCategoryLimits(); // V10 Call
+        lucide.createIcons();
     },
     openSettings() { Swal.fire({ title: 'Configuración', html: `<div class="grid grid-cols-2 gap-4 mt-4"><button onclick="app.downloadBackup()" class="bg-blue-600 text-white p-4 rounded-xl font-bold hover:bg-blue-700 transition-all flex flex-col items-center gap-2"><i data-lucide="download-cloud" class="w-8 h-8"></i> Exportar</button><button onclick="document.getElementById('importFile').click()" class="bg-slate-700 text-white p-4 rounded-xl font-bold hover:bg-slate-600 transition-all flex flex-col items-center gap-2"><i data-lucide="upload-cloud" class="w-8 h-8"></i> Restaurar</button></div>`, showConfirmButton: false }); },
     downloadBackup() { const s = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data)); const a = document.createElement('a'); a.href = s; a.download = `Backup_${this.user}.json`; a.click(); },
@@ -399,28 +493,20 @@ const app = {
     
     async fetchFullMarket() {
         const ga=document.getElementById("marketGridArg"), gw=document.getElementById("marketGridWorld"), gc=document.getElementById("marketGridCrypto"), ic=document.getElementById("refreshIcon"); ic.classList.add("animate-spin"); this.rates={'USD':1,'EUR':0.92,'ARS_BLUE':0.001};
-        // 1. ARGENTINA
         try { const r=await fetch("https://dolarapi.com/v1/dolares"); const d=await r.json(); const f=d.filter(x=>x.casa==="oficial"||x.casa==="blue"); f.forEach(x=>{if(x.casa==='blue')this.rates['ARS_BLUE']=1/x.venta;if(x.casa==='oficial')this.rates['ARS_OFICIAL']=1/x.venta;}); ga.innerHTML=f.map(x=>`<div class="glass p-6 rounded-3xl relative overflow-hidden border border-emerald-500/30"><div class="flex items-center gap-3 mb-4"><div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div><h3 class="font-bold text-lg text-slate-200">Dólar ${x.nombre}</h3></div><div class="grid grid-cols-2 gap-4"><div class="bg-black/20 p-3 rounded-xl"><p class="text-[10px] uppercase font-bold text-slate-500">Compra</p><p class="text-xl font-black text-white">$${x.compra}</p></div><div class="bg-black/20 p-3 rounded-xl border border-emerald-500/20"><p class="text-[10px] uppercase font-bold text-slate-500">Venta</p><p class="text-xl font-black text-emerald-400">$${x.venta}</p></div></div></div>`).join(''); } catch(e){}
-        // 2. CRYPTO (CoinGecko)
         try {
             const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&page=1&sparkline=false"); const d=await r.json();
-            d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price);
-            this.fillCalcSelects(); // Update calculator with new rates
-            gc.innerHTML=d.map(c=> {
-                const changeColor = c.price_change_percentage_24h >= 0 ? 'text-emerald-400' : 'text-rose-500';
-                return `<div class="glass p-5 rounded-3xl relative overflow-hidden hover:bg-white/5 transition-all border border-purple-500/20"><div class="flex items-center gap-3 mb-3"><img src="${c.image}" class="w-8 h-8 rounded-full shadow-lg ${c.price_change_percentage_24h > 5 ? 'crypto-pulse' : ''}"><div class="overflow-hidden"><h3 class="font-bold text-white truncate">${c.name}</h3><span class="text-xs font-bold text-slate-500 bg-black/30 px-2 py-0.5 rounded uppercase">${c.symbol}</span></div></div><div class="flex justify-between items-end"><div class="flex flex-col"><span class="text-[10px] font-bold text-slate-500">PRECIO USD</span><span class="text-xl font-mono font-bold text-white">$${c.current_price.toLocaleString()}</span></div><div class="flex flex-col items-end"><span class="text-[10px] font-bold text-slate-500">24H %</span><span class="text-sm font-bold ${changeColor}">${c.price_change_percentage_24h.toFixed(2)}%</span></div></div></div>`;
-            }).join('');
-        } catch(e) { console.log(e); gc.innerHTML = `<div class="col-span-full text-center text-slate-500 p-4">Crypto API Limit (Wait a min)</div>`; }
-        // 3. WORLD
+            d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price); this.fillCalcSelects(); 
+            gc.innerHTML=d.map(c=> { const changeColor = c.price_change_percentage_24h >= 0 ? 'text-emerald-400' : 'text-rose-500'; return `<div class="glass p-5 rounded-3xl relative overflow-hidden hover:bg-white/5 transition-all border border-purple-500/20"><div class="flex items-center gap-3 mb-3"><img src="${c.image}" class="w-8 h-8 rounded-full shadow-lg ${c.price_change_percentage_24h > 5 ? 'crypto-pulse' : ''}"><div class="overflow-hidden"><h3 class="font-bold text-white truncate">${c.name}</h3><span class="text-xs font-bold text-slate-500 bg-black/30 px-2 py-0.5 rounded uppercase">${c.symbol}</span></div></div><div class="flex justify-between items-end"><div class="flex flex-col"><span class="text-[10px] font-bold text-slate-500">PRECIO USD</span><span class="text-xl font-mono font-bold text-white">$${c.current_price.toLocaleString()}</span></div><div class="flex flex-col items-end"><span class="text-[10px] font-bold text-slate-500">24H %</span><span class="text-sm font-bold ${changeColor}">${c.price_change_percentage_24h.toFixed(2)}%</span></div></div></div>`; }).join('');
+        } catch(e) { gc.innerHTML = `<div class="col-span-full text-center text-slate-500 p-4">Crypto API Limit (Wait a min)</div>`; }
         try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates,d.rates); const c=[{c:'EUR',n:'Euro',f:'🇪🇺'},{c:'GBP',n:'Libra',f:'🇬🇧'},{c:'JPY',n:'Yen',f:'🇯🇵'},{c:'BRL',n:'Real',f:'🇧🇷'},{c:'MXN',n:'Peso MX',f:'🇲🇽'},{c:'CNY',n:'Yuan',f:'🇨🇳'}]; gw.innerHTML=c.map(x=>{const v=d.rates[x.c]; if(!v)return''; return `<div class="glass p-4 rounded-2xl border border-blue-500/10 hover:border-blue-500/30"><div class="flex justify-between mb-2"><span class="text-2xl">${x.f}</span><span class="text-xs font-bold bg-black/30 px-2 py-1 rounded text-slate-400">${x.c}</span></div><p class="text-sm font-bold text-slate-300">${x.n}</p><p class="text-lg font-mono font-bold text-blue-400">${v.toFixed(2)}</p></div>`}).join(''); } catch(e){}
         setTimeout(()=>ic.classList.remove("animate-spin"),1000); lucide.createIcons();
     },
     fillCalcSelects() { 
-        // Mix Fiat and Top Crypto
         const opts = [{v:'USD',t:'🇺🇸 USD'},{v:'ARS_BLUE',t:'🇦🇷 Blue'},{v:'EUR',t:'🇪🇺 Euro'},{v:'BTC',t:'₿ BTC'},{v:'ETH',t:'Ξ ETH'},{v:'USDT',t:'₮ USDT'},{v:'BRL',t:'🇧🇷 Real'}];
         const h=opts.map(o=>`<option value="${o.v}">${o.t}</option>`).join(''); 
         const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); 
-        if(s1.innerHTML.length < 50) { s1.innerHTML=h; s2.innerHTML=h; s2.value='ARS_BLUE'; } // Only fill if empty/small to avoid reset
+        if(s1.innerHTML.length < 50) { s1.innerHTML=h; s2.innerHTML=h; s2.value='ARS_BLUE'; } 
     },
     calcCurrency() { const a=parseFloat(document.getElementById("calcAmount").value)||0,f=document.getElementById("calcFrom").value,t=document.getElementById("calcTo").value; const r={...this.rates}; if(!r[f])r[f]=1;if(!r[t])r[t]=1; let u=f==='USD'?a:(f.includes('ARS')?a*r[f]:a/r[f]); let res=t==='USD'?u:(t.includes('ARS')?u/r[t]:u*r[t]); document.getElementById("calcResult").textContent=res.toLocaleString(undefined,{maximumFractionDigits:4}); },
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"), tmp=f.value; f.value=t.value; t.value=tmp; this.calcCurrency(); },
