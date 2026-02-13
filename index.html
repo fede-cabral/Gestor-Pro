@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V6 Manager</title>
+    <title>FORJAX Terminal - V7 Autopilot</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -69,14 +69,17 @@
 
 <div id="mainApp" class="hidden opacity-0 transition-opacity duration-700">
     
-    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass px-2 py-2 rounded-2xl flex items-center gap-1 shadow-2xl">
-        <button onclick="app.switchTab('wallet')" id="btnWallet" class="px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-blue-600 text-white shadow-lg">
-            <i data-lucide="wallet"></i> Mi Billetera
+    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass px-2 py-2 rounded-2xl flex items-center gap-1 shadow-2xl overflow-x-auto no-scrollbar max-w-[90vw] md:max-w-none">
+        <button onclick="app.switchTab('wallet')" id="btnWallet" class="whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-blue-600 text-white shadow-lg">
+            <i data-lucide="wallet"></i> Billetera
         </button>
-        <button onclick="app.switchTab('market')" id="btnMarket" class="px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-white/5">
+        <button onclick="app.switchTab('subs')" id="btnSubs" class="whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-white/5">
+            <i data-lucide="zap"></i> Suscripciones
+        </button>
+        <button onclick="app.switchTab('market')" id="btnMarket" class="whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-white/5">
             <i data-lucide="globe"></i> Forex
         </button>
-        <div class="w-px h-6 bg-white/10 mx-2"></div>
+        <div class="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
         <button onclick="app.openSettings()" class="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
             <i data-lucide="settings" class="w-5 h-5"></i>
         </button>
@@ -91,12 +94,8 @@
     <div class="pt-28 max-w-[1400px] mx-auto px-6 pb-12">
         
         <div id="viewWallet" class="fade-in">
-            
             <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h2 class="text-2xl font-bold">Dashboard</h2>
-                    <p class="text-sm text-slate-400">Resumen Financiero</p>
-                </div>
+                <div><h2 class="text-2xl font-bold">Dashboard</h2><p class="text-sm text-slate-400">Resumen Financiero</p></div>
                 <div class="glass p-1 rounded-xl flex gap-1">
                     <button onclick="app.setFilter('month')" id="filterMonth" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow-lg">Este Mes</button>
                     <button onclick="app.setFilter('prev')" id="filterPrev" class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-white/5">Mes Pasado</button>
@@ -105,126 +104,52 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div class="glass p-6 rounded-3xl border-b-4 border-emerald-500 hover-scale">
-                    <p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Ingresos</p>
-                    <h2 class="text-3xl font-black text-emerald-500" id="bIncome">$0</h2>
-                </div>
-                <div class="glass p-6 rounded-3xl border-b-4 border-rose-500 hover-scale">
-                    <p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Gastos</p>
-                    <h2 class="text-3xl font-black text-rose-500" id="bExpense">$0</h2>
-                </div>
-                <div class="glass p-6 rounded-3xl border-b-4 border-blue-500 hover-scale">
-                    <p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Balance</p>
-                    <h2 class="text-3xl font-black text-blue-500" id="bNet">$0</h2>
-                </div>
-                <div class="glass p-6 rounded-3xl border-b-4 border-violet-500 hover-scale flex flex-col justify-center">
-                    <p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Capital USD</p>
-                    <div class="flex items-baseline gap-2">
-                        <h2 class="text-3xl font-black text-white" id="capitalUsd">US$ 0</h2>
-                        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded" id="dolarRateTag">...</span>
-                    </div>
-                </div>
+                <div class="glass p-6 rounded-3xl border-b-4 border-emerald-500 hover-scale"><p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Ingresos</p><h2 class="text-3xl font-black text-emerald-500" id="bIncome">$0</h2></div>
+                <div class="glass p-6 rounded-3xl border-b-4 border-rose-500 hover-scale"><p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Gastos</p><h2 class="text-3xl font-black text-rose-500" id="bExpense">$0</h2></div>
+                <div class="glass p-6 rounded-3xl border-b-4 border-blue-500 hover-scale"><p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Balance</p><h2 class="text-3xl font-black text-blue-500" id="bNet">$0</h2></div>
+                <div class="glass p-6 rounded-3xl border-b-4 border-violet-500 hover-scale flex flex-col justify-center"><p class="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">Capital USD</p><div class="flex items-baseline gap-2"><h2 class="text-3xl font-black text-white" id="capitalUsd">US$ 0</h2><span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded" id="dolarRateTag">...</span></div></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-4 space-y-6">
                     <div class="glass p-6 rounded-3xl">
                         <h3 class="flex items-center gap-2 text-lg font-bold mb-6 text-blue-500"><i data-lucide="mouse-pointer-2"></i> Operaciones</h3>
-                        
                         <div class="space-y-4">
-                            <div class="relative">
-                                <i data-lucide="type" class="absolute left-4 top-3.5 w-5 h-5 opacity-50"></i>
-                                <input id="transDesc" type="text" placeholder="Descripción (ej: Sueldo, Super)" class="w-full pl-12 p-3 rounded-xl font-medium outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                            </div>
-                            
+                            <div class="relative"><i data-lucide="type" class="absolute left-4 top-3.5 w-5 h-5 opacity-50"></i><input id="transDesc" type="text" placeholder="Descripción" class="w-full pl-12 p-3 rounded-xl font-medium outline-none focus:ring-2 focus:ring-blue-500 transition-all"></div>
                             <div class="flex gap-3">
-                                <div class="relative w-1/2">
-                                    <i data-lucide="dollar-sign" class="absolute left-3 top-3.5 w-5 h-5 opacity-50"></i>
-                                    <input id="transAmount" type="number" placeholder="Monto" class="w-full pl-10 p-3 rounded-xl font-medium outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                                </div>
-                                <select id="transCategory" class="w-1/2 p-3 rounded-xl font-medium outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                                    <option value="Ingreso">💼 Ingreso</option>
-                                    <option value="Hogar">🏠 Hogar</option>
-                                    <option value="Comida">🍔 Comida</option>
-                                    <option value="Servicios">💡 Servicios</option>
-                                    <option value="Transporte">🚗 Transporte</option>
-                                    <option value="Ocio">🍿 Ocio</option>
-                                    <option value="Salud">❤️ Salud</option>
-                                    <option value="Educación">📚 Educación</option>
-                                    <option value="Otros">📦 Otros</option>
-                                </select>
+                                <div class="relative w-1/2"><i data-lucide="dollar-sign" class="absolute left-3 top-3.5 w-5 h-5 opacity-50"></i><input id="transAmount" type="number" placeholder="Monto" class="w-full pl-10 p-3 rounded-xl font-medium outline-none focus:ring-2 focus:ring-blue-500 transition-all"></div>
+                                <select id="transCategory" class="w-1/2 p-3 rounded-xl font-medium outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"><option value="Ingreso">💼 Ingreso</option><option value="Hogar">🏠 Hogar</option><option value="Comida">🍔 Comida</option><option value="Servicios">💡 Servicios</option><option value="Transporte">🚗 Transporte</option><option value="Ocio">🍿 Ocio</option><option value="Salud">❤️ Salud</option><option value="Educación">📚 Educación</option><option value="Otros">📦 Otros</option></select>
                             </div>
-
                             <div class="grid grid-cols-2 gap-3 pt-2">
-                                <button onclick="app.addRecord('income')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-emerald-500/30 active:scale-95 flex justify-center items-center gap-2">
-                                    <i data-lucide="plus"></i> INGRESO
-                                </button>
-                                <button onclick="app.addRecord('expense')" class="bg-rose-600 hover:bg-rose-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-rose-500/30 active:scale-95 flex justify-center items-center gap-2">
-                                    <i data-lucide="minus"></i> GASTO
-                                </button>
+                                <button onclick="app.addRecord('income')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg active:scale-95 flex justify-center items-center gap-2"><i data-lucide="plus"></i> INGRESO</button>
+                                <button onclick="app.addRecord('expense')" class="bg-rose-600 hover:bg-rose-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg active:scale-95 flex justify-center items-center gap-2"><i data-lucide="minus"></i> GASTO</button>
                             </div>
                         </div>
-
                         <div class="mt-10 pt-8 border-t border-white/10">
-                            <div class="flex justify-between items-end mb-4">
-                                <div>
-                                    <h4 class="font-bold text-base text-blue-400 uppercase tracking-wide flex items-center gap-2">
-                                        <i data-lucide="target" class="w-5 h-5"></i> Presupuesto
-                                    </h4>
-                                    <p class="text-xs text-slate-500 mt-1">Mensual</p>
-                                </div>
-                                <span id="budgetPercent" class="text-xl font-black text-white bg-blue-600 px-3 py-1 rounded-lg shadow-lg shadow-blue-600/20">0%</span>
-                            </div>
-                            
-                            <div class="w-full bg-slate-700/50 rounded-full h-5 mb-4 overflow-hidden border border-white/5">
-                                <div id="budgetBar" class="bg-blue-500 h-5 rounded-full transition-all duration-1000 relative" style="width: 0%">
-                                    <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5">
-                                <span id="budgetUsed" class="text-sm font-bold text-rose-400">$0 Gastados</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs text-slate-400">Meta:</span>
-                                    <input id="budgetInput" onchange="app.setBudget()" type="number" class="bg-transparent text-right outline-none w-32 text-lg font-bold text-emerald-400 placeholder-slate-600 focus:border-b focus:border-emerald-400 transition-all" placeholder="$ Definir">
-                                </div>
-                            </div>
+                            <div class="flex justify-between items-end mb-4"><div><h4 class="font-bold text-base text-blue-400 uppercase tracking-wide flex items-center gap-2"><i data-lucide="target" class="w-5 h-5"></i> Presupuesto</h4><p class="text-xs text-slate-500 mt-1">Mensual</p></div><span id="budgetPercent" class="text-xl font-black text-white bg-blue-600 px-3 py-1 rounded-lg shadow-lg shadow-blue-600/20">0%</span></div>
+                            <div class="w-full bg-slate-700/50 rounded-full h-5 mb-4 overflow-hidden border border-white/5"><div id="budgetBar" class="bg-blue-500 h-5 rounded-full transition-all duration-1000 relative" style="width: 0%"><div class="absolute inset-0 bg-white/20 animate-pulse"></div></div></div>
+                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5"><span id="budgetUsed" class="text-sm font-bold text-rose-400">$0 Gastados</span><div class="flex items-center gap-2"><span class="text-xs text-slate-400">Meta:</span><input id="budgetInput" onchange="app.setBudget()" type="number" class="bg-transparent text-right outline-none w-32 text-lg font-bold text-emerald-400 placeholder-slate-600 focus:border-b focus:border-emerald-400 transition-all" placeholder="$ Definir"></div></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-8 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="glass p-5 rounded-3xl">
-                            <h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4">Evolución</h4>
-                            <div class="h-48"><canvas id="barChart"></canvas></div>
-                        </div>
-                        <div class="glass p-5 rounded-3xl">
-                            <h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4">Distribución</h4>
-                            <div class="h-48 flex justify-center"><canvas id="pieChart"></canvas></div>
-                        </div>
+                        <div class="glass p-5 rounded-3xl"><h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4">Evolución</h4><div class="h-48"><canvas id="barChart"></canvas></div></div>
+                        <div class="glass p-5 rounded-3xl"><h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4">Distribución</h4><div class="h-48 flex justify-center"><canvas id="pieChart"></canvas></div></div>
                     </div>
-
                     <div class="glass rounded-3xl overflow-hidden border border-white/5">
                         <div class="p-5 border-b border-white/5 flex flex-wrap justify-between items-center gap-4 bg-white/5">
                             <h3 class="font-bold flex items-center gap-2"><i data-lucide="list"></i> Movimientos</h3>
                             <div class="flex gap-2">
                                 <input id="searchInput" onkeyup="app.render()" type="text" placeholder="Buscar..." class="bg-black/20 border-none rounded-lg px-3 py-1.5 text-sm w-32 focus:w-48 transition-all outline-none">
-                                <button onclick="app.exportProExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-600/20">
-                                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> CFO
-                                </button>
+                                <button onclick="app.exportProExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-600/20"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> CFO</button>
                             </div>
                         </div>
                         <div class="overflow-x-auto max-h-[400px] custom-scroll">
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-[#0f172a] z-10 text-xs uppercase opacity-70 font-bold">
-                                    <tr>
-                                        <th class="px-6 py-4">Fecha</th>
-                                        <th class="px-6 py-4">Detalle</th>
-                                        <th class="px-6 py-4">Categoría</th>
-                                        <th class="px-6 py-4 text-right">Monto</th>
-                                        <th class="px-6 py-4 text-center">Acción</th>
-                                    </tr>
+                                    <tr><th class="px-6 py-4">Fecha</th><th class="px-6 py-4">Detalle</th><th class="px-6 py-4">Categoría</th><th class="px-6 py-4 text-right">Monto</th><th class="px-6 py-4 text-center">Acción</th></tr>
                                 </thead>
                                 <tbody id="historyTable" class="divide-y divide-white/5 text-sm font-medium"></tbody>
                             </table>
@@ -234,57 +159,66 @@
             </div>
         </div>
 
+        <div id="viewSubs" class="hidden fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2"><i data-lucide="zap" class="text-yellow-500"></i> Gastos Fijos & Suscripciones</h2>
+                    <p class="text-sm text-slate-400">Piloto Automático de Pagos</p>
+                </div>
+                <button onclick="app.toggleSubForm()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2">
+                    <i data-lucide="plus-circle"></i> Nueva Suscripción
+                </button>
+            </div>
+
+            <div id="subForm" class="hidden glass p-6 rounded-3xl mb-8 border border-blue-500/30">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div class="md:col-span-1">
+                        <label class="text-xs text-slate-500 mb-1 block">Nombre (ej: Netflix)</label>
+                        <input id="subName" type="text" class="w-full p-3 rounded-xl font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="text-xs text-slate-500 mb-1 block">Monto Fijo</label>
+                        <input id="subAmount" type="number" class="w-full p-3 rounded-xl font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="text-xs text-slate-500 mb-1 block">Día de Vencimiento (1-31)</label>
+                        <input id="subDay" type="number" min="1" max="31" class="w-full p-3 rounded-xl font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="md:col-span-1">
+                        <button onclick="app.addSub()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-xl font-bold transition-all">Guardar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8 p-4 rounded-2xl bg-slate-800/50 border border-white/5 flex justify-between items-center">
+                <span class="text-slate-400 font-medium">Total Costos Fijos Mensuales:</span>
+                <span id="totalSubs" class="text-2xl font-black text-white">$0</span>
+            </div>
+
+            <div id="subsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                </div>
+        </div>
+
         <div id="viewMarket" class="hidden fade-in">
             <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-3xl font-black tracking-tight text-white flex items-center gap-2">
-                        <i data-lucide="globe-2" class="text-blue-500"></i> Mercado Internacional
-                    </h2>
-                    <p class="text-slate-400">Cotizaciones en tiempo real</p>
-                </div>
-                <div class="text-right">
-                    <button onclick="app.fetchFullMarket()" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 p-3 rounded-xl transition-all">
-                        <i data-lucide="refresh-cw" id="refreshIcon" class="w-6 h-6"></i>
-                    </button>
-                </div>
+                <div><h2 class="text-3xl font-black tracking-tight text-white flex items-center gap-2"><i data-lucide="globe-2" class="text-blue-500"></i> Mercado Internacional</h2><p class="text-slate-400">Cotizaciones en tiempo real</p></div>
+                <div class="text-right"><button onclick="app.fetchFullMarket()" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 p-3 rounded-xl transition-all"><i data-lucide="refresh-cw" id="refreshIcon" class="w-6 h-6"></i></button></div>
             </div>
-
             <div class="glass p-6 rounded-3xl mb-10 border-l-4 border-blue-500">
-                <h3 class="text-sm font-bold uppercase tracking-wider text-blue-400 mb-4 flex items-center gap-2">
-                    <i data-lucide="calculator" class="w-4 h-4"></i> Convertidor Universal
-                </h3>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-blue-400 mb-4 flex items-center gap-2"><i data-lucide="calculator" class="w-4 h-4"></i> Convertidor Universal</h3>
                 <div class="flex flex-col md:flex-row gap-4 items-center">
-                    <div class="flex-1 w-full">
-                        <label class="text-xs text-slate-500 mb-1 block">Monto</label>
-                        <input id="calcAmount" type="number" value="1" onkeyup="app.calcCurrency()" class="w-full p-3 rounded-xl text-lg font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                    </div>
-                    <div class="flex-1 w-full">
-                        <label class="text-xs text-slate-500 mb-1 block">De</label>
-                        <select id="calcFrom" onchange="app.calcCurrency()" class="w-full p-3 rounded-xl font-bold cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 text-white bg-slate-800"></select>
-                    </div>
-                    <div class="flex items-center justify-center pt-5">
-                        <button onclick="app.swapCalc()" class="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all">
-                            <i data-lucide="arrow-right-left" class="w-5 h-5 text-slate-400"></i>
-                        </button>
-                    </div>
-                    <div class="flex-1 w-full">
-                        <label class="text-xs text-slate-500 mb-1 block">A</label>
-                        <select id="calcTo" onchange="app.calcCurrency()" class="w-full p-3 rounded-xl font-bold cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 text-white bg-slate-800"></select>
-                    </div>
-                    <div class="flex-1 w-full bg-blue-600/10 p-3 rounded-xl border border-blue-500/20 text-center">
-                        <p class="text-xs text-blue-400 uppercase font-bold mb-1">Resultado</p>
-                        <p id="calcResult" class="text-2xl font-black text-white">...</p>
-                    </div>
+                    <div class="flex-1 w-full"><label class="text-xs text-slate-500 mb-1 block">Monto</label><input id="calcAmount" type="number" value="1" onkeyup="app.calcCurrency()" class="w-full p-3 rounded-xl text-lg font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all"></div>
+                    <div class="flex-1 w-full"><label class="text-xs text-slate-500 mb-1 block">De</label><select id="calcFrom" onchange="app.calcCurrency()" class="w-full p-3 rounded-xl font-bold cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 text-white bg-slate-800"></select></div>
+                    <div class="flex items-center justify-center pt-5"><button onclick="app.swapCalc()" class="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all"><i data-lucide="arrow-right-left" class="w-5 h-5 text-slate-400"></i></button></div>
+                    <div class="flex-1 w-full"><label class="text-xs text-slate-500 mb-1 block">A</label><select id="calcTo" onchange="app.calcCurrency()" class="w-full p-3 rounded-xl font-bold cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 text-white bg-slate-800"></select></div>
+                    <div class="flex-1 w-full bg-blue-600/10 p-3 rounded-xl border border-blue-500/20 text-center"><p class="text-xs text-blue-400 uppercase font-bold mb-1">Resultado</p><p id="calcResult" class="text-2xl font-black text-white">...</p></div>
                 </div>
             </div>
-
             <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-emerald-500">🇦🇷 Argentina</h3>
             <div id="marketGridArg" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10"></div>
-
             <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-blue-500">🌎 Divisas Mundiales (Forex)</h3>
             <div id="marketGridWorld" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
         </div>
-
     </div>
 </div>
 
@@ -296,8 +230,8 @@ const app = {
     user: localStorage.getItem("currentUser"),
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
-    timeFilter: 'month', // 'month', 'prev', 'all'
-    data: { records: [], budget: 0 },
+    timeFilter: 'month', 
+    data: { records: [], budget: 0, subs: [] }, // NUEVO: subs array
     rates: {}, 
     charts: {},
 
@@ -312,6 +246,7 @@ const app = {
             
             this.loadData();
             this.render();
+            this.renderSubs(); // NUEVO
             this.fillCalcSelects();
             this.fetchDolarSimple();
             this.fetchFullMarket();
@@ -319,175 +254,195 @@ const app = {
         }
     },
 
-    /* --- GESTIÓN DE PESTAÑAS --- */
+    /* --- NAVEGACIÓN --- */
     switchTab(tab) {
         this.currentTab = tab;
-        const walletView = document.getElementById("viewWallet");
-        const marketView = document.getElementById("viewMarket");
-        const btnWallet = document.getElementById("btnWallet");
-        const btnMarket = document.getElementById("btnMarket");
-
+        const views = { wallet: document.getElementById("viewWallet"), subs: document.getElementById("viewSubs"), market: document.getElementById("viewMarket") };
+        const btns = { wallet: document.getElementById("btnWallet"), subs: document.getElementById("btnSubs"), market: document.getElementById("btnMarket") };
         const activeClass = "bg-blue-600 text-white shadow-lg";
         const inactiveClass = "text-slate-400 hover:text-white hover:bg-white/5";
-        const baseClass = "px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ";
+        const baseClass = "whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ";
 
-        if (tab === 'wallet') {
-            walletView.classList.remove("hidden");
-            marketView.classList.add("hidden");
-            btnWallet.className = baseClass + activeClass;
-            btnMarket.className = baseClass + inactiveClass;
-        } else {
-            walletView.classList.add("hidden");
-            marketView.classList.remove("hidden");
-            btnWallet.className = baseClass + inactiveClass;
-            btnMarket.className = baseClass + activeClass;
-            this.fetchFullMarket();
-        }
+        // Ocultar todo
+        Object.values(views).forEach(v => v.classList.add("hidden"));
+        Object.values(btns).forEach(b => b.className = baseClass + inactiveClass);
+
+        // Mostrar activo
+        views[tab].classList.remove("hidden");
+        btns[tab].className = baseClass + activeClass;
+
+        if (tab === 'market') this.fetchFullMarket();
+        if (tab === 'subs') this.renderSubs();
     },
 
-    /* --- FILTROS DE TIEMPO (NUEVO) --- */
     setFilter(filter) {
         this.timeFilter = filter;
-        
-        // Actualizar UI de botones
-        const btns = {
-            'month': document.getElementById("filterMonth"),
-            'prev': document.getElementById("filterPrev"),
-            'all': document.getElementById("filterAll")
-        };
-
+        const btns = { 'month': document.getElementById("filterMonth"), 'prev': document.getElementById("filterPrev"), 'all': document.getElementById("filterAll") };
         const activeClass = "bg-blue-600 text-white shadow-lg";
         const inactiveClass = "text-slate-400 hover:text-white hover:bg-white/5";
-
-        Object.keys(btns).forEach(key => {
-            btns[key].className = `px-4 py-2 rounded-lg text-xs font-bold transition-all ${key === filter ? activeClass : inactiveClass}`;
-        });
-
-        this.render(); // Redibujar todo con el filtro nuevo
+        Object.keys(btns).forEach(key => btns[key].className = `px-4 py-2 rounded-lg text-xs font-bold transition-all ${key === filter ? activeClass : inactiveClass}`);
+        this.render();
     },
 
-    getFilteredRecords() {
-        if (this.timeFilter === 'all') return this.data.records;
+    /* --- SUBSCRIPTION MANAGER (NUEVO MOTOR) --- */
+    toggleSubForm() { document.getElementById("subForm").classList.toggle("hidden"); },
 
+    addSub() {
+        const name = document.getElementById("subName").value;
+        const amount = Number(document.getElementById("subAmount").value);
+        const day = Number(document.getElementById("subDay").value);
+
+        if(!name || amount <= 0 || day < 1 || day > 31) return Swal.fire("Error", "Datos inválidos", "error");
+
+        if(!this.data.subs) this.data.subs = [];
+        this.data.subs.push({ id: Date.now(), name, amount, day });
+        this.save();
+        this.renderSubs();
+        document.getElementById("subName").value = "";
+        document.getElementById("subAmount").value = "";
+        this.toggleSubForm();
+        Swal.fire({toast:true, position:'top-end', icon:'success', title:'Suscripción Agregada', showConfirmButton:false, timer:2000});
+    },
+
+    deleteSub(id) {
+        Swal.fire({
+            title: '¿Eliminar suscripción?', text: "Esto no borra los pagos ya realizados.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sí, borrar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.data.subs = this.data.subs.filter(s => s.id !== id);
+                this.save();
+                this.renderSubs();
+            }
+        });
+    },
+
+    paySub(id) {
+        const sub = this.data.subs.find(s => s.id === id);
+        if(!sub) return;
+        
+        // Agregar registro a la wallet
+        this.data.records.unshift({
+            id: Date.now(),
+            date: new Date().toLocaleDateString(),
+            desc: `Pago: ${sub.name}`,
+            amount: sub.amount,
+            category: 'Servicios', // Categoría por defecto
+            type: 'expense'
+        });
+        
+        this.save();
+        this.renderSubs(); // Recargar para actualizar estado
+        this.render(); // Actualizar dashboard
+        Swal.fire({toast:true, position:'top-end', icon:'success', title:`¡${sub.name} Pagado!`, showConfirmButton:false, timer:2000});
+    },
+
+    renderSubs() {
+        const grid = document.getElementById("subsGrid");
+        const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
+        const today = now.getDate();
 
-        return this.data.records.filter(r => {
-            // Convertir fecha string dd/mm/yyyy a objeto Date
-            const [day, month, year] = r.date.split('/').map(Number);
-            const recordDate = new Date(year, month - 1, day);
+        if(!this.data.subs || this.data.subs.length === 0) {
+            grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500 opacity-50"><i data-lucide="zap-off" class="w-16 h-16 mx-auto mb-4"></i><p>Sin gastos fijos configurados</p></div>`;
+            document.getElementById("totalSubs").textContent = "$0";
+            return;
+        }
 
-            if (this.timeFilter === 'month') {
-                return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
-            } 
-            if (this.timeFilter === 'prev') {
-                const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-                return recordDate.getMonth() === prevDate.getMonth() && recordDate.getFullYear() === prevDate.getFullYear();
+        let totalFixed = 0;
+        
+        grid.innerHTML = this.data.subs.map(s => {
+            totalFixed += s.amount;
+            
+            // Verificar si ya se pagó este mes
+            // Buscamos en el historial un gasto con el nombre "Pago: [NombreSub]" en este mes
+            const isPaid = this.data.records.some(r => {
+                const [d, m, y] = r.date.split('/').map(Number);
+                return (m - 1) === currentMonth && y === currentYear && r.desc === `Pago: ${s.name}`;
+            });
+
+            // Calcular días restantes
+            let daysLeft = s.day - today;
+            let statusColor = "text-emerald-400";
+            let statusText = `Vence en ${daysLeft} días`;
+
+            if(daysLeft < 0) {
+                // Ya pasó el día
+                if(isPaid) { statusText = "Pagado a tiempo"; statusColor = "text-slate-400"; }
+                else { statusText = "VENCIDO"; statusColor = "text-rose-500 font-black"; }
+            } else if (daysLeft === 0) {
+                 statusText = "VENCE HOY"; statusColor = "text-yellow-400 font-black animate-pulse";
             }
-            return true;
-        });
-    },
 
-    /* --- BACKUP & RESTORE (NUEVO) --- */
-    openSettings() {
-        Swal.fire({
-            title: 'Configuración Avanzada',
-            html: `
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <button onclick="app.downloadBackup()" class="bg-blue-600 text-white p-4 rounded-xl font-bold hover:bg-blue-700 transition-all flex flex-col items-center gap-2">
-                        <i data-lucide="download-cloud" class="w-8 h-8"></i> Exportar Datos
-                    </button>
-                    <button onclick="document.getElementById('importFile').click()" class="bg-slate-700 text-white p-4 rounded-xl font-bold hover:bg-slate-600 transition-all flex flex-col items-center gap-2">
-                        <i data-lucide="upload-cloud" class="w-8 h-8"></i> Restaurar Datos
-                    </button>
+            return `
+            <div class="glass p-5 rounded-2xl relative group hover:bg-white/5 transition-all border ${isPaid ? 'border-emerald-500/30' : 'border-slate-700'}">
+                <button onclick="app.deleteSub(${s.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-xl ${isPaid ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'}">
+                        <i data-lucide="${isPaid ? 'check-circle-2' : 'calendar-clock'}" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-white">${s.name}</h3>
+                        <p class="text-xs ${statusColor}">${statusText}</p>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-400 mt-4">Tus datos están seguros en tu navegador. Haz una copia regularmente.</p>
-            `,
-            showConfirmButton: false,
-            background: this.theme === 'dark' ? '#0f172a' : '#fff',
-            color: this.theme === 'dark' ? '#fff' : '#000',
-            didOpen: () => lucide.createIcons()
-        });
+
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="text-[10px] uppercase font-bold text-slate-500">Monto</p>
+                        <p class="text-2xl font-black text-white">${formatter.format(s.amount)}</p>
+                    </div>
+                    ${!isPaid ? 
+                        `<button onclick="app.paySub(${s.id})" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-lg shadow-blue-600/20 transition-all active:scale-95">PAGAR</button>` : 
+                        `<span class="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">PAGADO</span>`
+                    }
+                </div>
+                <div class="mt-3 w-full bg-slate-700/50 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-blue-500 h-full transition-all" style="width: ${Math.min((today/31)*100, 100)}%"></div>
+                </div>
+            </div>`;
+        }).join('');
+        
+        document.getElementById("totalSubs").textContent = formatter.format(totalFixed);
+        lucide.createIcons();
     },
 
-    downloadBackup() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `Backup_Forjax_${this.user}_${new Date().toISOString().split('T')[0]}.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-        Swal.close();
-    },
-
-    restoreData(input) {
-        const file = input.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData.records && Array.isArray(importedData.records)) {
-                    this.data = importedData;
-                    this.save();
-                    Swal.fire("¡Éxito!", "Datos restaurados correctamente. La página se recargará.", "success").then(() => location.reload());
-                } else {
-                    throw new Error("Formato inválido");
-                }
-            } catch (err) {
-                Swal.fire("Error", "El archivo de respaldo está dañado o no es válido.", "error");
-            }
-        };
-        reader.readAsText(file);
-    },
-
-    /* --- DATA ENGINE --- */
+    /* --- DATA ENGINE (Actualizado para incluir subs) --- */
     loadData() {
         const prefix = this.user + "_";
         this.data.records = JSON.parse(localStorage.getItem(prefix + "records")) || [];
         this.data.budget = Number(localStorage.getItem(prefix + "budget")) || 0;
+        this.data.subs = JSON.parse(localStorage.getItem(prefix + "subs")) || []; // Cargar subs
     },
 
     save() {
         const prefix = this.user + "_";
         localStorage.setItem(prefix + "records", JSON.stringify(this.data.records));
         localStorage.setItem(prefix + "budget", this.data.budget);
+        localStorage.setItem(prefix + "subs", JSON.stringify(this.data.subs)); // Guardar subs
         this.render();
     },
 
-    addRecord(type) {
-        const desc = document.getElementById("transDesc").value;
-        const amount = Number(document.getElementById("transAmount").value);
-        const category = document.getElementById("transCategory").value;
-        if (!desc || amount <= 0) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Faltan datos', showConfirmButton:false, timer:2000});
-        this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), desc, amount, category, type });
-        document.getElementById("transDesc").value = "";
-        document.getElementById("transAmount").value = "";
-        this.save();
-        const Toast = Swal.mixin({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        Toast.fire({ icon: 'success', title: 'Operación Registrada' });
+    /* --- RENDER ENGINE & HELPERS (Sin cambios mayores, solo mantenidos) --- */
+    getFilteredRecords() {
+        if (this.timeFilter === 'all') return this.data.records;
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        return this.data.records.filter(r => {
+            const [d, m, y] = r.date.split('/').map(Number);
+            const rDate = new Date(y, m - 1, d);
+            if (this.timeFilter === 'month') return rDate.getMonth() === currentMonth && rDate.getFullYear() === currentYear;
+            if (this.timeFilter === 'prev') { const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1); return rDate.getMonth() === prev.getMonth() && rDate.getFullYear() === prev.getFullYear(); }
+            return true;
+        });
     },
 
-    deleteRecord(id) {
-        this.data.records = this.data.records.filter(r => r.id !== id);
-        this.save();
-    },
-
-    setBudget() {
-        this.data.budget = Number(document.getElementById("budgetInput").value);
-        this.save();
-    },
-
-    /* --- RENDER ENGINE (CON FILTROS) --- */
     render() {
         const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-        
-        // USAMOS LOS REGISTROS FILTRADOS
         const visibleRecords = this.getFilteredRecords();
-
         const totalInc = visibleRecords.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
         const totalExp = visibleRecords.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
         const balance = totalInc - totalExp;
@@ -499,8 +454,6 @@ const app = {
 
         document.getElementById("budgetInput").value = this.data.budget || "";
         if(this.data.budget > 0) {
-            // Nota: El presupuesto se compara contra el gasto del mes (si el filtro es mes)
-            // Si el filtro es "Todo", comparar presupuesto mensual es raro, pero lo dejamos visualmente.
             const percent = Math.min((totalExp / this.data.budget) * 100, 100);
             document.getElementById("budgetBar").style.width = `${percent}%`;
             document.getElementById("budgetBar").className = `h-5 rounded-full transition-all duration-1000 relative ${percent > 90 ? 'bg-rose-500' : percent > 50 ? 'bg-yellow-500' : 'bg-blue-500'}`;
@@ -510,127 +463,87 @@ const app = {
 
         const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
         const filtered = visibleRecords.filter(r => r.desc.toLowerCase().includes(searchTerm) || r.category.toLowerCase().includes(searchTerm));
-        
         const tbody = document.getElementById("historyTable");
+        
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 font-bold text-lg">SIN DATOS EN ESTE PERIODO</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 font-bold text-lg">SIN DATOS</td></tr>`;
         } else {
             tbody.innerHTML = filtered.map(r => `
                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-all group border-b border-white/5 last:border-0">
                     <td class="px-6 py-4 opacity-70 text-xs font-bold">${r.date}</td>
-                    <td class="px-6 py-4 font-bold flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center ${r.type === 'income' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-rose-500/20 text-rose-500'}">
-                            <i data-lucide="${r.type === 'income' ? 'arrow-up' : 'shopping-bag'}" class="w-4 h-4"></i>
-                        </div>
-                        ${r.desc}
-                    </td>
+                    <td class="px-6 py-4 font-bold flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center ${r.type === 'income' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-rose-500/20 text-rose-500'}"><i data-lucide="${r.type === 'income' ? 'arrow-up' : 'shopping-bag'}" class="w-4 h-4"></i></div>${r.desc}</td>
                     <td class="px-6 py-4"><span class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-white/10 opacity-80">${r.category}</span></td>
                     <td class="px-6 py-4 text-right font-black ${r.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}">${r.type === 'income' ? '+' : '-'}${formatter.format(r.amount)}</td>
-                    <td class="px-6 py-4 text-center">
-                        <button onclick="app.deleteRecord(${r.id})" class="text-slate-400 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+                    <td class="px-6 py-4 text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-400 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                </tr>`).join('');
         }
-
         if(searchTerm === "") this.updateCharts(totalInc, totalExp, visibleRecords);
         lucide.createIcons();
     },
 
-    /* --- APIs --- */
-    async fetchDolarSimple() {
-        try {
-            const res = await fetch("https://dolarapi.com/v1/dolares/blue");
-            const data = await res.json();
-            document.getElementById("dolarRateTag").textContent = `@ $${data.venta}`;
-            // Calculamos capital en USD basado en el balance TOTAL, no el filtrado
-            const totalInc = this.data.records.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
-            const totalExp = this.data.records.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
-            if(data.venta > 0) document.getElementById("capitalUsd").textContent = `US$ ${((totalInc - totalExp) / data.venta).toLocaleString('en-US', {maximumFractionDigits: 0})}`;
-        } catch(e) {}
+    /* --- BACKUP & SETTINGS --- */
+    openSettings() {
+        Swal.fire({
+            title: 'Configuración Avanzada',
+            html: `<div class="grid grid-cols-2 gap-4 mt-4"><button onclick="app.downloadBackup()" class="bg-blue-600 text-white p-4 rounded-xl font-bold hover:bg-blue-700 transition-all flex flex-col items-center gap-2"><i data-lucide="download-cloud" class="w-8 h-8"></i> Exportar Datos</button><button onclick="document.getElementById('importFile').click()" class="bg-slate-700 text-white p-4 rounded-xl font-bold hover:bg-slate-600 transition-all flex flex-col items-center gap-2"><i data-lucide="upload-cloud" class="w-8 h-8"></i> Restaurar Datos</button></div>`,
+            showConfirmButton: false, background: this.theme === 'dark' ? '#0f172a' : '#fff', color: this.theme === 'dark' ? '#fff' : '#000', didOpen: () => lucide.createIcons()
+        });
+    },
+    downloadBackup() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `Backup_Forjax_${this.user}_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click(); downloadAnchorNode.remove(); Swal.close();
+    },
+    restoreData(input) {
+        const file = input.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (importedData.records) { this.data = importedData; this.save(); Swal.fire("¡Éxito!", "Datos restaurados.", "success").then(() => location.reload()); }
+            } catch (err) { Swal.fire("Error", "Archivo inválido.", "error"); }
+        }; reader.readAsText(file);
     },
 
+    /* --- MERCADO Y GRAFICOS --- */
+    async fetchDolarSimple() { try { const r = await fetch("https://dolarapi.com/v1/dolares/blue"); const d = await r.json(); document.getElementById("dolarRateTag").textContent = `@ $${d.venta}`; const i = this.data.records.filter(r => r.type === 'income').reduce((a, c) => a + c.amount, 0); const e = this.data.records.filter(r => r.type === 'expense').reduce((a, c) => a + c.amount, 0); if(d.venta > 0) document.getElementById("capitalUsd").textContent = `US$ ${((i - e) / d.venta).toLocaleString('en-US', {maximumFractionDigits: 0})}`; } catch(e) {} },
     async fetchFullMarket() {
-        const gridArg = document.getElementById("marketGridArg");
-        const gridWorld = document.getElementById("marketGridWorld");
-        const icon = document.getElementById("refreshIcon");
-        icon.classList.add("animate-spin");
-        this.rates = { 'USD': 1, 'EUR': 0.92, 'BRL': 5.0, 'ARS_BLUE': 0.001 }; 
-
-        try {
-            const res = await fetch("https://dolarapi.com/v1/dolares");
-            const data = await res.json();
-            const filtered = data.filter(d => d.casa === "oficial" || d.casa === "blue");
-            filtered.forEach(d => {
-                if(d.casa === 'blue') this.rates['ARS_BLUE'] = 1/d.venta; 
-                if(d.casa === 'oficial') this.rates['ARS_OFICIAL'] = 1/d.venta;
-            });
-            gridArg.innerHTML = filtered.map(d => `<div class="glass p-6 rounded-3xl relative overflow-hidden group hover:bg-white/5 transition-all border border-emerald-500/30"><div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div><div class="flex items-center gap-3 mb-4"><div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div><h3 class="font-bold text-lg text-slate-200">Dólar ${d.nombre}</h3></div><div class="grid grid-cols-2 gap-4 mb-2"><div class="bg-black/20 p-3 rounded-xl"><p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Compra</p><p class="text-xl font-black text-white">$${d.compra}</p></div><div class="bg-black/20 p-3 rounded-xl border border-emerald-500/20"><p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Venta</p><p class="text-xl font-black text-emerald-400">$${d.venta}</p></div></div></div>`).join('');
-        } catch (e) {}
-
-        try {
-            const res = await fetch("https://api.frankfurter.app/latest?from=USD");
-            const data = await res.json();
-            Object.assign(this.rates, data.rates);
-            const currencies = [{code:'EUR',name:'Euro',flag:'🇪🇺'},{code:'GBP',name:'Libra',flag:'🇬🇧'},{code:'JPY',name:'Yen',flag:'🇯🇵'},{code:'BRL',name:'Real',flag:'🇧🇷'},{code:'CLP',name:'Peso CL',flag:'🇨🇱'},{code:'MXN',name:'Peso MX',flag:'🇲🇽'},{code:'CAD',name:'Dólar CA',flag:'🇨🇦'},{code:'AUD',name:'Dólar AU',flag:'🇦🇺'},{code:'CNY',name:'Yuan',flag:'🇨🇳'},{code:'CHF',name:'Franco',flag:'🇨🇭'}];
-            gridWorld.innerHTML = currencies.map(c => { const val = data.rates[c.code]; if(!val) return ''; return `<div class="glass p-4 rounded-2xl hover:bg-white/5 transition-all border border-blue-500/10 hover:border-blue-500/40 group"><div class="flex justify-between items-center mb-2"><span class="text-2xl">${c.flag}</span><span class="text-xs font-bold text-slate-500 bg-black/30 px-2 py-1 rounded">${c.code}</span></div><p class="text-sm font-bold text-slate-300 truncate">${c.name}</p><p class="text-lg font-mono font-bold text-blue-400 mt-1">${val.toFixed(2)}</p><p class="text-[10px] text-slate-600">1 USD = ${val.toFixed(2)} ${c.code}</p></div>`; }).join('');
-        } catch (e) { gridWorld.innerHTML = `<div class="col-span-full text-center text-slate-500 p-4">Sin datos mundiales.</div>`; }
-
-        setTimeout(() => icon.classList.remove("animate-spin"), 1000);
-        lucide.createIcons();
+        const ga=document.getElementById("marketGridArg"), gw=document.getElementById("marketGridWorld"), ic=document.getElementById("refreshIcon"); ic.classList.add("animate-spin"); this.rates={'USD':1,'EUR':0.92,'ARS_BLUE':0.001};
+        try { const r=await fetch("https://dolarapi.com/v1/dolares"); const d=await r.json(); const f=d.filter(x=>x.casa==="oficial"||x.casa==="blue"); f.forEach(x=>{if(x.casa==='blue')this.rates['ARS_BLUE']=1/x.venta;if(x.casa==='oficial')this.rates['ARS_OFICIAL']=1/x.venta;}); ga.innerHTML=f.map(x=>`<div class="glass p-6 rounded-3xl relative overflow-hidden border border-emerald-500/30"><div class="flex items-center gap-3 mb-4"><div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div><h3 class="font-bold text-lg text-slate-200">Dólar ${x.nombre}</h3></div><div class="grid grid-cols-2 gap-4"><div class="bg-black/20 p-3 rounded-xl"><p class="text-[10px] uppercase font-bold text-slate-500">Compra</p><p class="text-xl font-black text-white">$${x.compra}</p></div><div class="bg-black/20 p-3 rounded-xl border border-emerald-500/20"><p class="text-[10px] uppercase font-bold text-slate-500">Venta</p><p class="text-xl font-black text-emerald-400">$${x.venta}</p></div></div></div>`).join(''); } catch(e){}
+        try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates,d.rates); const c=[{c:'EUR',n:'Euro',f:'🇪🇺'},{c:'GBP',n:'Libra',f:'🇬🇧'},{c:'JPY',n:'Yen',f:'🇯🇵'},{c:'BRL',n:'Real',f:'🇧🇷'},{c:'MXN',n:'Peso MX',f:'🇲🇽'},{c:'CNY',n:'Yuan',f:'🇨🇳'}]; gw.innerHTML=c.map(x=>{const v=d.rates[x.c]; if(!v)return''; return `<div class="glass p-4 rounded-2xl border border-blue-500/10"><div class="flex justify-between mb-2"><span class="text-2xl">${x.f}</span><span class="text-xs font-bold bg-black/30 px-2 py-1 rounded text-slate-400">${x.c}</span></div><p class="text-sm font-bold text-slate-300">${x.n}</p><p class="text-lg font-mono font-bold text-blue-400">${v.toFixed(2)}</p></div>`}).join(''); } catch(e){}
+        setTimeout(()=>ic.classList.remove("animate-spin"),1000); lucide.createIcons();
     },
-
-    fillCalcSelects() {
-        const h = [{v:'USD',t:'🇺🇸 Dólar'},{v:'ARS_BLUE',t:'🇦🇷 Blue'},{v:'ARS_OFICIAL',t:'🇦🇷 Oficial'},{v:'EUR',t:'🇪🇺 Euro'},{v:'BRL',t:'🇧🇷 Real'},{v:'GBP',t:'🇬🇧 Libra'},{v:'JPY',t:'🇯🇵 Yen'},{v:'CLP',t:'🇨🇱 Peso CL'},{v:'MXN',t:'🇲🇽 Peso MX'}].map(o=>`<option value="${o.v}">${o.t}</option>`).join('');
-        const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo");
-        if(s1.innerHTML === "") { s1.innerHTML=h; s2.innerHTML=h; s2.value='EUR'; }
-    },
-
-    calcCurrency() {
-        const amount = parseFloat(document.getElementById("calcAmount").value)||0, from = document.getElementById("calcFrom").value, to = document.getElementById("calcTo").value;
-        const rates = {...this.rates}; if(!rates[from]) rates[from]=1; if(!rates[to]) rates[to]=1;
-        let usd = from==='USD'?amount:(from.includes('ARS')?amount*rates[from]:amount/rates[from]);
-        let final = to==='USD'?usd:(to.includes('ARS')?usd/rates[to]:usd*rates[to]);
-        document.getElementById("calcResult").textContent = final.toLocaleString(undefined,{maximumFractionDigits:2});
-    },
+    fillCalcSelects() { const h=[{v:'USD',t:'🇺🇸 Dólar'},{v:'ARS_BLUE',t:'🇦🇷 Blue'},{v:'EUR',t:'🇪🇺 Euro'},{v:'BRL',t:'🇧🇷 Real'},{v:'GBP',t:'🇬🇧 Libra'}].map(o=>`<option value="${o.v}">${o.t}</option>`).join(''); const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); if(s1.innerHTML===""){s1.innerHTML=h;s2.innerHTML=h;s2.value='EUR';} },
+    calcCurrency() { const a=parseFloat(document.getElementById("calcAmount").value)||0,f=document.getElementById("calcFrom").value,t=document.getElementById("calcTo").value; const r={...this.rates}; if(!r[f])r[f]=1;if(!r[t])r[t]=1; let u=f==='USD'?a:(f.includes('ARS')?a*r[f]:a/r[f]); let res=t==='USD'?u:(t.includes('ARS')?u/r[t]:u*r[t]); document.getElementById("calcResult").textContent=res.toLocaleString(undefined,{maximumFractionDigits:2}); },
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"), tmp=f.value; f.value=t.value; t.value=tmp; this.calcCurrency(); },
-
+    
     exportProExcel() {
         const wb = XLSX.utils.book_new();
-        const headerStyle = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } }, alignment: { horizontal: "center", vertical: "center" } };
-        const titleStyle = { font: { bold: true, sz: 18, color: { rgb: "3B82F6" } } };
-        const moneyGreen = { numFmt: "$ #,##0", font: { color: { rgb: "10B981" } } };
-        const moneyRed = { numFmt: "$ #,##0", font: { color: { rgb: "EF4444" } } };
-
-        const visibleRecords = this.getFilteredRecords(); // Exportar solo lo filtrado
-        const totalInc = visibleRecords.filter(r => r.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
-        const totalExp = visibleRecords.filter(r => r.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
-        
-        const wsDash = XLSX.utils.aoa_to_sheet([["REPORTE CFO"],[`Periodo: ${this.timeFilter === 'month' ? 'Este Mes' : 'Histórico'}`],[""],["Ingresos", totalInc],["Gastos", totalExp],["Balance", totalInc - totalExp]]);
-        wsDash['A1'].s = titleStyle;
-        XLSX.utils.book_append_sheet(wb, wsDash, "Resumen");
-
-        const transData = [["FECHA", "DESCRIPCIÓN", "CATEGORÍA", "TIPO", "MONTO"], ...visibleRecords.map(r => [r.date, r.desc, r.category, r.type.toUpperCase(), r.amount])];
-        const wsTrans = XLSX.utils.aoa_to_sheet(transData);
-        wsTrans['A1'].s = wsTrans['B1'].s = wsTrans['C1'].s = wsTrans['D1'].s = wsTrans['E1'].s = headerStyle;
-        for (let i = 1; i < transData.length; i++) wsTrans[XLSX.utils.encode_cell({ r: i, c: 4 })].s = transData[i][3] === 'GASTO' ? moneyRed : moneyGreen;
-        XLSX.utils.book_append_sheet(wb, wsTrans, "Detalle");
-        XLSX.writeFile(wb, `FORJAX_CFO_${this.user}.xlsx`);
+        const hs = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } }, alignment: { horizontal: "center", vertical: "center" } };
+        const ts = { font: { bold: true, sz: 18, color: { rgb: "3B82F6" } } };
+        const mg = { numFmt: "$ #,##0", font: { color: { rgb: "10B981" } } };
+        const mr = { numFmt: "$ #,##0", font: { color: { rgb: "EF4444" } } };
+        const rec = this.getFilteredRecords();
+        const ti = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
+        const te = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+        const wd = XLSX.utils.aoa_to_sheet([["REPORTE CFO"],["Periodo: "+this.timeFilter],[""],["Ingresos", ti],["Gastos", te],["Balance", ti-te]]); wd['A1'].s=ts; XLSX.utils.book_append_sheet(wb, wd, "Resumen");
+        const td = [["FECHA", "DESCRIPCIÓN", "CATEGORÍA", "TIPO", "MONTO"], ...rec.map(r => [r.date, r.desc, r.category, r.type.toUpperCase(), r.amount])];
+        const wt = XLSX.utils.aoa_to_sheet(td); wt['A1'].s=wt['B1'].s=wt['C1'].s=wt['D1'].s=wt['E1'].s=hs; for(let i=1;i<td.length;i++) wt[XLSX.utils.encode_cell({r:i,c:4})].s = td[i][3]==='GASTO'?mr:mg;
+        XLSX.utils.book_append_sheet(wb, wt, "Detalle"); XLSX.writeFile(wb, `FORJAX_CFO_${this.user}.xlsx`);
     },
 
     updateCharts(inc, exp, records) {
         const ctxBar = document.getElementById("barChart").getContext("2d");
         const ctxPie = document.getElementById("pieChart").getContext("2d");
-        if (this.charts.bar) this.charts.bar.destroy();
-        if (this.charts.pie) this.charts.pie.destroy();
+        if (this.charts.bar) this.charts.bar.destroy(); if (this.charts.pie) this.charts.pie.destroy();
         const c = { bg: this.theme === 'dark' ? '#94a3b8' : '#475569' };
-        
         this.charts.bar = new Chart(ctxBar, { type: 'bar', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 6, barThickness: 40 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: c.bg } }, x: { grid: { display: false }, ticks: { color: c.bg } } } } });
-        
         const catData = {}; records.filter(r => r.type === 'expense').forEach(r => { catData[r.category] = (catData[r.category] || 0) + r.amount; });
         this.charts.pie = new Chart(ctxPie, { type: 'doughnut', data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: c.bg, boxWidth: 10, font: {size:10} } } }, cutout: '75%' } });
     },
-
     toggleTheme() { this.theme = this.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem("theme", this.theme); this.init(); },
     applyTheme() { document.documentElement.className = this.theme; document.getElementById("themeIcon").setAttribute('data-lucide', this.theme === 'dark' ? 'sun' : 'moon'); },
     initSession() { const v = document.getElementById("userInput").value; if(v.length>2) { localStorage.setItem("currentUser", v); location.reload(); } },
