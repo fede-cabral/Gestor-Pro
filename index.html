@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V8 Dream Catcher</title>
+    <title>FORJAX Terminal - V9 Crypto King</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -48,6 +48,10 @@
         .dark input::placeholder { color: #94a3b8; }
         .dark option { background-color: #0f172a; color: white; }
         .light input, .light select { background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; }
+        
+        /* Animación pulso cripto */
+        .crypto-pulse { animation: cryptoPulse 2s infinite; }
+        @keyframes cryptoPulse { 0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(168, 85, 247, 0); } 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); } }
     </style>
 </head>
 
@@ -81,7 +85,7 @@
             <i data-lucide="target"></i> Metas
         </button>
         <button onclick="app.switchTab('market')" id="btnMarket" class="whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-white/5">
-            <i data-lucide="globe"></i> Forex
+            <i data-lucide="globe"></i> Mercado
         </button>
         <div class="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
         <button onclick="app.openSettings()" class="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
@@ -165,10 +169,7 @@
 
         <div id="viewSubs" class="hidden fade-in">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold flex items-center gap-2"><i data-lucide="zap" class="text-yellow-500"></i> Gastos Fijos</h2>
-                    <p class="text-sm text-slate-400">Piloto Automático</p>
-                </div>
+                <div><h2 class="text-2xl font-bold flex items-center gap-2"><i data-lucide="zap" class="text-yellow-500"></i> Gastos Fijos</h2><p class="text-sm text-slate-400">Piloto Automático</p></div>
                 <button onclick="app.toggleSubForm()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2"><i data-lucide="plus-circle"></i> Nueva Suscripción</button>
             </div>
             <div id="subForm" class="hidden glass p-6 rounded-3xl mb-8 border border-blue-500/30">
@@ -185,24 +186,18 @@
 
         <div id="viewGoals" class="hidden fade-in">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold flex items-center gap-2"><i data-lucide="trophy" class="text-yellow-500"></i> Cazador de Sueños</h2>
-                    <p class="text-sm text-slate-400">Objetivos Financieros</p>
-                </div>
-                <button onclick="app.addGoalPrompt()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-purple-500/30 transition-all flex items-center gap-2">
-                    <i data-lucide="star"></i> Crear Meta
-                </button>
+                <div><h2 class="text-2xl font-bold flex items-center gap-2"><i data-lucide="trophy" class="text-yellow-500"></i> Cazador de Sueños</h2><p class="text-sm text-slate-400">Objetivos Financieros</p></div>
+                <button onclick="app.addGoalPrompt()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-purple-500/30 transition-all flex items-center gap-2"><i data-lucide="star"></i> Crear Meta</button>
             </div>
-
-            <div id="goalsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
+            <div id="goalsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
         <div id="viewMarket" class="hidden fade-in">
             <div class="flex items-center justify-between mb-8">
-                <div><h2 class="text-3xl font-black tracking-tight text-white flex items-center gap-2"><i data-lucide="globe-2" class="text-blue-500"></i> Mercado Internacional</h2><p class="text-slate-400">Cotizaciones en tiempo real</p></div>
+                <div><h2 class="text-3xl font-black tracking-tight text-white flex items-center gap-2"><i data-lucide="globe-2" class="text-blue-500"></i> Mercado Global</h2><p class="text-slate-400">Fiat & Cripto en tiempo real</p></div>
                 <div class="text-right"><button onclick="app.fetchFullMarket()" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 p-3 rounded-xl transition-all"><i data-lucide="refresh-cw" id="refreshIcon" class="w-6 h-6"></i></button></div>
             </div>
+
             <div class="glass p-6 rounded-3xl mb-10 border-l-4 border-blue-500">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-blue-400 mb-4 flex items-center gap-2"><i data-lucide="calculator" class="w-4 h-4"></i> Convertidor Universal</h3>
                 <div class="flex flex-col md:flex-row gap-4 items-center">
@@ -213,8 +208,14 @@
                     <div class="flex-1 w-full bg-blue-600/10 p-3 rounded-xl border border-blue-500/20 text-center"><p class="text-xs text-blue-400 uppercase font-bold mb-1">Resultado</p><p id="calcResult" class="text-2xl font-black text-white">...</p></div>
                 </div>
             </div>
+
+            <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-purple-500 flex items-center gap-2">🚀 Criptomonedas (Live)</h3>
+            <div id="marketGridCrypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                 </div>
+
             <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-emerald-500">🇦🇷 Argentina</h3>
             <div id="marketGridArg" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10"></div>
+
             <h3 class="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-blue-500">🌎 Divisas Mundiales (Forex)</h3>
             <div id="marketGridWorld" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
         </div>
@@ -230,7 +231,7 @@ const app = {
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
     timeFilter: 'month', 
-    data: { records: [], budget: 0, subs: [], goals: [] }, // Agregado: goals
+    data: { records: [], budget: 0, subs: [], goals: [] },
     rates: {}, 
     charts: {},
 
@@ -246,7 +247,7 @@ const app = {
             this.loadData();
             this.render();
             this.renderSubs();
-            this.renderGoals(); // NUEVO
+            this.renderGoals();
             this.fillCalcSelects();
             this.fetchDolarSimple();
             this.fetchFullMarket();
@@ -265,7 +266,6 @@ const app = {
 
         Object.values(views).forEach(v => v.classList.add("hidden"));
         Object.values(btns).forEach(b => b.className = baseClass + inactiveClass);
-
         views[tab].classList.remove("hidden");
         btns[tab].className = baseClass + activeClass;
 
@@ -289,7 +289,7 @@ const app = {
         this.data.records = JSON.parse(localStorage.getItem(prefix + "records")) || [];
         this.data.budget = Number(localStorage.getItem(prefix + "budget")) || 0;
         this.data.subs = JSON.parse(localStorage.getItem(prefix + "subs")) || [];
-        this.data.goals = JSON.parse(localStorage.getItem(prefix + "goals")) || []; // Cargar Metas
+        this.data.goals = JSON.parse(localStorage.getItem(prefix + "goals")) || [];
     },
 
     save() {
@@ -297,143 +297,24 @@ const app = {
         localStorage.setItem(prefix + "records", JSON.stringify(this.data.records));
         localStorage.setItem(prefix + "budget", this.data.budget);
         localStorage.setItem(prefix + "subs", JSON.stringify(this.data.subs));
-        localStorage.setItem(prefix + "goals", JSON.stringify(this.data.goals)); // Guardar Metas
+        localStorage.setItem(prefix + "goals", JSON.stringify(this.data.goals));
         this.render();
     },
 
-    /* --- METAS (GOALS ENGINE) --- */
-    async addGoalPrompt() {
-        const { value: formValues } = await Swal.fire({
-            title: 'Nueva Meta de Ahorro',
-            html:
-                '<input id="swal-goal" class="swal2-input" placeholder="Nombre (ej: Auto Nuevo)">' +
-                '<input id="swal-target" type="number" class="swal2-input" placeholder="Monto Objetivo ($)">',
-            focusConfirm: false,
-            showCancelButton: true,
-            confirmButtonText: 'Crear',
-            preConfirm: () => {
-                return [
-                    document.getElementById('swal-goal').value,
-                    document.getElementById('swal-target').value
-                ]
-            }
-        });
-
-        if (formValues && formValues[0] && formValues[1]) {
-            this.data.goals.push({
-                id: Date.now(),
-                name: formValues[0],
-                target: Number(formValues[1]),
-                current: 0,
-                icon: 'star' 
-            });
-            this.save();
-            this.renderGoals();
-            Swal.fire({toast:true, icon:'success', title:'¡Meta creada!', position:'top-end', showConfirmButton:false, timer:2000});
-        }
-    },
-
-    async depositGoal(id) {
-        const goal = this.data.goals.find(g => g.id === id);
-        const { value: amount } = await Swal.fire({
-            title: `Sumar a ${goal.name}`,
-            input: 'number',
-            inputLabel: 'Monto a depositar',
-            showCancelButton: true,
-            confirmButtonText: 'Depositar'
-        });
-
-        if (amount) {
-            const val = Number(amount);
-            if(val > 0) {
-                goal.current += val;
-                this.save();
-                this.renderGoals();
-                
-                // CONFETI SI LLEGA AL 100%
-                if(goal.current >= goal.target) {
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    Swal.fire('¡FELICIDADES!', `Has alcanzado tu meta: ${goal.name}`, 'success');
-                } else {
-                    Swal.fire({toast:true, icon:'success', title:`+ $${val} guardados`, position:'top-end', showConfirmButton:false, timer:2000});
-                }
-            }
-        }
-    },
-
-    deleteGoal(id) {
-        Swal.fire({title: '¿Borrar meta?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33'}).then((r) => {
-            if (r.isConfirmed) {
-                this.data.goals = this.data.goals.filter(g => g.id !== id);
-                this.save();
-                this.renderGoals();
-            }
-        });
-    },
-
-    renderGoals() {
-        const grid = document.getElementById("goalsGrid");
-        const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-
-        if(!this.data.goals || this.data.goals.length === 0) {
-            grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500 opacity-50"><i data-lucide="target" class="w-16 h-16 mx-auto mb-4"></i><p>No tienes metas activas. ¡Crea una!</p></div>`;
-            return;
-        }
-
-        grid.innerHTML = this.data.goals.map(g => {
-            const progress = Math.min((g.current / g.target) * 100, 100);
-            const isCompleted = progress >= 100;
-            
-            return `
-            <div class="glass p-6 rounded-3xl relative overflow-hidden group hover:scale-[1.02] transition-all border ${isCompleted ? 'border-yellow-400/50 shadow-yellow-500/20 shadow-lg' : 'border-slate-700'}">
-                <button onclick="app.deleteGoal(${g.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                
-                <div class="flex justify-between items-start mb-4">
-                    <div class="p-3 rounded-2xl ${isCompleted ? 'bg-yellow-400 text-black' : 'bg-purple-500/20 text-purple-400'}">
-                        <i data-lucide="${isCompleted ? 'trophy' : 'rocket'}" class="w-8 h-8"></i>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs font-bold uppercase text-slate-500">Meta</p>
-                        <p class="text-lg font-bold text-slate-300">${formatter.format(g.target)}</p>
-                    </div>
-                </div>
-
-                <h3 class="text-xl font-bold text-white mb-2">${g.name}</h3>
-                
-                <div class="flex justify-between items-end mb-2">
-                    <p class="text-3xl font-black ${isCompleted ? 'text-yellow-400' : 'text-white'}">${formatter.format(g.current)}</p>
-                    <p class="text-sm font-bold ${isCompleted ? 'text-yellow-400' : 'text-purple-400'}">${Math.round(progress)}%</p>
-                </div>
-
-                <div class="w-full bg-slate-700/50 h-3 rounded-full overflow-hidden mb-4">
-                    <div class="h-full transition-all duration-1000 ${isCompleted ? 'bg-yellow-400' : 'bg-gradient-to-r from-purple-500 to-pink-500'}" style="width: ${progress}%"></div>
-                </div>
-
-                <button onclick="app.depositGoal(${g.id})" class="w-full py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition-all ${isCompleted ? 'bg-yellow-400/20 text-yellow-400 cursor-default' : 'bg-white/10 hover:bg-white/20 text-white'}">
-                    ${isCompleted ? '¡COMPLETADA!' : '<i data-lucide="plus"></i> Depositar'}
-                </button>
-            </div>`;
-        }).join('');
-        lucide.createIcons();
-    },
-
-    /* --- WALLET LOGIC --- */
+    /* --- WALLET --- */
     addRecord(type) {
         const desc = document.getElementById("transDesc").value;
         const amount = Number(document.getElementById("transAmount").value);
         const category = document.getElementById("transCategory").value;
         if (!desc || amount <= 0) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Faltan datos', showConfirmButton:false, timer:2000});
         this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), desc, amount, category, type });
-        document.getElementById("transDesc").value = "";
-        document.getElementById("transAmount").value = "";
-        this.save();
-        const Toast = Swal.mixin({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        Toast.fire({ icon: 'success', title: 'Operación Registrada' });
+        document.getElementById("transDesc").value = ""; document.getElementById("transAmount").value = ""; this.save();
+        Swal.fire({toast:true, position:'bottom-end', icon:'success', title:'Operación Registrada', showConfirmButton:false, timer:3000});
     },
     deleteRecord(id) { this.data.records = this.data.records.filter(r => r.id !== id); this.save(); },
     setBudget() { this.data.budget = Number(document.getElementById("budgetInput").value); this.save(); },
 
-    /* --- SUBS LOGIC --- */
+    /* --- SUBS --- */
     toggleSubForm() { document.getElementById("subForm").classList.toggle("hidden"); },
     addSub() {
         const name = document.getElementById("subName").value;
@@ -442,9 +323,7 @@ const app = {
         if(!name || amount <= 0 || day < 1 || day > 31) return Swal.fire("Error", "Datos inválidos", "error");
         if(!this.data.subs) this.data.subs = [];
         this.data.subs.push({ id: Date.now(), name, amount, day });
-        this.save(); this.renderSubs();
-        document.getElementById("subName").value = ""; document.getElementById("subAmount").value = "";
-        this.toggleSubForm();
+        this.save(); this.renderSubs(); document.getElementById("subName").value = ""; document.getElementById("subAmount").value = ""; this.toggleSubForm();
     },
     deleteSub(id) { Swal.fire({title: '¿Eliminar?', showCancelButton: true, confirmButtonColor: '#d33'}).then((r) => { if (r.isConfirmed) { this.data.subs = this.data.subs.filter(s => s.id !== id); this.save(); this.renderSubs(); }}); },
     paySub(id) {
@@ -467,15 +346,31 @@ const app = {
         document.getElementById("totalSubs").textContent = formatter.format(totalFixed); lucide.createIcons();
     },
 
-    /* --- HELPERS --- */
+    /* --- GOALS --- */
+    async addGoalPrompt() {
+        const { value: formValues } = await Swal.fire({ title: 'Nueva Meta', html: '<input id="swal-goal" class="swal2-input" placeholder="Nombre"><input id="swal-target" type="number" class="swal2-input" placeholder="Objetivo ($)">', focusConfirm: false, showCancelButton: true, preConfirm: () => [document.getElementById('swal-goal').value, document.getElementById('swal-target').value] });
+        if (formValues && formValues[0] && formValues[1]) { this.data.goals.push({ id: Date.now(), name: formValues[0], target: Number(formValues[1]), current: 0 }); this.save(); this.renderGoals(); Swal.fire({toast:true, icon:'success', title:'Meta creada', position:'top-end', showConfirmButton:false, timer:2000}); }
+    },
+    async depositGoal(id) {
+        const goal = this.data.goals.find(g => g.id === id);
+        const { value: amount } = await Swal.fire({ title: `Sumar a ${goal.name}`, input: 'number', showCancelButton: true, confirmButtonText: 'Depositar' });
+        if (amount && Number(amount) > 0) { goal.current += Number(amount); this.save(); this.renderGoals(); if(goal.current >= goal.target) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); Swal.fire('¡Felicidades!', `Meta alcanzada: ${goal.name}`, 'success'); } }
+    },
+    deleteGoal(id) { Swal.fire({title: '¿Borrar meta?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33'}).then((r) => { if (r.isConfirmed) { this.data.goals = this.data.goals.filter(g => g.id !== id); this.save(); this.renderGoals(); }}); },
+    renderGoals() {
+        const grid = document.getElementById("goalsGrid"); const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+        if(!this.data.goals || this.data.goals.length === 0) { grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500 opacity-50"><i data-lucide="target" class="w-16 h-16 mx-auto mb-4"></i><p>Sin metas</p></div>`; return; }
+        grid.innerHTML = this.data.goals.map(g => {
+            const progress = Math.min((g.current / g.target) * 100, 100); const isCompleted = progress >= 100;
+            return `<div class="glass p-6 rounded-3xl relative overflow-hidden group hover:scale-[1.02] transition-all border ${isCompleted ? 'border-yellow-400/50 shadow-yellow-500/20 shadow-lg' : 'border-slate-700'}"><button onclick="app.deleteGoal(${g.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="flex justify-between items-start mb-4"><div class="p-3 rounded-2xl ${isCompleted ? 'bg-yellow-400 text-black' : 'bg-purple-500/20 text-purple-400'}"><i data-lucide="${isCompleted ? 'trophy' : 'rocket'}" class="w-8 h-8"></i></div><div class="text-right"><p class="text-xs font-bold uppercase text-slate-500">Meta</p><p class="text-lg font-bold text-slate-300">${formatter.format(g.target)}</p></div></div><h3 class="text-xl font-bold text-white mb-2">${g.name}</h3><div class="flex justify-between items-end mb-2"><p class="text-3xl font-black ${isCompleted ? 'text-yellow-400' : 'text-white'}">${formatter.format(g.current)}</p><p class="text-sm font-bold ${isCompleted ? 'text-yellow-400' : 'text-purple-400'}">${Math.round(progress)}%</p></div><div class="w-full bg-slate-700/50 h-3 rounded-full overflow-hidden mb-4"><div class="h-full transition-all duration-1000 ${isCompleted ? 'bg-yellow-400' : 'bg-gradient-to-r from-purple-500 to-pink-500'}" style="width: ${progress}%"></div></div><button onclick="app.depositGoal(${g.id})" class="w-full py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition-all ${isCompleted ? 'bg-yellow-400/20 text-yellow-400 cursor-default' : 'bg-white/10 hover:bg-white/20 text-white'}">${isCompleted ? '¡COMPLETADA!' : '<i data-lucide="plus"></i> Depositar'}</button></div>`;
+        }).join(''); lucide.createIcons();
+    },
+
+    /* --- HELPERS & RENDER --- */
     getFilteredRecords() {
         if (this.timeFilter === 'all') return this.data.records;
         const now = new Date(); const m = now.getMonth(); const y = now.getFullYear();
-        return this.data.records.filter(r => { const [d, rm, ry] = r.date.split('/').map(Number);
-            if (this.timeFilter === 'month') return rm - 1 === m && ry === y;
-            if (this.timeFilter === 'prev') { const prev = new Date(y, m - 1, 1); return rm - 1 === prev.getMonth() && ry === prev.getFullYear(); }
-            return true;
-        });
+        return this.data.records.filter(r => { const [d, rm, ry] = r.date.split('/').map(Number); if (this.timeFilter === 'month') return rm - 1 === m && ry === y; if (this.timeFilter === 'prev') { const prev = new Date(y, m - 1, 1); return rm - 1 === prev.getMonth() && ry === prev.getFullYear(); } return true; });
     },
     render() {
         const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
@@ -493,22 +388,43 @@ const app = {
     openSettings() { Swal.fire({ title: 'Configuración', html: `<div class="grid grid-cols-2 gap-4 mt-4"><button onclick="app.downloadBackup()" class="bg-blue-600 text-white p-4 rounded-xl font-bold hover:bg-blue-700 transition-all flex flex-col items-center gap-2"><i data-lucide="download-cloud" class="w-8 h-8"></i> Exportar</button><button onclick="document.getElementById('importFile').click()" class="bg-slate-700 text-white p-4 rounded-xl font-bold hover:bg-slate-600 transition-all flex flex-col items-center gap-2"><i data-lucide="upload-cloud" class="w-8 h-8"></i> Restaurar</button></div>`, showConfirmButton: false }); },
     downloadBackup() { const s = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data)); const a = document.createElement('a'); a.href = s; a.download = `Backup_${this.user}.json`; a.click(); },
     restoreData(i) { const f = i.files[0]; const r = new FileReader(); r.onload = (e) => { this.data = JSON.parse(e.target.result); this.save(); location.reload(); }; r.readAsText(f); },
-    async fetchDolarSimple() { try { const r = await fetch("https://dolarapi.com/v1/dolares/blue"); const d = await r.json(); document.getElementById("dolarRateTag").textContent = `@ $${d.venta}`; const i = this.data.records.filter(r => r.type === 'income').reduce((a, c) => a + c.amount, 0); const e = this.data.records.filter(r => r.type === 'expense').reduce((a, c) => a + c.amount, 0); if(d.venta > 0) document.getElementById("capitalUsd").textContent = `US$ ${((i - e) / d.venta).toLocaleString('en-US', {maximumFractionDigits: 0})}`; } catch(e) {} },
-    async fetchFullMarket() {
-        const ga=document.getElementById("marketGridArg"), gw=document.getElementById("marketGridWorld"), ic=document.getElementById("refreshIcon"); ic.classList.add("animate-spin"); this.rates={'USD':1,'EUR':0.92,'ARS_BLUE':0.001};
-        try { const r=await fetch("https://dolarapi.com/v1/dolares"); const d=await r.json(); const f=d.filter(x=>x.casa==="oficial"||x.casa==="blue"); f.forEach(x=>{if(x.casa==='blue')this.rates['ARS_BLUE']=1/x.venta;if(x.casa==='oficial')this.rates['ARS_OFICIAL']=1/x.venta;}); ga.innerHTML=f.map(x=>`<div class="glass p-6 rounded-3xl relative overflow-hidden border border-emerald-500/30"><div class="flex items-center gap-3 mb-4"><div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div><h3 class="font-bold text-lg text-slate-200">Dólar ${x.nombre}</h3></div><div class="grid grid-cols-2 gap-4 mb-2"><div class="bg-black/20 p-3 rounded-xl"><p class="text-[10px] uppercase font-bold text-slate-500">Compra</p><p class="text-xl font-black text-white">$${x.compra}</p></div><div class="bg-black/20 p-3 rounded-xl border border-emerald-500/20"><p class="text-[10px] uppercase font-bold text-slate-500">Venta</p><p class="text-xl font-black text-emerald-400">$${x.venta}</p></div></div></div>`).join(''); } catch(e){}
-        try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates,d.rates); const c=[{c:'EUR',n:'Euro',f:'🇪🇺'},{c:'GBP',n:'Libra',f:'🇬🇧'},{c:'JPY',n:'Yen',f:'🇯🇵'},{c:'BRL',n:'Real',f:'🇧🇷'},{c:'MXN',n:'Peso MX',f:'🇲🇽'},{c:'CNY',n:'Yuan',f:'🇨🇳'}]; gw.innerHTML=c.map(x=>{const v=d.rates[x.c]; if(!v)return''; return `<div class="glass p-4 rounded-2xl border border-blue-500/10"><div class="flex justify-between mb-2"><span class="text-2xl">${x.f}</span><span class="text-xs font-bold bg-black/30 px-2 py-1 rounded text-slate-400">${x.c}</span></div><p class="text-sm font-bold text-slate-300">${x.n}</p><p class="text-lg font-mono font-bold text-blue-400">${v.toFixed(2)}</p></div>`}).join(''); } catch(e){}
-        setTimeout(()=>ic.classList.remove("animate-spin"),1000); lucide.createIcons();
-    },
-    fillCalcSelects() { const h=[{v:'USD',t:'🇺🇸 Dólar'},{v:'ARS_BLUE',t:'🇦🇷 Blue'},{v:'EUR',t:'🇪🇺 Euro'},{v:'BRL',t:'🇧🇷 Real'},{v:'GBP',t:'🇬🇧 Libra'}].map(o=>`<option value="${o.v}">${o.t}</option>`).join(''); const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); if(s1.innerHTML===""){s1.innerHTML=h;s2.innerHTML=h;s2.value='EUR';} },
-    calcCurrency() { const a=parseFloat(document.getElementById("calcAmount").value)||0,f=document.getElementById("calcFrom").value,t=document.getElementById("calcTo").value; const r={...this.rates}; if(!r[f])r[f]=1;if(!r[t])r[t]=1; let u=f==='USD'?a:(f.includes('ARS')?a*r[f]:a/r[f]); let res=t==='USD'?u:(t.includes('ARS')?u/r[t]:u*r[t]); document.getElementById("calcResult").textContent=res.toLocaleString(undefined,{maximumFractionDigits:2}); },
-    swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"), tmp=f.value; f.value=t.value; t.value=tmp; this.calcCurrency(); },
-    exportProExcel() { const wb = XLSX.utils.book_new(); const r=this.getFilteredRecords(); const i=r.filter(x=>x.type==='income').reduce((a,c)=>a+c.amount,0); const e=r.filter(x=>x.type==='expense').reduce((a,c)=>a+c.amount,0); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["REPORTE"],["Balance", i-e]]), "Resumen"); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["FECHA","DETALLE","MONTO"],...r.map(x=>[x.date,x.desc,x.amount])]), "Detalle"); XLSX.writeFile(wb, `FORJAX_${this.user}.xlsx`); },
     updateCharts(inc, exp, records) { const b=document.getElementById("barChart").getContext("2d"); const p=document.getElementById("pieChart").getContext("2d"); if(this.charts.bar)this.charts.bar.destroy(); if(this.charts.pie)this.charts.pie.destroy(); this.charts.bar=new Chart(b,{type:'bar',data:{labels:['Ingresos','Gastos'],datasets:[{data:[inc,exp],backgroundColor:['#10b981','#f43f5e']}]}}); const cat={}; records.filter(r=>r.type==='expense').forEach(r=>{cat[r.category]=(cat[r.category]||0)+r.amount}); this.charts.pie=new Chart(p,{type:'doughnut',data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]}}); },
     toggleTheme() { this.theme = this.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem("theme", this.theme); this.init(); },
     applyTheme() { document.documentElement.className = this.theme; document.getElementById("themeIcon").setAttribute('data-lucide', this.theme === 'dark' ? 'sun' : 'moon'); },
     initSession() { const v = document.getElementById("userInput").value; if(v.length>2) { localStorage.setItem("currentUser", v); location.reload(); } },
-    logout() { localStorage.removeItem("currentUser"); location.reload(); }
+    logout() { localStorage.removeItem("currentUser"); location.reload(); },
+
+    /* --- MARKET APIs --- */
+    async fetchDolarSimple() { try { const r = await fetch("https://dolarapi.com/v1/dolares/blue"); const d = await r.json(); document.getElementById("dolarRateTag").textContent = `@ $${d.venta}`; const i = this.data.records.filter(r => r.type === 'income').reduce((a, c) => a + c.amount, 0); const e = this.data.records.filter(r => r.type === 'expense').reduce((a, c) => a + c.amount, 0); if(d.venta > 0) document.getElementById("capitalUsd").textContent = `US$ ${((i - e) / d.venta).toLocaleString('en-US', {maximumFractionDigits: 0})}`; } catch(e) {} },
+    
+    async fetchFullMarket() {
+        const ga=document.getElementById("marketGridArg"), gw=document.getElementById("marketGridWorld"), gc=document.getElementById("marketGridCrypto"), ic=document.getElementById("refreshIcon"); ic.classList.add("animate-spin"); this.rates={'USD':1,'EUR':0.92,'ARS_BLUE':0.001};
+        // 1. ARGENTINA
+        try { const r=await fetch("https://dolarapi.com/v1/dolares"); const d=await r.json(); const f=d.filter(x=>x.casa==="oficial"||x.casa==="blue"); f.forEach(x=>{if(x.casa==='blue')this.rates['ARS_BLUE']=1/x.venta;if(x.casa==='oficial')this.rates['ARS_OFICIAL']=1/x.venta;}); ga.innerHTML=f.map(x=>`<div class="glass p-6 rounded-3xl relative overflow-hidden border border-emerald-500/30"><div class="flex items-center gap-3 mb-4"><div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div><h3 class="font-bold text-lg text-slate-200">Dólar ${x.nombre}</h3></div><div class="grid grid-cols-2 gap-4"><div class="bg-black/20 p-3 rounded-xl"><p class="text-[10px] uppercase font-bold text-slate-500">Compra</p><p class="text-xl font-black text-white">$${x.compra}</p></div><div class="bg-black/20 p-3 rounded-xl border border-emerald-500/20"><p class="text-[10px] uppercase font-bold text-slate-500">Venta</p><p class="text-xl font-black text-emerald-400">$${x.venta}</p></div></div></div>`).join(''); } catch(e){}
+        // 2. CRYPTO (CoinGecko)
+        try {
+            const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&page=1&sparkline=false"); const d=await r.json();
+            d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price);
+            this.fillCalcSelects(); // Update calculator with new rates
+            gc.innerHTML=d.map(c=> {
+                const changeColor = c.price_change_percentage_24h >= 0 ? 'text-emerald-400' : 'text-rose-500';
+                return `<div class="glass p-5 rounded-3xl relative overflow-hidden hover:bg-white/5 transition-all border border-purple-500/20"><div class="flex items-center gap-3 mb-3"><img src="${c.image}" class="w-8 h-8 rounded-full shadow-lg ${c.price_change_percentage_24h > 5 ? 'crypto-pulse' : ''}"><div class="overflow-hidden"><h3 class="font-bold text-white truncate">${c.name}</h3><span class="text-xs font-bold text-slate-500 bg-black/30 px-2 py-0.5 rounded uppercase">${c.symbol}</span></div></div><div class="flex justify-between items-end"><div class="flex flex-col"><span class="text-[10px] font-bold text-slate-500">PRECIO USD</span><span class="text-xl font-mono font-bold text-white">$${c.current_price.toLocaleString()}</span></div><div class="flex flex-col items-end"><span class="text-[10px] font-bold text-slate-500">24H %</span><span class="text-sm font-bold ${changeColor}">${c.price_change_percentage_24h.toFixed(2)}%</span></div></div></div>`;
+            }).join('');
+        } catch(e) { console.log(e); gc.innerHTML = `<div class="col-span-full text-center text-slate-500 p-4">Crypto API Limit (Wait a min)</div>`; }
+        // 3. WORLD
+        try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates,d.rates); const c=[{c:'EUR',n:'Euro',f:'🇪🇺'},{c:'GBP',n:'Libra',f:'🇬🇧'},{c:'JPY',n:'Yen',f:'🇯🇵'},{c:'BRL',n:'Real',f:'🇧🇷'},{c:'MXN',n:'Peso MX',f:'🇲🇽'},{c:'CNY',n:'Yuan',f:'🇨🇳'}]; gw.innerHTML=c.map(x=>{const v=d.rates[x.c]; if(!v)return''; return `<div class="glass p-4 rounded-2xl border border-blue-500/10 hover:border-blue-500/30"><div class="flex justify-between mb-2"><span class="text-2xl">${x.f}</span><span class="text-xs font-bold bg-black/30 px-2 py-1 rounded text-slate-400">${x.c}</span></div><p class="text-sm font-bold text-slate-300">${x.n}</p><p class="text-lg font-mono font-bold text-blue-400">${v.toFixed(2)}</p></div>`}).join(''); } catch(e){}
+        setTimeout(()=>ic.classList.remove("animate-spin"),1000); lucide.createIcons();
+    },
+    fillCalcSelects() { 
+        // Mix Fiat and Top Crypto
+        const opts = [{v:'USD',t:'🇺🇸 USD'},{v:'ARS_BLUE',t:'🇦🇷 Blue'},{v:'EUR',t:'🇪🇺 Euro'},{v:'BTC',t:'₿ BTC'},{v:'ETH',t:'Ξ ETH'},{v:'USDT',t:'₮ USDT'},{v:'BRL',t:'🇧🇷 Real'}];
+        const h=opts.map(o=>`<option value="${o.v}">${o.t}</option>`).join(''); 
+        const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); 
+        if(s1.innerHTML.length < 50) { s1.innerHTML=h; s2.innerHTML=h; s2.value='ARS_BLUE'; } // Only fill if empty/small to avoid reset
+    },
+    calcCurrency() { const a=parseFloat(document.getElementById("calcAmount").value)||0,f=document.getElementById("calcFrom").value,t=document.getElementById("calcTo").value; const r={...this.rates}; if(!r[f])r[f]=1;if(!r[t])r[t]=1; let u=f==='USD'?a:(f.includes('ARS')?a*r[f]:a/r[f]); let res=t==='USD'?u:(t.includes('ARS')?u/r[t]:u*r[t]); document.getElementById("calcResult").textContent=res.toLocaleString(undefined,{maximumFractionDigits:4}); },
+    swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"), tmp=f.value; f.value=t.value; t.value=tmp; this.calcCurrency(); },
+    exportProExcel() { const wb = XLSX.utils.book_new(); const r=this.getFilteredRecords(); const i=r.filter(x=>x.type==='income').reduce((a,c)=>a+c.amount,0); const e=r.filter(x=>x.type==='expense').reduce((a,c)=>a+c.amount,0); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["REPORTE"],["Balance", i-e]]), "Resumen"); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["FECHA","DETALLE","MONTO"],...r.map(x=>[x.date,x.desc,x.amount])]), "Detalle"); XLSX.writeFile(wb, `FORJAX_${this.user}.xlsx`); },
 };
 
 app.init();
