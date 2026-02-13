@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V26.1 FIXED</title>
+    <title>FORJAX Terminal - V26.2 HIGH CONTRAST</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,24 +35,26 @@
         
         body { font-family: 'Outfit', sans-serif; transition: background-color 0.3s, color 0.3s; }
         
-        /* DARK MODE (Default Hyperion) */
-        .dark body { background-color: #050b14; color: #e2e8f0; background-image: radial-gradient(circle at 50% 0%, #172a45 0%, #050b14 60%); }
-        .dark .glass { background: rgba(13, 25, 48, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); }
-        .dark .glass-card { background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.05); }
-        .dark input, .dark select { background: #0f1c2e !important; color: white !important; border: 1px solid #1e3a5f !important; }
+        /* DARK MODE (Hyperion High Contrast) */
+        .dark body { background-color: #050b14; color: #f8fafc; background-image: radial-gradient(circle at 50% 0%, #111827 0%, #050b14 60%); }
+        .dark .glass { background: rgba(10, 15, 30, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .dark .glass-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); }
+        .dark input, .dark select { background: #111827 !important; color: #fff !important; border: 1px solid #374151 !important; }
+        .dark input::placeholder { color: #64748b; }
         
-        /* LIGHT MODE (Clean Platinum) */
-        .light body { background-color: #f1f5f9; color: #0f172a; background-image: radial-gradient(circle at 50% 0%, #e2e8f0 0%, #f1f5f9 60%); }
-        .light .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .light .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .light input, .light select { background: #fff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
-        .light .text-white { color: #0f172a !important; } /* Force dark text in light mode */
-        .light .text-slate-400 { color: #64748b !important; }
+        /* LIGHT MODE (Clean High Contrast) */
+        .light body { background-color: #f8fafc; color: #020617; background-image: radial-gradient(circle at 50% 0%, #e2e8f0 0%, #f8fafc 60%); }
+        .light .glass { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .light .glass-card { background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .light input, .light select { background: #fff !important; color: #020617 !important; border: 1px solid #94a3b8 !important; }
+        .light .text-white { color: #020617 !important; } 
+        .light .text-slate-400 { color: #475569 !important; }
+        .light .text-slate-500 { color: #334155 !important; }
 
         /* Common */
         .glass-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-3px); }
-        .dark .glass-card:hover { border-color: rgba(0, 243, 255, 0.3); box-shadow: 0 10px 40px -10px rgba(0, 243, 255, 0.15); }
+        .dark .glass-card:hover { border-color: rgba(0, 243, 255, 0.4); box-shadow: 0 10px 40px -10px rgba(0, 243, 255, 0.15); }
         .light .glass-card:hover { border-color: #0ea5e9; box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.2); }
 
         /* Navbar */
@@ -61,19 +63,35 @@
             padding: 0.4rem; border-radius: 999px; display: flex; gap: 0.3rem;
             backdrop-filter: blur(20px); transition: all 0.3s;
         }
-        .dark .nav-container { background: rgba(5, 11, 20, 0.8); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
-        .light .nav-container { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1); }
+        .dark .nav-container { background: rgba(5, 11, 20, 0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7); }
+        .light .nav-container { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); }
 
-        .nav-btn { padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; }
-        .dark .nav-btn { color: #64748b; } .dark .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .nav-btn { padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; }
+        .dark .nav-btn { color: #94a3b8; } .dark .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
         .light .nav-btn { color: #64748b; } .light .nav-btn:hover { color: #0f172a; background: rgba(0,0,0,0.05); }
         
         .nav-btn.active { box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
         .dark .nav-btn.active { background: #00f3ff; color: #050b14; }
         .light .nav-btn.active { background: #0284c7; color: white; box-shadow: 0 0 20px rgba(2, 132, 199, 0.3); }
 
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 10px; }
+        /* SweetAlert Custom Overrides for High Contrast */
+        div:where(.swal2-container) div:where(.swal2-popup) {
+            background: #0f172a !important;
+            border: 2px solid #1e293b !important;
+            color: #fff !important;
+            border-radius: 1.5rem !important;
+        }
+        .light div:where(.swal2-container) div:where(.swal2-popup) {
+            background: #fff !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #020617 !important;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+        
         .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .blur-sensitive { transition: filter 0.3s ease; }
@@ -86,13 +104,13 @@
 <div id="loginScreen" class="fixed inset-0 z-[60] flex items-center justify-center bg-[#050b14] transition-all duration-500">
     <div class="relative w-full max-w-md p-8 text-center fade-in">
         <div class="absolute inset-0 bg-cyan-500/10 blur-[100px] rounded-full"></div>
-        <div class="glass relative p-10 rounded-3xl border border-cyan-500/20">
+        <div class="glass relative p-10 rounded-3xl border border-cyan-500/30">
             <div class="mb-8 inline-flex p-5 bg-cyan-500/10 border border-cyan-500/50 rounded-2xl shadow-neon-blue">
                 <i data-lucide="cpu" class="w-12 h-12 text-cyan-400"></i>
             </div>
-            <h2 class="text-5xl font-black mb-2 tracking-tighter text-white">FORJAX <span class="text-cyan-400">V26.1</span></h2>
-            <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest">Hyperion Fixed</p>
-            <input id="userInput" type="text" placeholder="ACCESS ID" class="w-full p-4 rounded-xl mb-4 text-center text-lg font-bold font-mono outline-none focus:ring-2 focus:ring-cyan-500 transition-all dark:bg-[#0f1c2e] dark:text-white bg-white text-black">
+            <h2 class="text-5xl font-black mb-2 tracking-tighter text-white">FORJAX <span class="text-cyan-400">V26.2</span></h2>
+            <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest">High Contrast Edition</p>
+            <input id="userInput" type="text" placeholder="ACCESS ID" class="w-full p-4 rounded-xl mb-4 text-center text-lg font-bold font-mono outline-none focus:ring-2 focus:ring-cyan-500 transition-all dark:bg-[#111827] dark:text-white bg-white text-black border-slate-700">
             <button onclick="app.initSession()" class="w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-xl transition-all shadow-neon-blue">INICIAR SISTEMA</button>
         </div>
     </div>
@@ -105,7 +123,7 @@
         <button onclick="app.switchTab('subs')" id="btnSubs" class="nav-btn"><i data-lucide="zap" class="w-4 h-4"></i> SUBS</button>
         <button onclick="app.switchTab('goals')" id="btnGoals" class="nav-btn"><i data-lucide="crosshair" class="w-4 h-4"></i> METAS</button>
         <button onclick="app.switchTab('market')" id="btnMarket" class="nav-btn"><i data-lucide="globe-2" class="w-4 h-4"></i> MARKET</button>
-        <div class="w-px h-5 bg-current opacity-10 mx-1"></div>
+        <div class="w-px h-5 bg-slate-500 opacity-30 mx-1"></div>
         <button onclick="app.togglePrivacy()" id="btnPrivacy" class="nav-btn px-3"><i id="eyeIcon" data-lucide="eye" class="w-4 h-4"></i></button>
         <button onclick="app.toggleTheme()" class="nav-btn px-3 hover:text-yellow-400"><i id="themeIcon" data-lucide="sun" class="w-4 h-4"></i></button>
         <button onclick="app.openSettings()" class="nav-btn px-3"><i data-lucide="settings-2" class="w-4 h-4"></i></button>
@@ -173,16 +191,16 @@
                     </div>
 
                     <div class="glass rounded-3xl overflow-hidden border border-white/5">
-                        <div class="p-6 border-b border-white/5 flex justify-between items-center bg-current bg-opacity-5">
+                        <div class="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
                             <h3 class="font-bold flex items-center gap-2 text-white"><i data-lucide="list-video"></i> Registros</h3>
-                            <button onclick="app.exportProExcel()" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-emerald-500 hover:text-black transition-all"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> EXPORTAR</button>
+                            <button onclick="app.exportProExcel()" class="bg-emerald-500 text-black px-4 py-2 rounded-lg text-xs font-black flex items-center gap-2 hover:bg-emerald-400 transition-all shadow-neon-blue"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> EXPORTAR</button>
                         </div>
                         <div class="overflow-x-auto max-h-[400px] custom-scroll">
                             <table class="w-full text-left">
-                                <thead class="sticky top-0 bg-current bg-opacity-5 z-10 text-[10px] uppercase text-slate-500 font-bold tracking-widest">
+                                <thead class="sticky top-0 bg-[#0f172a] z-10 text-[10px] uppercase text-slate-400 font-bold tracking-widest border-b border-slate-700">
                                     <tr><th class="px-6 py-4">Fecha</th><th class="px-6 py-4">Desc</th><th class="px-6 py-4">Cat</th><th class="px-6 py-4 text-right">Monto</th><th class="px-6 py-4 text-center">Opt</th></tr>
                                 </thead>
-                                <tbody id="historyTable" class="divide-y divide-white/5 text-sm font-medium text-slate-300 font-mono"></tbody>
+                                <tbody id="historyTable" class="divide-y divide-white/5 text-sm font-medium text-slate-200 font-mono"></tbody>
                             </table>
                         </div>
                     </div>
@@ -252,7 +270,7 @@
 <script>
 const app = {
     user: localStorage.getItem("currentUser"),
-    theme: localStorage.getItem("theme") || 'dark', // Recuperar tema
+    theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
     timeFilter: 'month', 
     data: { records: [], subs: [], goals: [] },
@@ -260,7 +278,7 @@ const app = {
     currencies: [{c:'USD', f:'us', n:'Dólar Americano'}, {c:'ARS', f:'ar', n:'Peso Argentino (Blue)'}, {c:'EUR', f:'eu', n:'Euro'}, {c:'BRL', f:'br', n:'Real Brasileño'}, {c:'GBP', f:'gb', n:'Libra Esterlina'}, {c:'JPY', f:'jp', n:'Yen Japonés'}, {c:'CNY', f:'cn', n:'Yuan Chino'}, {c:'MXN', f:'mx', n:'Peso Mexicano'}, {c:'CLP', f:'cl', n:'Peso Chileno'}, {c:'COP', f:'co', n:'Peso Colombiano'}, {c:'BTC', f:'un', n:'Bitcoin'}, {c:'ETH', f:'un', n:'Ethereum'}, {c:'USDT',f:'un', n:'Tether'}, {c:'SOL', f:'un', n:'Solana'}],
 
     init() {
-        this.applyTheme(); // Aplicar tema al inicio
+        this.applyTheme();
         if (!this.user) { document.getElementById("loginScreen").classList.remove("hidden"); return; }
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("mainApp").classList.remove("hidden");
@@ -291,7 +309,6 @@ const app = {
         if(tab === 'market') this.fetchFullMarket();
     },
 
-    // --- TEMA (Dark/Light) ---
     toggleTheme() {
         this.theme = this.theme === 'dark' ? 'light' : 'dark';
         localStorage.setItem("theme", this.theme);
@@ -304,7 +321,7 @@ const app = {
         lucide.createIcons();
     },
 
-    // --- SETTINGS FIXED (Data Center) ---
+    // --- SETTINGS FIXED ---
     openSettings() {
         Swal.fire({
             title: '<div class="flex flex-col items-center gap-3 mb-2"><div class="p-4 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="server" class="w-8 h-8"></i></div><span class="text-2xl font-black tracking-tight">DATA CENTER</span></div>',
@@ -324,7 +341,7 @@ const app = {
                     </button>
                 </div>`,
             showConfirmButton: false, showCloseButton: true,
-            background: this.theme === 'dark' ? '#050b14' : '#fff',
+            background: this.theme === 'dark' ? '#0f172a' : '#fff',
             color: this.theme === 'dark' ? '#fff' : '#0f172a',
             width: '450px', padding: '2em',
             didOpen: () => lucide.createIcons()
@@ -353,6 +370,7 @@ const app = {
         return this.data.records.filter(r => { const [d, rm, ry] = r.date.split('/').map(Number); return (rm - 1) === m && ry === y; });
     },
 
+    // --- RENDER HIGH CONTRAST ---
     render() {
         const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
         const rec = this.getFilteredRecords();
@@ -367,7 +385,24 @@ const app = {
 
         const tb = document.getElementById("historyTable");
         if(rec.length === 0) tb.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 text-lg font-mono">NO_DATA</td></tr>`;
-        else tb.innerHTML = rec.map(r => `<tr class="hover:bg-current hover:bg-opacity-5 transition-all border-b border-white/5 last:border-0"><td class="px-6 py-4 opacity-50">${r.date}</td><td class="px-6 py-4 font-bold uppercase text-current">${r.desc}</td><td class="px-6 py-4"><span class="bg-current bg-opacity-10 border border-current border-opacity-10 px-2 py-1 rounded text-[10px] font-bold opacity-60 uppercase tracking-wider">${r.category}</span></td><td class="px-6 py-4 text-right font-black font-mono ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive">${r.type==='income'?'+':'-'}${fmt.format(r.amount)}</td><td class="text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`).join('');
+        else tb.innerHTML = rec.map(r => `
+            <tr class="hover:bg-blue-500/10 transition-all border-b border-white/5 last:border-0 group">
+                <td class="px-6 py-4 opacity-70 text-slate-300 group-hover:text-white font-mono">${r.date}</td>
+                <td class="px-6 py-4 font-bold uppercase text-white tracking-wide">${r.desc}</td>
+                <td class="px-6 py-4">
+                    <span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider shadow-sm">
+                        ${r.category}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-right font-black font-mono ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive text-lg">
+                    ${r.type==='income'?'+':'-'}${fmt.format(r.amount)}
+                </td>
+                <td class="text-center">
+                    <button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors p-2 hover:bg-rose-500/10 rounded-full">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </td>
+            </tr>`).join('');
         
         this.updateCharts(inc, exp, rec);
         lucide.createIcons();
@@ -387,7 +422,7 @@ const app = {
         
         this.charts.line = new Chart(ctxL, { 
             type: 'line', 
-            data: { labels: dates, datasets: [{ label: 'Flujo Neto', data: dates.map(d=>dailyData[d]), borderColor: this.theme==='dark'?'#00f3ff':'#0ea5e9', backgroundColor: grad, fill:true, tension:0.4, borderWidth:2, pointRadius:3, pointBackgroundColor: this.theme==='dark'?'#050b14':'#fff' }] }, 
+            data: { labels: dates, datasets: [{ label: 'Flujo Neto', data: dates.map(d=>dailyData[d]), borderColor: this.theme==='dark'?'#00f3ff':'#0ea5e9', backgroundColor: grad, fill:true, tension:0.4, borderWidth:2, pointRadius:4, pointBackgroundColor: this.theme==='dark'?'#050b14':'#fff' }] }, 
             options: { 
                 responsive:true, maintainAspectRatio:false, 
                 plugins:{legend:{display:false}, tooltip: { backgroundColor: this.theme==='dark'?'#050b14':'#fff', titleColor: textColor, bodyColor: this.theme==='dark'?'#00f3ff':'#0ea5e9', borderColor: 'rgba(100,100,100,0.2)', borderWidth: 1 } }, 
