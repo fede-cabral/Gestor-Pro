@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V23 TITAN</title>
+    <title>FORJAX Terminal - V24 DATA STORM</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -77,8 +77,8 @@
             <div class="mb-8 inline-flex p-5 bg-blue-600 rounded-2xl shadow-neon">
                 <i data-lucide="layout-dashboard" class="w-10 h-10 text-white"></i>
             </div>
-            <h2 class="text-4xl font-extrabold mb-2 tracking-tight">FORJAX <span class="text-blue-500">V23</span></h2>
-            <p class="text-slate-400 mb-8 font-medium">Titan Edition</p>
+            <h2 class="text-4xl font-extrabold mb-2 tracking-tight">FORJAX <span class="text-blue-500">V24</span></h2>
+            <p class="text-slate-400 mb-8 font-medium">Data Storm Update</p>
             <input id="userInput" type="text" placeholder="Identificación" class="w-full p-4 rounded-xl mb-4 text-center text-lg font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all">
             <button onclick="app.initSession()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg">ACCEDER</button>
         </div>
@@ -137,8 +137,24 @@
 
                 <div class="lg:col-span-8 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="glass p-5 rounded-3xl"><h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4">Evolución</h4><div class="h-48"><canvas id="barChart"></canvas></div></div>
-                        <div class="glass p-5 rounded-3xl"><h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4">Distribución</h4><div class="h-48 flex justify-center"><canvas id="pieChart"></canvas></div></div>
+                        <div class="glass p-5 rounded-3xl relative">
+                            <h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-blue-400"></i> Tendencia Mensual</h4>
+                            <div class="h-56 w-full">
+                                <canvas id="lineChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass p-5 rounded-3xl relative">
+                            <h4 class="text-xs font-bold uppercase tracking-wider opacity-60 mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i> Distribución</h4>
+                            <div class="h-56 w-full flex justify-center relative">
+                                <canvas id="doughnutChart"></canvas>
+                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div class="text-center">
+                                        <p class="text-[10px] text-slate-400 uppercase">Total</p>
+                                        <p id="chartTotal" class="text-sm font-bold text-white">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="glass rounded-3xl overflow-hidden border border-white/5">
@@ -226,7 +242,7 @@ const app = {
         document.getElementById("mainApp").classList.remove("hidden");
         document.getElementById("mainApp").classList.remove("opacity-0");
         this.loadData(); this.render(); this.renderSubs(); this.renderGoals(); 
-        this.fetchFullMarket(); // Restaurado
+        this.fetchFullMarket();
         lucide.createIcons();
     },
 
@@ -256,7 +272,7 @@ const app = {
     getFilteredRecords() {
         if (this.timeFilter === 'all') return this.data.records;
         const now = new Date(); const m = now.getMonth(); const y = now.getFullYear();
-        return this.data.records.filter(r => { const [d, rm, ry] = r.date.split('/').map(Number); return (rm - 1) === m && ry === y; });
+        return this.data.records.filter(r => { const [d, rm, ry] = r.date.split('/').map(Number); return (rm - 1) === m && ry === y; }).sort((a,b) => b.id - a.id);
     },
 
     addRecord(type) {
@@ -277,7 +293,7 @@ const app = {
         this.render(); 
     },
 
-    // --- RENDER & CHARTS ---
+    // --- RENDER & CHARTS V24 (MAJOR UPDATE) ---
     render() {
         const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
         const rec = this.getFilteredRecords();
@@ -294,27 +310,80 @@ const app = {
         if(rec.length === 0) tb.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 text-lg">Sin movimientos</td></tr>`;
         else tb.innerHTML = rec.map(r => `<tr class="hover:bg-white/5 transition-all border-b border-white/5 last:border-0"><td class="px-6 py-4 opacity-70">${r.date}</td><td class="px-6 py-4 font-bold text-white">${r.desc}</td><td class="px-6 py-4"><span class="bg-slate-800 border border-white/5 px-3 py-1 rounded-lg text-xs font-bold text-slate-400">${r.category}</span></td><td class="px-6 py-4 text-right font-black ${r.type==='income'?'text-emerald-500':'text-rose-500'} blur-sensitive">${r.type==='income'?'+':'-'}${fmt.format(r.amount)}</td><td class="text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`).join('');
         
-        this.updateCharts(inc, exp, rec); // Gráficos restaurados
+        this.updateCharts(inc, exp, rec);
         lucide.createIcons();
     },
 
     updateCharts(inc, exp, records) {
-        const b = document.getElementById("barChart").getContext("2d");
-        const p = document.getElementById("pieChart").getContext("2d");
-        if(this.charts.bar) this.charts.bar.destroy();
-        if(this.charts.pie) this.charts.pie.destroy();
-        
-        this.charts.bar = new Chart(b, {
-            type: 'bar',
-            data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 10 }] },
-            options: { responsive: true, plugins: { legend: {display: false} }, scales: { y: { display: false }, x: { grid: {display: false}, ticks: {color: '#94a3b8'} } } }
+        // Destroy old charts
+        if(this.charts.line) this.charts.line.destroy();
+        if(this.charts.doughnut) this.charts.doughnut.destroy();
+
+        // 1. Prepare Data for Line Chart (Daily Aggregate)
+        const dailyData = {};
+        records.forEach(r => {
+            if(!dailyData[r.date]) dailyData[r.date] = { income: 0, expense: 0 };
+            if(r.type === 'income') dailyData[r.date].income += r.amount;
+            else dailyData[r.date].expense += r.amount;
         });
         
-        const cat = {}; records.filter(r=>r.type==='expense').forEach(r=>{ cat[r.category] = (cat[r.category]||0) + r.amount });
-        this.charts.pie = new Chart(p, {
+        // Sort dates
+        const sortedDates = Object.keys(dailyData).sort((a,b) => {
+            const [da, ma, ya] = a.split('/').map(Number);
+            const [db, mb, yb] = b.split('/').map(Number);
+            return new Date(ya, ma-1, da) - new Date(yb, mb-1, db);
+        });
+
+        // 2. Line Chart (Area)
+        const ctxLine = document.getElementById("lineChart").getContext("2d");
+        const gradInc = ctxLine.createLinearGradient(0,0,0,200); gradInc.addColorStop(0, 'rgba(16, 185, 129, 0.4)'); gradInc.addColorStop(1, 'rgba(16, 185, 129, 0)');
+        const gradExp = ctxLine.createLinearGradient(0,0,0,200); gradExp.addColorStop(0, 'rgba(244, 63, 94, 0.4)'); gradExp.addColorStop(1, 'rgba(244, 63, 94, 0)');
+
+        this.charts.line = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: sortedDates,
+                datasets: [
+                    { label: 'Ingresos', data: sortedDates.map(d => dailyData[d].income), borderColor: '#10b981', backgroundColor: gradInc, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3 },
+                    { label: 'Gastos', data: sortedDates.map(d => dailyData[d].expense), borderColor: '#f43f5e', backgroundColor: gradExp, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                interaction: { mode: 'index', intersect: false },
+                scales: { 
+                    x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                    y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // 3. Doughnut Chart (Enhanced)
+        const ctxDoughnut = document.getElementById("doughnutChart").getContext("2d");
+        const catData = {};
+        records.filter(r => r.type === 'expense').forEach(r => { catData[r.category] = (catData[r.category] || 0) + r.amount });
+        
+        document.getElementById("chartTotal").textContent = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(exp);
+
+        this.charts.doughnut = new Chart(ctxDoughnut, {
             type: 'doughnut',
-            data: { labels: Object.keys(cat), datasets: [{ data: Object.values(cat), borderWidth: 0, backgroundColor: ['#3b82f6','#8b5cf6','#ec4899','#f43f5e','#f59e0b','#10b981'] }] },
-            options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#94a3b8', boxWidth: 10 } } }, cutout: '70%' }
+            data: {
+                labels: Object.keys(catData),
+                datasets: [{
+                    data: Object.values(catData),
+                    backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#94a3b8', boxWidth: 12, padding: 15, font: { size: 10 } } }
+                }
+            }
         });
     },
 
@@ -340,10 +409,10 @@ const app = {
     depositGoal(id) { const g=this.data.goals.find(x=>x.id===id); Swal.fire({title:'Depositar',input:'number'}).then(r=>{ if(r.value){ g.current+=Number(r.value); this.save(); this.renderGoals(); if(g.current>=g.target) confetti(); } }) },
     deleteGoal(id) { this.data.goals = this.data.goals.filter(x=>x.id!==id); this.save(); this.renderGoals(); },
 
-    // --- MARKET (FULL MAGIC) ---
+    // --- MARKET ---
     async fetchFullMarket() {
         const gc = document.getElementById("marketGridCrypto"); const gf = document.getElementById("marketGridFiat");
-        this.rates = {'USD':1, 'ARS_BLUE':0.001}; // Reset basic
+        this.rates = {'USD':1, 'ARS_BLUE':0.001}; 
         
         try { 
             const r=await fetch("https://dolarapi.com/v1/dolares/blue"); const d=await r.json(); 
@@ -361,7 +430,6 @@ const app = {
             const list = [{c:'EUR',f:'🇪🇺'},{c:'GBP',f:'🇬🇧'},{c:'BRL',f:'🇧🇷'},{c:'JPY',f:'🇯🇵'},{c:'MXN',f:'🇲🇽'}];
             gf.innerHTML = list.map(x => `<div class="glass p-4 rounded-2xl flex justify-between items-center"><div class="flex items-center gap-2"><span class="text-2xl">${x.f}</span><span class="font-bold">${x.c}</span></div><span class="font-mono text-slate-300">${d.rates[x.c]?.toFixed(2)}</span></div>`).join('');
         } catch(e){}
-        
         this.fillCalcSelects();
     },
     fillCalcSelects() { 
@@ -371,7 +439,7 @@ const app = {
     calcCurrency() { const a=parseFloat(document.getElementById("calcAmount").value)||0,f=document.getElementById("calcFrom").value,t=document.getElementById("calcTo").value; const r={...this.rates}; if(!r[f])r[f]=1;if(!r[t])r[t]=1; let u=f==='USD'?a:(f.includes('ARS')?a*r[f]:a/r[f]); let res=t==='USD'?u:(t.includes('ARS')?u/r[t]:u*r[t]); document.getElementById("calcResult").textContent=res.toLocaleString(undefined,{maximumFractionDigits:4}); },
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"), tmp=f.value; f.value=t.value; t.value=tmp; this.calcCurrency(); },
 
-    // --- SETTINGS (DATA CENTER) ---
+    // --- SETTINGS ---
     openSettings() {
         Swal.fire({
             title: '<div class="flex flex-col items-center gap-3 mb-2"><div class="p-4 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="server" class="w-8 h-8"></i></div><span class="text-2xl font-black text-white tracking-tight">DATA CENTER</span></div>',
