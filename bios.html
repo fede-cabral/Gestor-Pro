@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX BIOS - Advanced Human Intelligence</title>
+    <title>FORJAX BIOS - Neural Intelligence Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -14,22 +14,6 @@
                 extend: {
                     fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
                     colors: { neon: '#00f3ff', bio: '#ff2d55' },
-                    boxShadow: {
-                        'neon-blue': '0 0 25px rgba(0, 243, 255, 0.6)',
-                        'neon-bio': '0 0 25px rgba(255, 45, 85, 0.6)',
-                        'glass-card': '0 8px 32px 0 rgba(31, 38, 135, 0.37)'
-                    },
-                    animation: {
-                        'spin-slow': 'spin 8s linear infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'bio-pulse': 'bioPulse 2s infinite'
-                    },
-                    keyframes: {
-                        bioPulse: {
-                            '0%, 100%': { opacity: 1, transform: 'scale(1)' },
-                            '50%': { opacity: 0.8, transform: 'scale(1.05)' },
-                        }
-                    }
                 }
             }
         }
@@ -40,352 +24,185 @@
             font-family: 'Outfit', sans-serif;
             background-color: #050b14;
             color: #f8fafc;
-            background-image:
-                radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%),
-                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300f3ff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%);
             overflow-x: hidden;
         }
-        .glass {
-            background: rgba(10, 15, 30, 0.75);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 243, 255, 0.15);
-            box-shadow: var(--tw-shadow-glass-card);
-            transition: all 0.3s ease;
-        }
-        .glass:hover {
-            border-color: rgba(0, 243, 255, 0.4);
-            box-shadow: var(--tw-shadow-neon-blue);
-            transform: translateY(-2px);
-        }
+        .glass { background: rgba(10, 15, 30, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(0, 243, 255, 0.15); transition: all 0.3s ease; }
+        .glass:hover { border-color: rgba(0, 243, 255, 0.4); transform: translateY(-2px); }
         .neon-text { text-shadow: 0 0 15px rgba(0, 243, 255, 0.8); }
-        .bio-text { text-shadow: 0 0 15px rgba(255, 45, 85, 0.8); }
-        .bios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
-        .energy-bar-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-        }
-        .energy-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #00f3ff, #00c2ff);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.7);
-            position: relative;
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .energy-bar::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 2s infinite;
-        }
-        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        .risk-card-pulse { animation: bio-pulse 2s infinite; }
-        .pulse-dot {
-            width: 8px; height: 8px; background-color: #ff2d55; border-radius: 50%;
-            box-shadow: 0 0 10px #ff2d55; animation: bio-pulse 1.5s infinite;
-        }
+        .badge-locked { filter: grayscale(1) opacity(0.3); }
+        .badge-unlocked { filter: none opacity(1); border-color: #00f3ff; background: rgba(0, 243, 255, 0.05); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body class="p-6 md:p-12">
 
     <header class="max-w-7xl mx-auto flex justify-between items-center mb-12">
         <div class="flex items-center gap-4">
-            <a href="index.html" class="p-3 glass rounded-full hover:bg-cyan-500/10 transition-all text-cyan-400 group relative">
-                <div class="absolute inset-0 bg-cyan-400 blur-md opacity-0 group-hover:opacity-30 transition-opacity rounded-full"></div>
-                <i data-lucide="arrow-left" class="relative z-10"></i>
+            <a href="index.html" class="p-3 glass rounded-full hover:bg-cyan-500/10 transition-all text-cyan-400 group">
+                <i data-lucide="arrow-left"></i>
             </a>
             <div>
                 <h1 class="text-4xl font-black tracking-tighter uppercase neon-text">Forjax <span class="text-cyan-400">BIOS</span></h1>
-                <p class="text-xs font-mono text-slate-500 uppercase tracking-[0.35em] neon-text">Neural & Financial Correlation Engine</p>
+                <p class="text-xs font-mono text-slate-500 uppercase tracking-[0.35em]">Neural Oracle System</p>
             </div>
         </div>
-        <div class="glass px-6 py-3 rounded-2xl flex items-center gap-4 border-cyan-500/30 relative overflow-hidden group">
-            <div class="absolute inset-0 bg-cyan-400/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="relative flex h-3 w-3">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500 shadow-[0_0_10px_#00f3ff]"></span>
-            </div>
-            <span class="text-xs font-black font-mono relative z-10 tracking-wider">LINKED_TO_V30_CORE</span>
+        <div class="glass px-6 py-3 rounded-2xl flex items-center gap-4 border-cyan-500/30">
+            <div class="flex h-3 w-3"><span class="animate-ping absolute h-3 w-3 rounded-full bg-cyan-400 opacity-75"></span><span class="relative rounded-full h-3 w-3 bg-cyan-500"></span></div>
+            <span class="text-xs font-black font-mono tracking-wider uppercase">V30_Sync_Active</span>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto space-y-10">
         
-        <div class="bios-grid" id="kpiContainer">...</div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 glass p-10 rounded-[3rem] border border-cyan-500/20">
-                <h3 class="text-sm font-black uppercase tracking-[0.2em] mb-10 flex items-center gap-3 neon-text">
-                    <i data-lucide="activity" class="text-cyan-400 w-5 h-5"></i> Energy vs. Capital Flow
-                </h3>
-                <div class="h-[400px]">
-                    <canvas id="correlationChart"></canvas>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-cyan-400">
+                <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Neural Efficiency</p>
+                <h2 id="bioRoi" class="text-6xl font-black font-mono">--</h2>
             </div>
-
-            <div class="glass p-8 rounded-[3rem] border border-cyan-500/30 flex flex-col bg-black/40 relative overflow-hidden">
-                <div class="absolute inset-0 bg-cyan-900/5 pointer-events-none"></div>
-                <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2 text-cyan-400">
-                    <i data-lucide="terminal" class="w-4 h-4"></i> AI Neural Oracle
-                </h3>
-                
-                <div id="oracleConsole" class="flex-1 font-mono text-[10px] space-y-3 overflow-y-auto custom-scroll pr-2">
-                    <p class="text-cyan-500/50">> INITIALIZING_NEURAL_CORE...</p>
-                    <p class="text-cyan-500/50">> SCANNING_V30_LEDGER...</p>
-                    <div id="oracleOutput" class="space-y-4">
-                        </div>
+            <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden">
+                <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Energy Core</p>
+                <div class="flex items-baseline gap-2 mb-4">
+                    <span id="energyVal" class="text-6xl font-black font-mono">--%</span>
                 </div>
+                <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div id="energyBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width: 0%"></div></div>
+            </div>
+            <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500">
+                <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest">Burnout Risk</p>
+                <h2 id="riskStatus" class="text-xl font-black uppercase text-white italic">Calculating...</h2>
+            </div>
+        </div>
 
-                <div class="mt-6 pt-4 border-t border-white/5">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span class="text-[9px] font-bold text-slate-500 uppercase">Oracle Status: Analyzing Patterns</span>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <div class="lg:col-span-1 space-y-6">
+                <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2"><i data-lucide="award" class="text-yellow-400"></i> Achievements</h3>
+                
+                <div class="grid grid-cols-1 gap-4">
+                    <div id="badgeZen" class="glass p-4 rounded-2xl border border-white/5 flex items-center gap-4 badge-locked transition-all duration-700">
+                        <div class="p-3 bg-emerald-500/20 rounded-xl text-emerald-400"><i data-lucide="sparkles"></i></div>
+                        <div><p class="text-xs font-black uppercase">Zen Master</p><p class="text-[9px] text-slate-500 uppercase">5 Operaciones en calma</p></div>
+                    </div>
+                    <div id="badgeGuardian" class="glass p-4 rounded-2xl border border-white/5 flex items-center gap-4 badge-locked transition-all duration-700">
+                        <div class="p-3 bg-blue-500/20 rounded-xl text-blue-400"><i data-lucide="shield-check"></i></div>
+                        <div><p class="text-xs font-black uppercase">Financial Guardian</p><p class="text-[9px] text-slate-500 uppercase">0 Gastos impulsivos</p></div>
+                    </div>
+                    <div id="badgeWhale" class="glass p-4 rounded-2xl border border-white/5 flex items-center gap-4 badge-locked transition-all duration-700">
+                        <div class="p-3 bg-purple-500/20 rounded-xl text-purple-400"><i data-lucide="gem"></i></div>
+                        <div><p class="text-xs font-black uppercase">Capital Whale</p><p class="text-[9px] text-slate-500 uppercase">Ingreso High-Score</p></div>
                     </div>
                 </div>
             </div>
+
+            <div class="lg:col-span-2 glass p-10 rounded-[3rem] border border-white/5">
+                <h3 class="text-sm font-black uppercase tracking-widest mb-10 flex items-center gap-3">
+                    <i data-lucide="activity" class="text-cyan-400"></i> Performance Correlation
+                </h3>
+                <div class="h-[400px]"><canvas id="correlationChart"></canvas></div>
+            </div>
+
+            <div class="lg:col-span-1 glass p-8 rounded-[3rem] flex flex-col bg-black/40">
+                <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2 text-cyan-400">
+                    <i data-lucide="terminal" class="w-4 h-4"></i> Neural Oracle
+                </h3>
+                <div id="oracleOutput" class="flex-1 font-mono text-[10px] space-y-4 custom-scroll overflow-y-auto pr-2">
+                    <p class="text-cyan-500/50 animate-pulse">> ANALYZING_PATTERNS...</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
-<script>
-const bios = {
-    getV30Data() {
-        const user = localStorage.getItem("currentUser");
-        return JSON.parse(localStorage.getItem(user + "_records")) || [];
-    },
-
-    init() {
-        const records = this.getV30Data();
-        this.calculateStats(records);
-        this.renderChart(records);
-        this.runOracle(records); // <-- Lanzamos el Oráculo
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    },
-
-    runOracle(records) {
-        const output = document.getElementById("oracleOutput");
-        const stressExpenses = records.filter(r => r.type === 'expense' && r.bio <= 40);
-        const latest = records[0];
-
-        let html = '';
-
-        // Simulación de "pensamiento" de la IA
-        setTimeout(() => {
-            // Deducción 1: Gasto bajo estrés
-            if (stressExpenses.length > 2) {
-                html += `
-                    <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg fade-in">
-                        <p class="text-rose-400 font-bold uppercase mb-1">⚠️ PATRÓN DETECTADO</p>
-                        <p class="text-slate-300">Has realizado ${stressExpenses.length} gastos bajo estrés crítico. Tu capital se drena por impulsividad.</p>
-                    </div>`;
-            }
-
-            // Deducción 2: Eficiencia del último registro
-            if (latest && latest.type === 'income') {
-                html += `
-                    <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg fade-in">
-                        <p class="text-emerald-400 font-bold uppercase mb-1">✅ ALTO RENDIMIENTO</p>
-                        <p class="text-slate-300">Último ingreso registrado con Bio-Estado ${latest.bio}%. Eficiencia máxima lograda.</p>
-                    </div>`;
-            }
-
-            // Deducción 3: Predicción futura
-            const energy = Math.max(15, 100 - (records.length * 1.5));
-            if (energy < 50) {
-                html += `
-                    <div class="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg fade-in">
-                        <p class="text-cyan-400 font-bold uppercase mb-1">💡 CONSEJO ORACLE</p>
-                        <p class="text-slate-300">Tu energía proyectada para mañana es del ${Math.round(energy - 5)}%. Evitá entrar al Market.</p>
-                    </div>`;
-            }
-
-            output.innerHTML = html;
-        }, 1500);
-    },
-
-    // ... (Mantener el resto de funciones: calculateStats, renderChart igual que antes)
-    calculateStats(records) {
-        if (!records.length) return;
-        const totalInc = records.filter(r => r.type === 'income').reduce((a,c) => a+c.amount, 0);
-        const totalExp = records.filter(r => r.type === 'expense').reduce((a,c) => a+c.amount, 0);
-        const efficiency = (totalInc / (totalExp || 1)).toFixed(2);
-        document.getElementById("bioRoi").innerText = efficiency + "x";
-        
-        const energy = Math.max(15, 100 - (records.length * 1.5));
-        document.getElementById("energyVal").innerText = Math.round(energy) + "%";
-        document.getElementById("energyBar").style.width = energy + "%";
-        
-        const risk = document.getElementById("riskStatus");
-        risk.innerText = energy < 50 ? "RIESGO COGNITIVO ALTO" : "ESTADO COGNITIVO ESTABLE";
-        risk.className = `text-2xl font-black uppercase mb-4 italic ${energy < 50 ? 'text-rose-500' : 'text-emerald-400'}`;
-    },
-
-    renderChart(records) {
-        // (Usar el código del gráfico que ya tenías en la respuesta anterior)
-    }
-};
-window.onload = () => bios.init();
-</script>
+    <script>
         const bios = {
-            // Aquí leemos los datos que guardó la V30
             getV30Data() {
                 const user = localStorage.getItem("currentUser");
-                if (!user) return [];
-                return JSON.parse(localStorage.getItem(user + "_records")) || [];
+                const p = user + "_";
+                return JSON.parse(localStorage.getItem(p + "records")) || [];
             },
 
             init() {
                 const records = this.getV30Data();
                 this.calculateStats(records);
                 this.renderChart(records);
+                this.runOracle(records);
+                this.checkAchievements(records);
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             },
 
             calculateStats(records) {
-                if (records.length === 0) return;
-
-                // Lógica de innovación: Simulamos que los gastos sin categoría o con nombres 
-                // específicos consumen más energía. 
-                const totalIncome = records.filter(r => r.type === 'income').reduce((a,c) => a+c.amount, 0);
-                const totalExpense = records.filter(r => r.type === 'expense').reduce((a,c) => a+c.amount, 0);
+                if (!records.length) return;
+                const totalInc = records.filter(r => r.type === 'income').reduce((a,c) => a+c.amount, 0);
+                const totalExp = records.filter(r => r.type === 'expense').reduce((a,c) => a+c.amount, 0);
                 
-                // Métrica inventada: ROI Biológico
-                const bioEfficiency = (totalIncome / (totalExpense || 1)).toFixed(2);
-                document.getElementById("bioRoi").innerText = bioEfficiency + "x";
+                // Indice de Eficiencia Biológica (Monto generado vs Gasto promedio)
+                const efficiency = (totalInc / (totalExp || 1)).toFixed(2);
+                document.getElementById("bioRoi").innerText = efficiency + "x";
 
-                // Energía simulada basada en volumen de transacciones (a más transacciones, más fatiga)
-                // y un poco de aleatoriedad para la demo
-                let energy = Math.max(15, 100 - (records.length * 1.5) - (Math.random() * 10));
-                energy = Math.round(energy);
-                document.getElementById("energyVal").innerText = energy + "%";
+                const energy = Math.max(15, 100 - (records.length * 1.2));
+                document.getElementById("energyVal").innerText = Math.round(energy) + "%";
                 document.getElementById("energyBar").style.width = energy + "%";
 
                 const risk = document.getElementById("riskStatus");
-                const riskCard = document.getElementById("riskCard");
-                const riskDot = document.getElementById("riskDot");
+                risk.innerText = energy < 45 ? "CRITICAL FATIGUE" : "COGNITIVE STABLE";
+                risk.className = `text-xl font-black uppercase italic ${energy < 45 ? 'text-rose-500' : 'text-emerald-400'}`;
+            },
 
-                if (energy < 40) {
-                    risk.innerText = "ALTA PROBABILIDAD DE BURNOUT";
-                    risk.className = "text-2xl font-black uppercase text-rose-400 mb-4 italic bio-text flex items-center gap-3";
-                    riskCard.classList.add('risk-card-pulse', 'border-rose-500', 'bg-rose-500/20');
-                    riskCard.classList.remove('border-emerald-500', 'bg-emerald-500/10');
-                     riskDot.classList.remove('hidden');
-                } else {
-                    risk.innerText = "ESTADO COGNITIVO ÓPTIMO";
-                    risk.className = "text-2xl font-black uppercase text-emerald-400 mb-4 italic neon-text flex items-center gap-3";
-                    riskCard.classList.remove('risk-card-pulse', 'border-rose-500', 'bg-rose-500/20');
-                    riskCard.classList.add('border-emerald-500', 'bg-emerald-500/10');
-                    riskDot.classList.add('hidden');
-                    // Cambiar icono y color de borde para estado óptimo
-                    riskCard.querySelector('.text-rose-300').classList.replace('text-rose-300', 'text-emerald-300');
-                    riskCard.querySelector('.text-rose-500\\/20').classList.replace('text-rose-500/20', 'text-emerald-500/20');
-                    riskCard.querySelector('i').setAttribute('data-lucide', 'shield-check');
-                    lucide.createIcons();
-                }
+            checkAchievements(records) {
+                if (!records.length) return;
+
+                // 1. Zen Master (5 seguidos que no sean stress 10 o impulsivos)
+                const last5Stress = records.slice(0, 5).every(r => (r.bio || 100) > 50);
+                if (last5Stress) document.getElementById("badgeZen").className = "glass p-4 rounded-2xl border border-cyan-400/50 flex items-center gap-4 badge-unlocked shadow-neon-blue";
+
+                // 2. Financial Guardian (Ultimos 10 registros sin stress crítico)
+                const noStress = records.slice(0, 10).every(r => (r.bio || 100) > 30);
+                if (noStress) document.getElementById("badgeGuardian").className = "glass p-4 rounded-2xl border border-cyan-400/50 flex items-center gap-4 badge-unlocked shadow-neon-blue";
+
+                // 3. Capital Whale (Ingreso mayor a 100.000 en estado Zen)
+                const whale = records.some(r => r.type === 'income' && r.amount >= 100000 && (r.bio || 100) >= 90);
+                if (whale) document.getElementById("badgeWhale").className = "glass p-4 rounded-2xl border border-purple-400/50 flex items-center gap-4 badge-unlocked shadow-neon-purple";
+            },
+
+            runOracle(records) {
+                const output = document.getElementById("oracleOutput");
+                const stressExp = records.filter(r => r.type === 'expense' && (r.bio || 100) <= 40);
+                
+                let html = '<p class="text-cyan-500">> DATA_SYNC_COMPLETE</p>';
+                setTimeout(() => {
+                    if(stressExp.length > 0) {
+                        html += `<div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg"><p class="text-rose-400 font-black mb-1">Detección de Fuga</p><p class="text-slate-400">Detectamos que tus emociones drenan capital en: ${stressExp[0].desc}</p></div>`;
+                    }
+                    html += `<div class="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg"><p class="text-cyan-400 font-black mb-1">Inferencia Neural</p><p class="text-slate-400">Tu ROI biológico está en ${document.getElementById("bioRoi").innerText}. Sos un ${Number(document.getElementById("bioRoi").innerText.slice(0,-1)) > 1 ? 'Activo Producivo' : 'Costo Operativo'}.</p></div>`;
+                    output.innerHTML = html;
+                }, 1000);
             },
 
             renderChart(records) {
                 const ctx = document.getElementById('correlationChart').getContext('2d');
-                const lastRecords = records.slice(0, 15).reverse();
-
-                // Gradiente para el área bajo la curva
-                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, 'rgba(0, 243, 255, 0.3)');
-                gradient.addColorStop(1, 'rgba(0, 243, 255, 0)');
-
+                const last = [...records].reverse().slice(-10);
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: lastRecords.map(r => r.desc),
+                        labels: last.map(r => r.desc),
                         datasets: [
-                            {
-                                label: 'Capital Flow',
-                                data: lastRecords.map(r => r.amount),
-                                borderColor: '#00f3ff',
-                                borderWidth: 3,
-                                pointBackgroundColor: '#050b14',
-                                pointBorderColor: '#00f3ff',
-                                pointBorderWidth: 2,
-                                pointRadius: 6,
-                                pointHoverRadius: 8,
-                                tension: 0.4,
-                                fill: true,
-                                backgroundColor: gradient
-                            },
-                            {
-                                label: 'Neural Fatigue Estimation',
-                                data: lastRecords.map((r, i) => (i * 8) + 30 + (Math.random() * 10)), // Simulación de curva de fatiga más orgánica
-                                borderColor: '#ff2d55',
-                                borderDash: [8, 8],
-                                borderWidth: 2,
-                                pointBackgroundColor: '#ff2d55',
-                                pointBorderColor: '#fff',
-                                pointRadius: 4,
-                                tension: 0.5,
-                                yAxisID: 'y1'
-                            }
+                            { label: 'Cash Flow', data: last.map(r => r.amount), borderColor: '#00f3ff', tension: 0.4, fill: true, backgroundColor: 'rgba(0, 243, 255, 0.05)' },
+                            { label: 'Energy Pulse', data: last.map(r => r.bio || 70), borderColor: '#ff2d55', borderDash: [5, 5], tension: 0.4, yAxisID: 'y1' }
                         ]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(5, 11, 20, 0.9)',
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                borderColor: 'rgba(0, 243, 255, 0.3)',
-                                borderWidth: 1,
-                                titleFont: { family: 'JetBrains Mono' },
-                                bodyFont: { family: 'JetBrains Mono' },
-                                padding: 12,
-                                displayColors: false,
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed.y !== null) {
-                                            if (context.datasetIndex === 0) {
-                                                label += new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(context.parsed.y);
-                                            } else {
-                                                label += Math.round(context.parsed.y) + '%';
-                                            }
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                grid: { color: 'rgba(255,255,255,0.05)' },
-                                ticks: { color: '#64748b', font: { family: 'JetBrains Mono' } }
-                            },
-                            y1: {
-                                position: 'right',
-                                grid: { display: false },
-                                ticks: { color: '#ff2d55', font: { family: 'JetBrains Mono' }, callback: (v) => v + '%' },
-                                min: 0, max: 100
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { color: '#64748b', font: { family: 'JetBrains Mono' }, maxRotation: 45, minRotation: 45 }
-                            }
+                    options: { 
+                        responsive: true, maintainAspectRatio: false, 
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y1: { position: 'right', min: 0, max: 100, display: false },
+                            x: { ticks: { color: '#64748b' }, grid: { display: false } }
                         }
                     }
                 });
             }
         };
-
         window.onload = () => bios.init();
     </script>
 </body>
