@@ -114,49 +114,120 @@
 
     <main class="max-w-7xl mx-auto space-y-10">
         
-        <div class="bios-grid">
-            <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-cyan-400 relative overflow-hidden group">
-                <div class="absolute -right-10 -top-10 text-cyan-500/10 animate-spin-slow"><i data-lucide="brain-circuit" class="w-40 h-40"></i></div>
-                <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest neon-text">Biological ROI Factor</p>
-                <h2 id="bioRoi" class="text-6xl font-black mb-4 font-mono neon-text">--</h2>
-                <p class="text-xs text-slate-300 leading-relaxed font-light">Índice de eficiencia cognitiva: Retorno financiero por unidad de estrés. <span class="text-cyan-400 font-bold neon-text">>1.5x es óptimo.</span></p>
-            </div>
+        <div class="bios-grid" id="kpiContainer">...</div>
 
-            <div class="glass p-8 rounded-[2.5rem] flex flex-col justify-center relative overflow-hidden group">
-                <div class="absolute -right-8 -bottom-8 text-cyan-500/10 group-hover:text-cyan-500/20 transition-colors animate-pulse-slow"><i data-lucide="battery-charging" class="w-36 h-36"></i></div>
-                <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest neon-text">Bio-Energy Reserves</p>
-                <div class="flex items-baseline gap-2 mb-6">
-                    <span id="energyVal" class="text-6xl font-black font-mono neon-text">--%</span>
-                    <span class="text-xs font-bold text-cyan-500 pb-1 uppercase tracking-wider">Capacidad Vital</span>
-                </div>
-                <div class="energy-bar-container h-4 w-full">
-                    <div id="energyBar" class="energy-bar" style="width: 0%"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 glass p-10 rounded-[3rem] border border-cyan-500/20">
+                <h3 class="text-sm font-black uppercase tracking-[0.2em] mb-10 flex items-center gap-3 neon-text">
+                    <i data-lucide="activity" class="text-cyan-400 w-5 h-5"></i> Energy vs. Capital Flow
+                </h3>
+                <div class="h-[400px]">
+                    <canvas id="correlationChart"></canvas>
                 </div>
             </div>
 
-            <div id="riskCard" class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500 bg-rose-500/10 relative overflow-hidden group">
-                <div class="absolute -right-10 -top-10 text-rose-500/20 animate-pulse-slow"><i data-lucide="alert-triangle" class="w-40 h-40"></i></div>
-                <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest bio-text">Neural Risk Assessment</p>
-                <h2 id="riskStatus" class="text-2xl font-black uppercase text-white mb-4 italic bio-text flex items-center gap-3">
-                    <span class="pulse-dot hidden" id="riskDot"></span> Calculando...
-                </h2>
-                <p class="text-xs text-slate-300 leading-relaxed font-light">Predicción de fatiga financiera basada en patrones de gasto bajo estrés y reservas de energía.</p>
+            <div class="glass p-8 rounded-[3rem] border border-cyan-500/30 flex flex-col bg-black/40 relative overflow-hidden">
+                <div class="absolute inset-0 bg-cyan-900/5 pointer-events-none"></div>
+                <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2 text-cyan-400">
+                    <i data-lucide="terminal" class="w-4 h-4"></i> AI Neural Oracle
+                </h3>
+                
+                <div id="oracleConsole" class="flex-1 font-mono text-[10px] space-y-3 overflow-y-auto custom-scroll pr-2">
+                    <p class="text-cyan-500/50">> INITIALIZING_NEURAL_CORE...</p>
+                    <p class="text-cyan-500/50">> SCANNING_V30_LEDGER...</p>
+                    <div id="oracleOutput" class="space-y-4">
+                        </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-white/5">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span class="text-[9px] font-bold text-slate-500 uppercase">Oracle Status: Analyzing Patterns</span>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="glass p-10 rounded-[3rem] border border-cyan-500/20 relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
-            <h3 class="text-sm font-black uppercase tracking-[0.2em] mb-10 flex items-center gap-3 neon-text">
-                <i data-lucide="activity" class="text-cyan-400 w-5 h-5"></i> Performance Map: Energy vs. Capital Flow
-            </h3>
-            <div class="h-[450px] relative z-10">
-                <canvas id="correlationChart"></canvas>
-            </div>
-        </div>
-
     </main>
 
-    <script>
+<script>
+const bios = {
+    getV30Data() {
+        const user = localStorage.getItem("currentUser");
+        return JSON.parse(localStorage.getItem(user + "_records")) || [];
+    },
+
+    init() {
+        const records = this.getV30Data();
+        this.calculateStats(records);
+        this.renderChart(records);
+        this.runOracle(records); // <-- Lanzamos el Oráculo
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+
+    runOracle(records) {
+        const output = document.getElementById("oracleOutput");
+        const stressExpenses = records.filter(r => r.type === 'expense' && r.bio <= 40);
+        const latest = records[0];
+
+        let html = '';
+
+        // Simulación de "pensamiento" de la IA
+        setTimeout(() => {
+            // Deducción 1: Gasto bajo estrés
+            if (stressExpenses.length > 2) {
+                html += `
+                    <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg fade-in">
+                        <p class="text-rose-400 font-bold uppercase mb-1">⚠️ PATRÓN DETECTADO</p>
+                        <p class="text-slate-300">Has realizado ${stressExpenses.length} gastos bajo estrés crítico. Tu capital se drena por impulsividad.</p>
+                    </div>`;
+            }
+
+            // Deducción 2: Eficiencia del último registro
+            if (latest && latest.type === 'income') {
+                html += `
+                    <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg fade-in">
+                        <p class="text-emerald-400 font-bold uppercase mb-1">✅ ALTO RENDIMIENTO</p>
+                        <p class="text-slate-300">Último ingreso registrado con Bio-Estado ${latest.bio}%. Eficiencia máxima lograda.</p>
+                    </div>`;
+            }
+
+            // Deducción 3: Predicción futura
+            const energy = Math.max(15, 100 - (records.length * 1.5));
+            if (energy < 50) {
+                html += `
+                    <div class="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg fade-in">
+                        <p class="text-cyan-400 font-bold uppercase mb-1">💡 CONSEJO ORACLE</p>
+                        <p class="text-slate-300">Tu energía proyectada para mañana es del ${Math.round(energy - 5)}%. Evitá entrar al Market.</p>
+                    </div>`;
+            }
+
+            output.innerHTML = html;
+        }, 1500);
+    },
+
+    // ... (Mantener el resto de funciones: calculateStats, renderChart igual que antes)
+    calculateStats(records) {
+        if (!records.length) return;
+        const totalInc = records.filter(r => r.type === 'income').reduce((a,c) => a+c.amount, 0);
+        const totalExp = records.filter(r => r.type === 'expense').reduce((a,c) => a+c.amount, 0);
+        const efficiency = (totalInc / (totalExp || 1)).toFixed(2);
+        document.getElementById("bioRoi").innerText = efficiency + "x";
+        
+        const energy = Math.max(15, 100 - (records.length * 1.5));
+        document.getElementById("energyVal").innerText = Math.round(energy) + "%";
+        document.getElementById("energyBar").style.width = energy + "%";
+        
+        const risk = document.getElementById("riskStatus");
+        risk.innerText = energy < 50 ? "RIESGO COGNITIVO ALTO" : "ESTADO COGNITIVO ESTABLE";
+        risk.className = `text-2xl font-black uppercase mb-4 italic ${energy < 50 ? 'text-rose-500' : 'text-emerald-400'}`;
+    },
+
+    renderChart(records) {
+        // (Usar el código del gráfico que ya tenías en la respuesta anterior)
+    }
+};
+window.onload = () => bios.init();
+</script>
         const bios = {
             // Aquí leemos los datos que guardó la V30
             getV30Data() {
