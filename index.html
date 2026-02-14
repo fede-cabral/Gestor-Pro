@@ -37,15 +37,16 @@
         .dark .glass { background: rgba(10, 15, 30, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(0, 243, 255, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
         .dark .glass-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); }
         .dark input, .dark select { background: #0a0f1d !important; color: #fff !important; border: 1px solid #1e293b !important; }
-        
-        .nav-container { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 50; padding: 0.4rem; border-radius: 999px; display: flex; gap: 0.3rem; backdrop-filter: blur(20px); background: rgba(5, 11, 20, 0.9); border: 1px solid rgba(255,255,255,0.1); }
+        .light body { background-color: #f8fafc; color: #020617; }
+        .nav-container { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 50; padding: 0.4rem; border-radius: 999px; display: flex; gap: 0.3rem; backdrop-filter: blur(20px); }
+        .dark .nav-container { background: rgba(5, 11, 20, 0.9); border: 1px solid rgba(255,255,255,0.1); }
         .nav-btn { padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; color: #94a3b8; }
         .nav-btn.active { background: #00f3ff; color: #050b14; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
-
         .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .blur-sensitive { transition: filter 0.3s ease; }
         body.privacy-active .blur-sensitive { filter: blur(8px); }
+        .panic-blur { filter: blur(12px) grayscale(1); pointer-events: none; opacity: 0.6; }
     </style>
 </head>
 
@@ -53,10 +54,10 @@
 
 <div id="loginScreen" class="fixed inset-0 z-[60] flex items-center justify-center bg-[#050b14]">
     <div class="relative w-full max-w-lg p-4 text-center fade-in">
-        <div class="glass relative p-8 md:p-12 rounded-3xl border-2 border-cyan-500/20 shadow-neon-blue flex flex-col items-center">
-            <img src="forjax_logo_metal.png" alt="FORJAX Logo" class="mx-auto mb-10 max-h-32 drop-shadow-[0_0_20px_rgba(0,243,255,0.5)]">
+        <div class="glass relative p-12 rounded-3xl border-2 border-cyan-500/20 shadow-neon-blue flex flex-col items-center">
+            <img src="forjax_logo_metal.png" alt="FORJAX Logo" class="mx-auto mb-10 max-h-32">
             <div class="w-full max-w-sm space-y-4">
-                <input id="userInput" type="text" placeholder="ACCESS ID" class="w-full p-4 rounded-xl text-center text-lg font-bold font-mono outline-none dark:bg-[#0a0f1d] dark:text-white border-slate-700">
+                <input id="userInput" type="text" placeholder="ACCESS ID" class="w-full p-4 rounded-xl text-center text-lg font-bold font-mono outline-none dark:bg-[#0a0f1d] dark:text-white">
                 <button onclick="app.initSession()" class="w-full bg-cyan-400 text-black font-black py-4 rounded-xl shadow-neon-blue">INICIAR SISTEMA</button>
             </div>
         </div>
@@ -75,15 +76,16 @@
     </nav>
 
     <div class="pt-28 max-w-[1400px] mx-auto px-6 pb-12">
+        
         <div id="viewWallet" class="fade-in">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div><h2 class="text-4xl font-black tracking-tighter text-white uppercase">Dashboard</h2><p class="text-xs font-mono text-cyan-500 uppercase">System Status: Online</p></div>
-                <div class="flex gap-2 items-center">
-                    <a href="bios.html" class="bg-slate-900 border border-cyan-500/30 text-cyan-400 px-6 py-2 rounded-xl text-xs font-bold hover:bg-cyan-500/10 transition-all flex items-center gap-2">
+                <div><h2 class="text-4xl font-black tracking-tighter text-white uppercase">Dashboard</h2><p class="text-xs font-mono text-cyan-500">SYSTEM STATUS: ONLINE</p></div>
+                <div class="flex items-center gap-3">
+                    <a href="bios.html" class="bg-slate-900 border border-cyan-500/30 text-cyan-400 px-6 py-2 rounded-xl text-xs font-bold hover:bg-cyan-500/10 flex items-center gap-2">
                         <i data-lucide="activity" class="w-4 h-4"></i> BIOS TERMINAL
                     </a>
                     <div class="glass p-1 rounded-lg flex gap-1">
-                        <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black">ESTE MES</button>
+                        <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black shadow-neon-blue transition-all">ESTE MES</button>
                         <button onclick="app.setFilter('all')" id="filterAll" class="px-6 py-2 rounded-md text-xs font-bold text-slate-400">HISTÓRICO</button>
                     </div>
                 </div>
@@ -104,21 +106,21 @@
                 </div>
                 <div class="glass-card p-6 rounded-2xl flex items-center gap-3">
                     <span class="fi fi-ar rounded text-2xl"></span>
-                    <div><p class="text-[10px] font-bold font-mono text-slate-400 uppercase">Blue</p><h2 class="text-2xl font-black text-white" id="dolarVal">$0</h2></div>
+                    <div><p class="text-[10px] font-bold font-mono text-slate-400">DÓLAR BLUE</p><h2 class="text-2xl font-black text-white" id="dolarVal">$0</h2></div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-4">
                     <div class="glass p-8 rounded-3xl relative overflow-hidden">
-                        <h3 class="flex items-center gap-2 text-lg font-bold mb-6 text-white uppercase"><i data-lucide="plus" class="text-cyan-400"></i> Nueva Transacción</h3>
+                        <h3 class="flex items-center gap-2 text-lg font-bold mb-6 text-white"><i data-lucide="plus" class="text-cyan-400"></i> Nueva Transacción</h3>
                         <div class="space-y-4">
                             <div><label class="text-[10px] font-bold text-slate-500 ml-1">DETALLE</label><input id="transDesc" type="text" class="w-full p-4 rounded-xl font-bold outline-none dark:bg-[#0a0f1d]"></div>
                             <div class="grid grid-cols-3 gap-3">
                                 <div><label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label><input id="transAmount" type="number" class="w-full p-4 rounded-xl font-bold font-mono outline-none dark:bg-[#0a0f1d]"></div>
                                 <div><label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label><select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none dark:bg-[#0a0f1d]"></select></div>
-                                <div><label class="text-[10px] font-bold text-cyan-500 ml-1">BIO-ESTADO</label>
-                                    <select id="transBio" class="w-full p-4 rounded-xl font-bold outline-none border-cyan-500/20 dark:bg-[#0a0f1d]">
+                                <div><label class="text-[10px] font-bold text-cyan-500 ml-1">BIOS</label>
+                                    <select id="transBio" class="w-full p-4 rounded-xl font-bold border-cyan-500/20 dark:bg-[#0a0f1d]">
                                         <option value="100">🧘 Zen</option>
                                         <option value="70">😐 Normal</option>
                                         <option value="30">🔥 Estrés</option>
@@ -133,16 +135,14 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="lg:col-span-8 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="glass p-6 rounded-3xl"><div class="h-56 w-full"><canvas id="lineChart"></canvas></div></div>
                         <div class="glass p-6 rounded-3xl flex flex-col items-center justify-center relative">
                             <div class="h-56 w-full"><canvas id="doughnutChart"></canvas></div>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"><p class="text-[10px] font-bold text-slate-500 uppercase">Total</p><p id="chartTotal" class="text-sm font-black text-white font-mono">-</p></div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"><p id="chartTotal" class="text-sm font-black text-white font-mono">-</p></div>
                         </div>
                     </div>
-
                     <div class="glass rounded-3xl overflow-hidden border border-white/5">
                         <table class="w-full text-left">
                             <thead class="bg-[#0f172a] text-[10px] uppercase text-slate-400 font-bold border-b border-slate-700">
@@ -154,10 +154,51 @@
                 </div>
             </div>
         </div>
-        
-        <div id="viewSubs" class="hidden fade-in text-center py-20 opacity-30">VISTA SUBS (MÓDULO ACTIVO)</div>
-        <div id="viewGoals" class="hidden fade-in text-center py-20 opacity-30">VISTA METAS (MÓDULO ACTIVO)</div>
-        <div id="viewMarket" class="hidden fade-in text-center py-20 opacity-30">VISTA MARKET (MÓDULO ACTIVO)</div>
+
+        <div id="viewSubs" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-10">
+                <div><h2 class="text-3xl font-black text-white tracking-tighter uppercase">Suscripciones</h2><p class="text-xs font-mono text-cyan-500">Gastos Recurrentes</p></div>
+                <button onclick="app.toggleSubForm()" class="bg-cyan-500/20 text-cyan-400 px-6 py-3 rounded-xl font-bold border border-cyan-500/30">+ Nueva</button>
+            </div>
+            <div id="subForm" class="hidden glass p-6 rounded-3xl mb-8 border border-cyan-500/20">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div><label class="text-[10px] font-bold text-slate-500">NOMBRE</label><input id="subName" class="w-full p-4 rounded-xl"></div>
+                    <div><label class="text-[10px] font-bold text-slate-500">MONTO</label><input id="subAmount" type="number" class="w-full p-4 rounded-xl"></div>
+                    <div><label class="text-[10px] font-bold text-slate-500">DÍA VENC.</label><input id="subDay" type="number" class="w-full p-4 rounded-xl"></div>
+                    <button onclick="app.addSub()" class="w-full bg-cyan-400 text-black p-4 rounded-xl font-black shadow-neon-blue">GUARDAR</button>
+                </div>
+            </div>
+            <div id="subsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </div>
+
+        <div id="viewGoals" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-10">
+                <div><h2 class="text-3xl font-black text-white tracking-tighter uppercase">Metas de Ahorro</h2><p class="text-xs font-mono text-purple-500">Objetivos</p></div>
+                <button onclick="app.addGoalPrompt()" class="bg-purple-500/20 text-purple-400 px-6 py-3 rounded-xl font-bold border border-purple-500/30">+ Nueva</button>
+            </div>
+            <div id="goalsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </div>
+
+        <div id="viewMarket" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-4xl font-black text-white tracking-tighter uppercase"><i data-lucide="globe-2"></i> Mercado Global</h2>
+                <button onclick="app.fetchFullMarket()" class="p-4 bg-slate-900 border border-cyan-500/50 rounded-full text-cyan-400"><i data-lucide="refresh-cw" id="spinIcon"></i></button>
+            </div>
+            <div class="glass p-8 rounded-3xl mb-12 border border-cyan-500/20">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                    <div class="flex-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Cantidad</label><input id="calcAmount" type="number" value="1" onkeyup="app.calcCurrency()" class="w-full p-4 rounded-xl text-xl font-bold font-mono"></div>
+                    <div class="flex-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Desde</label><select id="calcFrom" onchange="app.calcCurrency()" class="w-full p-4 rounded-xl font-bold"></select></div>
+                    <div class="flex-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Hacia</label><select id="calcTo" onchange="app.calcCurrency()" class="w-full p-4 rounded-xl font-bold"></select></div>
+                    <div class="flex-1 bg-slate-900 p-4 rounded-xl text-center"><p class="text-[10px] font-bold text-slate-500 uppercase">Resultado</p><p id="calcResult" class="text-2xl font-black text-cyan-400 font-mono">--</p></div>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold uppercase text-white border-b border-white/10 pb-2">Cripto & Forex</h3>
+                <div id="marketGridCrypto" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
+                <div id="marketGridFiat" class="grid grid-cols-1 md:grid-cols-5 gap-4"></div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -165,26 +206,32 @@
 const app = {
     user: localStorage.getItem("currentUser"),
     data: { records: [], subs: [], goals: [] },
-    theme: 'dark', timeFilter: 'month', rates: {ARS: 1200}, charts: {}, privacy: false,
-    defaultCategories: ["Ingreso", "Hogar", "Comida", "Servicios", "Transporte", "Salud", "Ocio", "Otros"],
+    rates: { USD: 1, ARS: 1200 }, charts: {}, timeFilter: 'month', privacy: false,
+    defaultCategories: ["Ingreso", "Hogar", "Comida", "Servicios", "Transporte", "Ocio", "Otros"],
+    currencies: [{c:'USD',f:'us',n:'Dólar'}, {c:'ARS',f:'ar',n:'Peso Blue'}, {c:'EUR',f:'eu',n:'Euro'}, {c:'BTC',f:'un',n:'Bitcoin'}],
 
     init() {
         if (!this.user) { document.getElementById("loginScreen").classList.remove("hidden"); return; }
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("mainApp").classList.remove("hidden");
         document.getElementById("mainApp").classList.remove("opacity-0");
-        this.loadData(); this.render(); this.updateCategoryDropdown(); this.fetchDolar();
+        this.loadData(); this.render(); this.renderSubs(); this.renderGoals();
+        this.updateCategoryDropdown(); this.fillCalcSelects(); this.fetchFullMarket();
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
     loadData() {
         const p = this.user + "_";
         this.data.records = JSON.parse(localStorage.getItem(p + "records")) || [];
+        this.data.subs = JSON.parse(localStorage.getItem(p + "subs")) || [];
+        this.data.goals = JSON.parse(localStorage.getItem(p + "goals")) || [];
     },
 
     save() {
         const p = this.user + "_";
         localStorage.setItem(p + "records", JSON.stringify(this.data.records));
+        localStorage.setItem(p + "subs", JSON.stringify(this.data.subs));
+        localStorage.setItem(p + "goals", JSON.stringify(this.data.goals));
         this.render();
     },
 
@@ -193,58 +240,41 @@ const app = {
         const a = Math.abs(Number(document.getElementById("transAmount").value));
         const b = Number(document.getElementById("transBio").value);
         let c = document.getElementById("transCategory").value;
-        
         if (c === 'custom') c = document.getElementById("customCategoryInput").value || "Otros";
-        if(!d || a<=0) return;
-
-        this.data.records.unshift({ 
-            id: Date.now(), 
-            date: new Date().toLocaleDateString('es-AR'), 
-            desc: d, amount: a, category: c, type: type, bio: b 
-        });
-
-        document.getElementById("transDesc").value = "";
-        document.getElementById("transAmount").value = "";
+        if (!d || a <= 0) return;
+        this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString('es-AR'), desc: d, amount: a, category: c, type: type, bio: b });
+        document.getElementById("transDesc").value = ""; document.getElementById("transAmount").value = "";
         this.save();
-        if(type === 'income') confetti();
+        if(type==='income') confetti();
     },
 
     render() {
-        const panicMode = localStorage.getItem("forjax_panic_mode") === "true";
+        const panic = localStorage.getItem("forjax_panic_mode") === "true";
         const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
         const rec = this.getFilteredRecords();
         const inc = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
         const exp = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
         const bal = inc - exp;
 
-        // KPIs con Modo Pánico
-        const elInc = document.getElementById("bIncome");
-        const elExp = document.getElementById("bExpense");
-        const elNet = document.getElementById("bNet");
+        document.body.classList.toggle('panic-active', panic);
+        const dash = document.getElementById("viewWallet");
+        panic ? dash.classList.add('panic-blur') : dash.classList.remove('panic-blur');
 
-        if (panicMode) {
-            [elInc, elExp, elNet].forEach(el => {
-                el.textContent = "LOCKED";
-                el.parentElement.classList.add('blur-md', 'select-none');
-            });
-        } else {
-            elInc.textContent = fmt.format(inc);
-            elExp.textContent = fmt.format(exp);
-            elNet.textContent = fmt.format(bal);
-            [elInc, elExp, elNet].forEach(el => el.parentElement.classList.remove('blur-md', 'select-none'));
-        }
+        document.getElementById("bIncome").textContent = panic ? "LOCKED" : fmt.format(inc);
+        document.getElementById("bExpense").textContent = panic ? "LOCKED" : fmt.format(exp);
+        document.getElementById("bNet").textContent = panic ? "LOCKED" : fmt.format(bal);
 
         const tb = document.getElementById("historyTable");
-        if (panicMode) {
-            tb.innerHTML = `<tr><td colspan="5" class="text-center py-20 text-rose-500 font-black animate-pulse uppercase tracking-widest">Protocolo de Seguridad BIOS Activo</td></tr>`;
+        if (panic) {
+            tb.innerHTML = `<tr><td colspan="5" class="text-center py-20 text-rose-500 font-black uppercase animate-pulse">PROTOCOLO DE SEGURIDAD BIOS ACTIVO</td></tr>`;
         } else {
             tb.innerHTML = rec.map(r => `
-                <tr class="hover:bg-white/5 transition-all">
+                <tr class="hover:bg-white/5 border-b border-white/5">
                     <td class="px-6 py-4 opacity-50">${r.date}</td>
                     <td class="px-6 py-4 font-bold uppercase">${r.desc}</td>
-                    <td class="px-6 py-4 text-[10px] uppercase font-black text-cyan-500">${r.category}</td>
+                    <td class="px-6 py-4 text-[10px] font-black text-cyan-400 uppercase">${r.category}</td>
                     <td class="px-6 py-4 text-right font-black ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive">${fmt.format(r.amount)}</td>
-                    <td class="text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-600 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                    <td class="text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-600 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
                 </tr>`).join('');
         }
         this.updateCharts(inc, exp, rec);
@@ -263,15 +293,81 @@ const app = {
     updateCharts(inc, exp, records) {
         if(this.charts.line) this.charts.line.destroy();
         if(this.charts.doughnut) this.charts.doughnut.destroy();
-        
         const ctxL = document.getElementById("lineChart").getContext("2d");
-        this.charts.line = new Chart(ctxL, { type: 'line', data: { labels: records.map(r=>r.date).reverse(), datasets: [{ label: 'Flujo', data: records.map(r=>r.amount).reverse(), borderColor: '#00f3ff', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } } });
-
+        this.charts.line = new Chart(ctxL, { type: 'line', data: { labels: records.map(r=>r.date).reverse(), datasets: [{ data: records.map(r=>r.amount).reverse(), borderColor: '#00f3ff', tension: 0.4 }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} } });
         const ctxD = document.getElementById("doughnutChart").getContext("2d");
-        this.charts.doughnut = new Chart(ctxD, { type: 'doughnut', data: { datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#f43f5e'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false } } } });
+        this.charts.doughnut = new Chart(ctxD, { type: 'doughnut', data: { datasets: [{ data: [inc, exp], backgroundColor: ['#10b981', '#f43f5e'], borderWidth:0 }] }, options: { cutout:'85%', plugins:{legend:{display:false}}} });
         document.getElementById("chartTotal").textContent = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(exp);
     },
 
+    // SUBSCRIPTIONS LOGIC
+    toggleSubForm(){ document.getElementById("subForm").classList.toggle("hidden"); },
+    addSub(){
+        const n=document.getElementById("subName").value, a=Number(document.getElementById("subAmount").value), d=document.getElementById("subDay").value;
+        if(!n || a<=0) return;
+        this.data.subs.push({id:Date.now(), name:n, amount:a, day:d}); this.save(); this.renderSubs(); this.toggleSubForm();
+    },
+    renderSubs() {
+        const grid = document.getElementById("subsGrid");
+        grid.innerHTML = this.data.subs.map(s => `
+            <div class="glass-card p-6 rounded-2xl relative">
+                <p class="text-[10px] font-bold text-slate-500">VENCE DÍA ${s.day}</p>
+                <h3 class="font-bold text-xl">${s.name}</h3>
+                <p class="text-2xl font-black text-cyan-400 font-mono mt-2">$${s.amount.toLocaleString()}</p>
+                <button onclick="app.deleteSub(${s.id})" class="mt-4 w-full border border-white/10 py-2 rounded-lg text-xs hover:bg-rose-500/20 hover:text-rose-400">ELIMINAR</button>
+            </div>`).join('');
+    },
+    deleteSub(id){ this.data.subs = this.data.subs.filter(x=>x.id!==id); this.save(); this.renderSubs(); },
+
+    // GOALS LOGIC
+    addGoalPrompt() {
+        Swal.fire({ title:'NUEVA META', html:'<input id="g1" class="swal2-input" placeholder="Nombre"><input id="g2" type="number" class="swal2-input" placeholder="Objetivo ($)">', preConfirm:()=>[document.getElementById('g1').value,document.getElementById('g2').value] })
+        .then(r => { if(r.value && r.value[0]) { this.data.goals.push({id:Date.now(), name:r.value[0], target:Number(r.value[1]), current:0}); this.save(); this.renderGoals(); } });
+    },
+    renderGoals() {
+        const grid = document.getElementById("goalsGrid");
+        grid.innerHTML = this.data.goals.map(g => {
+            const pct = Math.min((g.current/g.target)*100, 100);
+            return `<div class="glass-card p-6 rounded-2xl">
+                <h3 class="font-bold text-lg uppercase">${g.name}</h3>
+                <div class="w-full bg-white/5 h-2 rounded-full mt-4 overflow-hidden"><div class="h-full bg-purple-500" style="width:${pct}%"></div></div>
+                <div class="flex justify-between mt-2 text-[10px] font-mono"><span>$${g.current.toLocaleString()}</span><span>$${g.target.toLocaleString()}</span></div>
+                <button onclick="app.depositGoal(${g.id})" class="mt-4 w-full bg-purple-500/10 text-purple-400 py-2 rounded-lg font-bold">+ DEPOSITAR</button>
+            </div>`;
+        }).join('');
+    },
+    depositGoal(id){
+        const g=this.data.goals.find(x=>x.id===id);
+        Swal.fire({title:'Monto a depositar', input:'number'}).then(r=>{ if(r.value){ g.current+=Number(r.value); this.save(); this.renderGoals(); if(g.current>=g.target) confetti(); }});
+    },
+
+    // MARKET LOGIC
+    async fetchFullMarket() {
+        document.getElementById("spinIcon").classList.add("animate-spin-slow");
+        try {
+            const r=await fetch("https://dolarapi.com/v1/dolares/blue"); const d=await r.json();
+            document.getElementById("dolarVal").innerText=`$${d.venta}`;
+            this.rates['ARS'] = d.venta;
+            const r2=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=4"); const d2=await r2.json();
+            document.getElementById("marketGridCrypto").innerHTML = d2.map(c => `<div class="glass-card p-4 rounded-xl flex justify-between items-center"><span class="font-bold uppercase text-xs">${c.symbol}</span><span class="font-mono font-bold">$${c.current_price}</span></div>`).join('');
+        } catch(e){}
+        setTimeout(()=>document.getElementById("spinIcon").classList.remove("animate-spin-slow"), 1000);
+    },
+    fillCalcSelects() {
+        const opts = this.currencies.map(o => `<option value="${o.c}">${o.c} - ${o.n}</option>`).join('');
+        document.getElementById("calcFrom").innerHTML = opts; document.getElementById("calcTo").innerHTML = opts;
+        document.getElementById("calcFrom").value = 'USD'; document.getElementById("calcTo").value = 'ARS';
+    },
+    calcCurrency(){
+        const a=Number(document.getElementById("calcAmount").value), f=document.getElementById("calcFrom").value, t=document.getElementById("calcTo").value;
+        let rateF = f==='USD' ? 1 : (f==='ARS' ? this.rates.ARS : 1.1);
+        let rateT = t==='USD' ? 1 : (t==='ARS' ? this.rates.ARS : 1.1);
+        let res = (a / rateF) * rateT;
+        if(f==='ARS') res = (a / this.rates.ARS) * (t==='USD' ? 1 : 1.1);
+        document.getElementById("calcResult").innerText = res.toLocaleString();
+    },
+
+    // COMMON
     switchTab(tab) {
         ['viewWallet', 'viewSubs', 'viewGoals', 'viewMarket'].forEach(id => document.getElementById(id).classList.add('hidden'));
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -279,7 +375,6 @@ const app = {
         document.getElementById('btn' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
         this.render();
     },
-
     updateCategoryDropdown() {
         const select = document.getElementById("transCategory");
         if(select) select.innerHTML = this.defaultCategories.map(c => `<option value="${c}">${c}</option>`).join('') + `<option value="custom">✏️ Nueva...</option>`;
