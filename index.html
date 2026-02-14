@@ -185,13 +185,17 @@
                             <div><label class="text-[10px] font-bold text-slate-500 ml-1">DETALLE</label><input id="transDesc" type="text" class="w-full p-4 rounded-xl font-bold outline-none transition-all"></div>
                             <div class="flex gap-3">
                                 <div class="w-1/2"><label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label><input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all"></div>
-                                <div class="w-1/2 flex flex-col">
-                                    <label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label>
-                                    <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer">
-                                        </select>
-                                    <input id="customCategoryInput" type="text" placeholder="Escribe la categoría..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none transition-all border border-cyan-500/50 hidden animate-pulse">
-                                </div>
-                            </div>
+                                <div class="flex gap-3">
+    <div class="w-1/3"><label class="text-[10px] font-bold text-slate-500 ml-1 uppercase">Monto</label><input id="transAmount" type="number" class="w-full p-4 rounded-xl font-bold font-mono outline-none dark:bg-[#0a0f1d]"></div>
+    <div class="w-1/3"><label class="text-[10px] font-bold text-slate-500 ml-1 uppercase">Categoría</label><select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none dark:bg-[#0a0f1d]"></select></div>
+    <div class="w-1/3"><label class="text-[10px] font-bold text-slate-500 ml-1 uppercase text-cyan-400">Bio-Estado</label>
+        <select id="transBio" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer dark:bg-[#0a0f1d] border-cyan-500/20">
+            <option value="100">🧘 Zen</option>
+            <option value="70">😐 Normal</option>
+            <option value="30">🔥 Estrés</option>
+        </select>
+    </div>
+</div>
                             <div class="grid grid-cols-2 gap-3 pt-4">
                                 <button onclick="app.addRecord('income')" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-black border border-emerald-500/50 text-emerald-400 py-4 rounded-xl font-black tracking-widest transition-all">INGRESO</button>
                                 <button onclick="app.addRecord('expense')" class="bg-rose-500/10 hover:bg-rose-500 hover:text-black border border-rose-500/50 text-rose-400 py-4 rounded-xl font-black tracking-widest transition-all">GASTO</button>
@@ -428,35 +432,37 @@ const app = {
     },
 
     addRecord(type) {
-        const d = document.getElementById("transDesc").value;
-        const a = Math.abs(Number(document.getElementById("transAmount").value));
-        let c = document.getElementById("transCategory").value;
-        
-        if (c === 'custom') {
-            const raw = document.getElementById("customCategoryInput").value;
-            if(!raw) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Escribe la categoría personalizada', showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'});
-            c = raw.charAt(0).toUpperCase() + raw.slice(1);
-        }
-
-        if(!d || a<=0) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Datos incompletos', showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'});
-        
-        this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString('es-AR'), desc: d, amount: a, category: c, type: type });
-        
-        document.getElementById("transDesc").value=""; document.getElementById("transAmount").value="";
-        this.save();
-        this.updateCategoryDropdown();
-        document.getElementById("transCategory").value="Ingreso"; document.getElementById("customCategoryInput").classList.add("hidden"); document.getElementById("customCategoryInput").value="";
-        
-        Swal.fire({toast:true, position:'bottom-end', icon:'success', title:'Registro Exitoso', showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'});
-    },
+    const d = document.getElementById("transDesc").value;
+    const a = Math.abs(Number(document.getElementById("transAmount").value));
+    const b = Number(document.getElementById("transBio").value); // NUEVO: Captura el Bio-Estado
+    let c = document.getElementById("transCategory").value;
     
-    deleteRecord(id) { this.data.records = this.data.records.filter(r=>r.id!==id); this.save(); },
-    setFilter(f){ this.timeFilter=f; this.render(); },
-    getFilteredRecords() {
-        if (this.timeFilter === 'all') return this.data.records;
-        const now = new Date(); const m = now.getMonth(); const y = now.getFullYear();
-        return this.data.records.filter(r => { const [d, rm, ry] = r.date.split('/').map(Number); return (rm - 1) === m && ry === y; });
-    },
+    if (c === 'custom') {
+        const raw = document.getElementById("customCategoryInput").value;
+        if(!raw) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Categoría vacía'});
+        c = raw.charAt(0).toUpperCase() + raw.slice(1);
+    }
+
+    if(!d || a<=0) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Datos incompletos'});
+    
+    // Guardamos el registro incluyendo el campo 'bio'
+    this.data.records.unshift({ 
+        id: Date.now(), 
+        date: new Date().toLocaleDateString('es-AR'), 
+        desc: d, 
+        amount: a, 
+        category: c, 
+        type: type,
+        bio: b // NUEVO: Se guarda para que la BIOS lo lea
+    });
+    
+    document.getElementById("transDesc").value=""; 
+    document.getElementById("transAmount").value="";
+    this.save();
+    this.updateCategoryDropdown();
+    
+    Swal.fire({toast:true, position:'bottom-end', icon:'success', title:'Registro BIOS-Sincronizado', showConfirmButton:false, timer:1500});
+},
 
     render() {
         // 1. CHEQUEO DE MODO PÁNICO (Sincronizado con BIOS)
