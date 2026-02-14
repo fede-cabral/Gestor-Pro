@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX BIOS - Neural Intelligence Suite</title>
+    <title>FORJAX BIOS - Human Intelligence Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -20,42 +21,31 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #050b14;
-            color: #f8fafc;
-            background-image: radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%);
-            overflow-x: hidden;
-        }
+        body { font-family: 'Outfit', sans-serif; background-color: #050b14; color: #f8fafc; background-image: radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%); overflow-x: hidden; }
         .glass { background: rgba(10, 15, 30, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(0, 243, 255, 0.15); transition: all 0.3s ease; }
-        .glass:hover { border-color: rgba(0, 243, 255, 0.4); transform: translateY(-2px); }
         .neon-text { text-shadow: 0 0 15px rgba(0, 243, 255, 0.8); }
         .badge-locked { filter: grayscale(1) opacity(0.3); }
-        .badge-unlocked { filter: none opacity(1); border-color: #00f3ff; background: rgba(0, 243, 255, 0.05); }
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        .panic-active { border-color: #ff2d55 !important; background: rgba(255, 45, 85, 0.1) !important; box-shadow: 0 0 30px rgba(255, 45, 85, 0.4); }
     </style>
 </head>
 <body class="p-6 md:p-12">
 
     <header class="max-w-7xl mx-auto flex justify-between items-center mb-12">
         <div class="flex items-center gap-4">
-            <a href="index.html" class="p-3 glass rounded-full hover:bg-cyan-500/10 transition-all text-cyan-400 group">
-                <i data-lucide="arrow-left"></i>
-            </a>
+            <a href="index.html" class="p-3 glass rounded-full hover:bg-cyan-500/10 text-cyan-400"><i data-lucide="arrow-left"></i></a>
             <div>
                 <h1 class="text-4xl font-black tracking-tighter uppercase neon-text">Forjax <span class="text-cyan-400">BIOS</span></h1>
                 <p class="text-xs font-mono text-slate-500 uppercase tracking-[0.35em]">Neural Oracle System</p>
             </div>
         </div>
-        <div class="glass px-6 py-3 rounded-2xl flex items-center gap-4 border-cyan-500/30">
-            <div class="flex h-3 w-3"><span class="animate-ping absolute h-3 w-3 rounded-full bg-cyan-400 opacity-75"></span><span class="relative rounded-full h-3 w-3 bg-cyan-500"></span></div>
-            <span class="text-xs font-black font-mono tracking-wider uppercase">V30_Sync_Active</span>
-        </div>
+        
+        <button id="panicBtn" onclick="bios.togglePanic()" class="glass px-6 py-3 rounded-2xl flex items-center gap-4 border-white/10 group transition-all">
+            <div id="panicDot" class="h-3 w-3 bg-slate-500 rounded-full"></div>
+            <span id="panicLabel" class="text-xs font-black font-mono tracking-wider uppercase">Modo Pánico: OFF</span>
+        </button>
     </header>
 
     <main class="max-w-7xl mx-auto space-y-10">
-        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-cyan-400">
                 <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Neural Efficiency</p>
@@ -63,80 +53,80 @@
             </div>
             <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden">
                 <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Energy Core</p>
-                <div class="flex items-baseline gap-2 mb-4">
-                    <span id="energyVal" class="text-6xl font-black font-mono">--%</span>
-                </div>
+                <div class="flex items-baseline gap-2 mb-4"><span id="energyVal" class="text-6xl font-black font-mono">--%</span></div>
                 <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div id="energyBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width: 0%"></div></div>
             </div>
-            <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500">
-                <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest">Burnout Risk</p>
-                <h2 id="riskStatus" class="text-xl font-black uppercase text-white italic">Calculating...</h2>
+            <div id="riskCard" class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500">
+                <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest">Neural Risk</p>
+                <h2 id="riskStatus" class="text-xl font-black uppercase italic">Analyzing...</h2>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            
-            <div class="lg:col-span-1 space-y-6">
-                <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2"><i data-lucide="award" class="text-yellow-400"></i> Achievements</h3>
-                
-                <div class="grid grid-cols-1 gap-4">
-                    <div id="badgeZen" class="glass p-4 rounded-2xl border border-white/5 flex items-center gap-4 badge-locked transition-all duration-700">
-                        <div class="p-3 bg-emerald-500/20 rounded-xl text-emerald-400"><i data-lucide="sparkles"></i></div>
-                        <div><p class="text-xs font-black uppercase">Zen Master</p><p class="text-[9px] text-slate-500 uppercase">5 Operaciones en calma</p></div>
-                    </div>
-                    <div id="badgeGuardian" class="glass p-4 rounded-2xl border border-white/5 flex items-center gap-4 badge-locked transition-all duration-700">
-                        <div class="p-3 bg-blue-500/20 rounded-xl text-blue-400"><i data-lucide="shield-check"></i></div>
-                        <div><p class="text-xs font-black uppercase">Financial Guardian</p><p class="text-[9px] text-slate-500 uppercase">0 Gastos impulsivos</p></div>
-                    </div>
-                    <div id="badgeWhale" class="glass p-4 rounded-2xl border border-white/5 flex items-center gap-4 badge-locked transition-all duration-700">
-                        <div class="p-3 bg-purple-500/20 rounded-xl text-purple-400"><i data-lucide="gem"></i></div>
-                        <div><p class="text-xs font-black uppercase">Capital Whale</p><p class="text-[9px] text-slate-500 uppercase">Ingreso High-Score</p></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-2 glass p-10 rounded-[3rem] border border-white/5">
-                <h3 class="text-sm font-black uppercase tracking-widest mb-10 flex items-center gap-3">
-                    <i data-lucide="activity" class="text-cyan-400"></i> Performance Correlation
-                </h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 glass p-10 rounded-[3rem]">
+                <h3 class="text-sm font-black uppercase tracking-widest mb-10 flex items-center gap-3"><i data-lucide="activity" class="text-cyan-400"></i> Performance Correlation</h3>
                 <div class="h-[400px]"><canvas id="correlationChart"></canvas></div>
             </div>
 
-            <div class="lg:col-span-1 glass p-8 rounded-[3rem] flex flex-col bg-black/40">
-                <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2 text-cyan-400">
-                    <i data-lucide="terminal" class="w-4 h-4"></i> Neural Oracle
-                </h3>
-                <div id="oracleOutput" class="flex-1 font-mono text-[10px] space-y-4 custom-scroll overflow-y-auto pr-2">
-                    <p class="text-cyan-500/50 animate-pulse">> ANALYZING_PATTERNS...</p>
+            <div class="glass p-8 rounded-[3rem] bg-black/40 flex flex-col">
+                <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2 text-cyan-400"><i data-lucide="terminal"></i> Oracle Intelligence</h3>
+                <div id="oracleOutput" class="flex-1 font-mono text-[10px] space-y-4 overflow-y-auto">
+                    <p class="text-slate-500">> SYSTEM_BOOT_COMPLETE</p>
                 </div>
             </div>
-
         </div>
     </main>
 
     <script>
         const bios = {
-            getV30Data() {
-                const user = localStorage.getItem("currentUser");
-                const p = user + "_";
-                return JSON.parse(localStorage.getItem(p + "records")) || [];
-            },
+            panicMode: localStorage.getItem("forjax_panic_mode") === "true",
 
             init() {
-                const records = this.getV30Data();
+                const user = localStorage.getItem("currentUser");
+                const records = JSON.parse(localStorage.getItem(user + "_records")) || [];
                 this.calculateStats(records);
                 this.renderChart(records);
-                this.runOracle(records);
-                this.checkAchievements(records);
+                this.updatePanicUI();
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             },
 
+            togglePanic() {
+                this.panicMode = !this.panicMode;
+                localStorage.setItem("forjax_panic_mode", this.panicMode);
+                this.updatePanicUI();
+                
+                Swal.fire({
+                    title: this.panicMode ? 'MODO PÁNICO ACTIVADO' : 'SISTEMA RESTAURADO',
+                    text: this.panicMode ? 'Saldos de la V30 bloqueados preventivamente.' : 'V30 operativa nuevamente.',
+                    icon: this.panicMode ? 'warning' : 'success',
+                    background: '#0f172a', color: '#fff', confirmButtonColor: '#00f3ff'
+                });
+            },
+
+            updatePanicUI() {
+                const btn = document.getElementById("panicBtn");
+                const dot = document.getElementById("panicDot");
+                const label = document.getElementById("panicLabel");
+
+                if (this.panicMode) {
+                    btn.classList.add("panic-active");
+                    dot.classList.replace("bg-slate-500", "bg-rose-500");
+                    dot.classList.add("animate-ping");
+                    label.innerText = "Modo Pánico: ON";
+                    label.classList.add("text-rose-500");
+                } else {
+                    btn.classList.remove("panic-active");
+                    dot.classList.replace("bg-rose-500", "bg-slate-500");
+                    dot.classList.remove("animate-ping");
+                    label.innerText = "Modo Pánico: OFF";
+                    label.classList.remove("text-rose-500");
+                }
+            },
+
             calculateStats(records) {
-                if (!records.length) return;
+                if(!records.length) return;
                 const totalInc = records.filter(r => r.type === 'income').reduce((a,c) => a+c.amount, 0);
                 const totalExp = records.filter(r => r.type === 'expense').reduce((a,c) => a+c.amount, 0);
-                
-                // Indice de Eficiencia Biológica (Monto generado vs Gasto promedio)
                 const efficiency = (totalInc / (totalExp || 1)).toFixed(2);
                 document.getElementById("bioRoi").innerText = efficiency + "x";
 
@@ -144,39 +134,9 @@
                 document.getElementById("energyVal").innerText = Math.round(energy) + "%";
                 document.getElementById("energyBar").style.width = energy + "%";
 
-                const risk = document.getElementById("riskStatus");
-                risk.innerText = energy < 45 ? "CRITICAL FATIGUE" : "COGNITIVE STABLE";
-                risk.className = `text-xl font-black uppercase italic ${energy < 45 ? 'text-rose-500' : 'text-emerald-400'}`;
-            },
-
-            checkAchievements(records) {
-                if (!records.length) return;
-
-                // 1. Zen Master (5 seguidos que no sean stress 10 o impulsivos)
-                const last5Stress = records.slice(0, 5).every(r => (r.bio || 100) > 50);
-                if (last5Stress) document.getElementById("badgeZen").className = "glass p-4 rounded-2xl border border-cyan-400/50 flex items-center gap-4 badge-unlocked shadow-neon-blue";
-
-                // 2. Financial Guardian (Ultimos 10 registros sin stress crítico)
-                const noStress = records.slice(0, 10).every(r => (r.bio || 100) > 30);
-                if (noStress) document.getElementById("badgeGuardian").className = "glass p-4 rounded-2xl border border-cyan-400/50 flex items-center gap-4 badge-unlocked shadow-neon-blue";
-
-                // 3. Capital Whale (Ingreso mayor a 100.000 en estado Zen)
-                const whale = records.some(r => r.type === 'income' && r.amount >= 100000 && (r.bio || 100) >= 90);
-                if (whale) document.getElementById("badgeWhale").className = "glass p-4 rounded-2xl border border-purple-400/50 flex items-center gap-4 badge-unlocked shadow-neon-purple";
-            },
-
-            runOracle(records) {
-                const output = document.getElementById("oracleOutput");
-                const stressExp = records.filter(r => r.type === 'expense' && (r.bio || 100) <= 40);
-                
-                let html = '<p class="text-cyan-500">> DATA_SYNC_COMPLETE</p>';
-                setTimeout(() => {
-                    if(stressExp.length > 0) {
-                        html += `<div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg"><p class="text-rose-400 font-black mb-1">Detección de Fuga</p><p class="text-slate-400">Detectamos que tus emociones drenan capital en: ${stressExp[0].desc}</p></div>`;
-                    }
-                    html += `<div class="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg"><p class="text-cyan-400 font-black mb-1">Inferencia Neural</p><p class="text-slate-400">Tu ROI biológico está en ${document.getElementById("bioRoi").innerText}. Sos un ${Number(document.getElementById("bioRoi").innerText.slice(0,-1)) > 1 ? 'Activo Producivo' : 'Costo Operativo'}.</p></div>`;
-                    output.innerHTML = html;
-                }, 1000);
+                if (energy < 40 && !this.panicMode) {
+                    document.getElementById("oracleOutput").innerHTML += `<p class="text-rose-500 font-bold">> ALERTA: Fatiga crítica. Se sugiere activar MODO PÁNICO.</p>`;
+                }
             },
 
             renderChart(records) {
@@ -187,19 +147,11 @@
                     data: {
                         labels: last.map(r => r.desc),
                         datasets: [
-                            { label: 'Cash Flow', data: last.map(r => r.amount), borderColor: '#00f3ff', tension: 0.4, fill: true, backgroundColor: 'rgba(0, 243, 255, 0.05)' },
-                            { label: 'Energy Pulse', data: last.map(r => r.bio || 70), borderColor: '#ff2d55', borderDash: [5, 5], tension: 0.4, yAxisID: 'y1' }
+                            { label: 'Flow', data: last.map(r => r.amount), borderColor: '#00f3ff', fill: true, backgroundColor: 'rgba(0, 243, 255, 0.05)' },
+                            { label: 'Pulse', data: last.map(r => r.bio || 70), borderColor: '#ff2d55', borderDash: [5, 5] }
                         ]
                     },
-                    options: { 
-                        responsive: true, maintainAspectRatio: false, 
-                        plugins: { legend: { display: false } },
-                        scales: { 
-                            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                            y1: { position: 'right', min: 0, max: 100, display: false },
-                            x: { ticks: { color: '#64748b' }, grid: { display: false } }
-                        }
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
             }
         };
