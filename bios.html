@@ -1,1 +1,167 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORJAX BIOS - Human Intelligence Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #050b14; 
+            color: #f8fafc;
+            background-image: radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%);
+        }
+        .glass { background: rgba(10, 15, 30, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(0, 243, 255, 0.1); }
+        .neon-text { text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+        .bios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
 
+    <header class="max-w-7xl mx-auto flex justify-between items-center mb-12">
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="p-3 glass rounded-full hover:bg-white/10 transition-all text-cyan-400">
+                <i data-lucide="arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="text-3xl font-black tracking-tighter uppercase neon-text">Forjax <span class="text-cyan-400">BIOS</span></h1>
+                <p class="text-[10px] font-mono text-slate-500 uppercase tracking-[0.3em]">Neural & Financial Correlation</p>
+            </div>
+        </div>
+        <div class="glass px-6 py-3 rounded-2xl flex items-center gap-4 border-cyan-500/20">
+            <div class="animate-pulse h-3 w-3 bg-cyan-400 rounded-full shadow-[0_0_10px_#00f3ff]"></div>
+            <span class="text-xs font-black font-mono">LINKED_TO_V30</span>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto space-y-8">
+        
+        <div class="bios-grid">
+            <div class="glass p-8 rounded-[2rem] border-l-4 border-cyan-400">
+                <p class="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest">Biological ROI</p>
+                <h2 id="bioRoi" class="text-5xl font-black mb-4">--</h2>
+                <p class="text-xs text-slate-400 leading-relaxed">Este índice mide cuánto dinero generás por cada punto de estrés registrado. <span class="text-cyan-400 font-bold">Un ratio mayor a 1.5 indica alta eficiencia cognitiva.</span></p>
+            </div>
+
+            <div class="glass p-8 rounded-[2rem] flex flex-col justify-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5"><i data-lucide="battery-low" class="w-24 h-24"></i></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest">Estado de Energía Vital</p>
+                <div class="flex items-end gap-2 mb-4">
+                    <span id="energyVal" class="text-5xl font-black">--%</span>
+                    <span class="text-xs font-bold text-cyan-500 pb-2 uppercase">Capacidad Actual</span>
+                </div>
+                <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                    <div id="energyBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-[2rem] border-l-4 border-rose-500 bg-rose-500/5">
+                <p class="text-[10px] font-bold text-rose-400 uppercase mb-2 tracking-widest">Predicción de Riesgo</p>
+                <h2 id="riskStatus" class="text-xl font-black uppercase text-white mb-2 italic">Calculando...</h2>
+                <p class="text-[11px] text-slate-400">Basado en tus últimos gastos bajo estrés, el sistema predice tu nivel de fatiga financiera.</p>
+            </div>
+        </div>
+
+        <div class="glass p-10 rounded-[2.5rem] border border-white/5">
+            <h3 class="text-sm font-black uppercase tracking-widest mb-8 flex items-center gap-2">
+                <i data-lucide="bar-chart-3" class="text-cyan-400"></i> Performance Map: Energy vs. Capital
+            </h3>
+            <div class="h-[400px]">
+                <canvas id="correlationChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const bios = {
+            // Aquí leemos los datos que guardó la V30
+            getV30Data() {
+                const user = localStorage.getItem("currentUser");
+                if (!user) return [];
+                return JSON.parse(localStorage.getItem(user + "_records")) || [];
+            },
+
+            init() {
+                const records = this.getV30Data();
+                this.calculateStats(records);
+                this.renderChart(records);
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            },
+
+            calculateStats(records) {
+                if (records.length === 0) return;
+
+                // Lógica de innovación: Simulamos que los gastos sin categoría o con nombres 
+                // específicos consumen más energía. 
+                const totalIncome = records.filter(r => r.type === 'income').reduce((a,c) => a+c.amount, 0);
+                const totalExpense = records.filter(r => r.type === 'expense').reduce((a,c) => a+c.amount, 0);
+                
+                // Métrica inventada: ROI Biológico
+                const bioEfficiency = (totalIncome / (totalExpense || 1)).toFixed(2);
+                document.getElementById("bioRoi").innerText = bioEfficiency + "x";
+
+                // Energía simulada basada en volumen de transacciones (a más transacciones, más fatiga)
+                const energy = Math.max(15, 100 - (records.length * 2));
+                document.getElementById("energyVal").innerText = energy + "%";
+                document.getElementById("energyBar").style.width = energy + "%";
+
+                const risk = document.getElementById("riskStatus");
+                if (energy < 40) {
+                    risk.innerText = "ALTA PROBABILIDAD DE BURNOUT";
+                    risk.className = "text-xl font-black uppercase text-rose-500 mb-2 italic animate-pulse";
+                } else {
+                    risk.innerText = "ESTADO COGNITIVO ESTABLE";
+                    risk.className = "text-xl font-black uppercase text-emerald-400 mb-2 italic";
+                }
+            },
+
+            renderChart(records) {
+                const ctx = document.getElementById('correlationChart').getContext('2d');
+                const lastRecords = records.slice(0, 15).reverse();
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: lastRecords.map(r => r.desc),
+                        datasets: [
+                            {
+                                label: 'Monto de Operación',
+                                data: lastRecords.map(r => r.amount),
+                                borderColor: '#00f3ff',
+                                borderWidth: 4,
+                                tension: 0.4,
+                                fill: true,
+                                backgroundColor: 'rgba(0, 243, 255, 0.05)'
+                            },
+                            {
+                                label: 'Fatiga Estimada',
+                                data: lastRecords.map((r, i) => (i * 10) + 20), // Simulación de curva de fatiga
+                                borderColor: '#ff2d55',
+                                borderDash: [5, 5],
+                                borderWidth: 2,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                            x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                        }
+                    }
+                });
+            }
+        };
+
+        window.onload = () => bios.init();
+    </script>
+</body>
+</html>
