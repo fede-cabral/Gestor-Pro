@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V31 ENTERPRISE ELITE</title>
+    <title>FORJAX Terminal - V31 LEGACY MOD</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -34,39 +34,41 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
         
         body { font-family: 'Outfit', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        
-        /* Mantenemos exactamente tus estilos de la V30 */
         .dark body { background-color: #050b14; color: #f8fafc; background-image: radial-gradient(circle at 50% 0%, #111827 0%, #050b14 60%); }
         .dark .glass { background: rgba(10, 15, 30, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
         .dark .glass-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); }
-        
+        .dark input, .dark select { background: #111827 !important; color: #fff !important; border: 1px solid #374151 !important; }
+
         .light body { background-color: #f8fafc; color: #020617; background-image: radial-gradient(circle at 50% 0%, #e2e8f0 0%, #f8fafc 60%); }
-        .light .glass { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .light .glass { background: #ffffff; border: 1px solid #e2e8f0; }
         .light .glass-card { background: #ffffff; border: 1px solid #cbd5e1; }
 
-        .nav-container { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 50; padding: 0.4rem; border-radius: 999px; display: flex; gap: 0.3rem; backdrop-filter: blur(20px); }
-        .dark .nav-container { background: rgba(5, 11, 20, 0.9); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-container { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 50; padding: 0.4rem; border-radius: 999px; display: flex; gap: 0.3rem; backdrop-filter: blur(20px); transition: all 0.3s; }
+        .dark .nav-container { background: rgba(5, 11, 20, 0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7); }
         .light .nav-container { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; }
 
         .nav-btn { padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; }
         .nav-btn.active { box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); background: #00f3ff; color: #050b14; }
 
+        .glass-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { transform: translateY(-3px); border-color: rgba(0, 243, 255, 0.4); }
+
         .blur-sensitive { transition: filter 0.3s ease; }
         body.privacy-active .blur-sensitive { filter: blur(8px); }
 
-        /* V31: Estilos de impresión optimizados */
-        @media print {
-            .nav-container, .no-print, button { display: none !important; }
-            body { background: white !important; color: black !important; }
-            .glass, .glass-card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; }
-            canvas { max-height: 250px !important; }
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media print { .nav-container, .no-print, button { display: none !important; } }
     </style>
 </head>
 
 <body class="min-h-[100dvh] pb-20 selection:bg-cyan-400 selection:text-black">
 
-<div id="loginScreen" class="fixed inset-0 z-[60] flex items-center justify-center bg-[#050b14] transition-all duration-500">
+<div id="loginScreen" class="fixed inset-0 z-[60] flex items-center justify-center bg-[#050b14]">
     <div class="relative w-full max-w-md p-8 text-center fade-in">
         <div class="absolute inset-0 bg-cyan-500/10 blur-[100px] rounded-full"></div>
         <div class="glass relative p-10 rounded-3xl border border-cyan-500/30">
@@ -74,8 +76,8 @@
                 <i data-lucide="cpu" class="w-12 h-12 text-cyan-400"></i>
             </div>
             <h2 class="text-5xl font-black mb-2 tracking-tighter text-white">FORJAX <span class="text-cyan-400">V31</span></h2>
-            <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest">Enterprise Elite</p>
-            <input id="userInput" type="text" placeholder="ACCESS ID" class="w-full p-4 rounded-xl mb-4 text-center text-lg font-bold font-mono outline-none focus:ring-2 focus:ring-cyan-500 dark:bg-[#111827] dark:text-white bg-white text-black border-slate-700">
+            <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest">Legacy Elite Mod</p>
+            <input id="userInput" type="text" placeholder="ACCESS ID" class="w-full p-4 rounded-xl mb-4 text-center text-lg font-bold font-mono outline-none dark:bg-[#111827] dark:text-white border-slate-700">
             <button onclick="app.initSession()" class="w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-xl transition-all shadow-neon-blue">INICIAR SISTEMA</button>
         </div>
     </div>
@@ -100,37 +102,37 @@
         <div id="viewWallet" class="fade-in">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                 <div>
-                    <h2 class="text-4xl font-black tracking-tighter text-white">DASHBOARD</h2>
-                    <p class="text-xs font-mono text-cyan-500" id="healthStatus">SYSTEM STATUS: OPTIMIZING...</p>
+                    <h2 class="text-4xl font-black tracking-tighter text-white uppercase">Dashboard</h2>
+                    <p class="text-xs font-mono text-cyan-500" id="healthStatus">SYSTEM STATUS: ONLINE</p>
                 </div>
-                <div class="flex gap-2 no-print">
-                    <button onclick="window.print()" class="glass px-4 py-2 rounded-lg text-[10px] font-bold text-white hover:bg-white/10 transition-all flex items-center gap-2"><i data-lucide="printer" class="w-3 h-3"></i> GENERAR INFORME</button>
-                    <div class="glass p-1 rounded-lg flex gap-1">
-                        <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black shadow-neon-blue transition-all">ESTE MES</button>
-                        <button onclick="app.setFilter('all')" id="filterAll" class="px-6 py-2 rounded-md text-xs font-bold text-slate-400 hover:text-white transition-all">HISTÓRICO</button>
-                    </div>
+                <div class="glass p-1 rounded-lg flex gap-1 no-print">
+                    <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black shadow-neon-blue transition-all">ESTE MES</button>
+                    <button onclick="app.setFilter('all')" id="filterAll" class="px-6 py-2 rounded-md text-xs font-bold text-slate-400 hover:text-white transition-all">HISTÓRICO</button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                 <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="arrow-up-right" class="w-12 h-12 text-emerald-400"></i></div>
                     <p class="text-[10px] font-bold font-mono text-emerald-400 mb-1">INGRESOS NETOS</p>
-                    <h2 class="text-3xl font-black text-white blur-sensitive" id="bIncome">$0</h2>
-                    <p id="trendIncome" class="text-[9px] font-bold text-slate-500 mt-2">--</p>
+                    <h2 class="text-3xl font-black text-white blur-sensitive tracking-tight" id="bIncome">$0</h2>
+                    <p id="trendIncome" class="text-[8px] font-bold text-slate-500 mt-2 uppercase">--</p>
                 </div>
                 <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="arrow-down-right" class="w-12 h-12 text-rose-400"></i></div>
                     <p class="text-[10px] font-bold font-mono text-rose-400 mb-1">GASTOS TOTALES</p>
-                    <h2 class="text-3xl font-black text-white blur-sensitive" id="bExpense">$0</h2>
-                    <p id="trendExpense" class="text-[9px] font-bold text-slate-500 mt-2">--</p>
+                    <h2 class="text-3xl font-black text-white blur-sensitive tracking-tight" id="bExpense">$0</h2>
+                    <p id="trendExpense" class="text-[8px] font-bold text-slate-500 mt-2 uppercase">--</p>
                 </div>
-                <div class="glass-card p-6 rounded-2xl relative overflow-hidden border-l-2 border-cyan-400">
+                <div class="glass-card p-6 rounded-2xl relative overflow-hidden group border-l-2 border-cyan-400">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="activity" class="w-12 h-12 text-cyan-400"></i></div>
                     <p class="text-[10px] font-bold font-mono text-cyan-400 mb-1">BALANCE GLOBAL</p>
-                    <h2 class="text-3xl font-black text-white blur-sensitive" id="bNet">$0</h2>
-                    <p class="text-[9px] font-bold text-cyan-500 mt-2 uppercase">Capital en Terminal</p>
+                    <h2 class="text-3xl font-black text-white blur-sensitive tracking-tight" id="bNet">$0</h2>
+                    <p class="text-[8px] font-bold text-cyan-600 mt-2 uppercase">CAPITAL EN TERMINAL</p>
                 </div>
-                <div class="glass-card p-6 rounded-2xl">
+                <div class="glass-card p-6 rounded-2xl relative overflow-hidden">
                     <div class="flex items-center gap-3">
-                        <span class="fi fi-ar rounded text-2xl"></span>
+                        <span class="fi fi-ar rounded shadow-lg text-2xl"></span>
                         <div><p class="text-[10px] font-bold font-mono text-slate-400 uppercase">Dólar Blue</p><h2 class="text-2xl font-black text-white" id="dolarVal">$0</h2></div>
                     </div>
                 </div>
@@ -139,20 +141,21 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-4 space-y-6 no-print">
                     <div class="glass p-8 rounded-3xl relative overflow-hidden">
-                        <h3 class="flex items-center gap-2 text-lg font-bold mb-6 text-white"><i data-lucide="plus" class="text-cyan-400"></i> Nueva Transacción</h3>
-                        <div class="space-y-4">
-                            <div><label class="text-[10px] font-bold text-slate-500 ml-1">DETALLE</label><input id="transDesc" type="text" class="w-full p-4 rounded-xl font-bold outline-none transition-all border border-transparent focus:border-cyan-500"></div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent"></div>
+                        <h3 class="flex items-center gap-2 text-lg font-bold mb-6 text-white relative z-10"><i data-lucide="plus" class="text-cyan-400"></i> Nueva Transacción</h3>
+                        <div class="space-y-4 relative z-10">
+                            <div><label class="text-[10px] font-bold text-slate-500 ml-1">DETALLE</label><input id="transDesc" type="text" class="w-full p-4 rounded-xl font-bold outline-none transition-all"></div>
                             <div class="flex gap-3">
                                 <div class="w-1/2"><label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label><input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none"></div>
                                 <div class="w-1/2 flex flex-col">
                                     <label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label>
-                                    <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none"></select>
-                                    <input id="customCategoryInput" type="text" placeholder="Nueva..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none border border-cyan-500/50 hidden">
+                                    <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer"></select>
+                                    <input id="customCategoryInput" type="text" placeholder="Escribe..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none border border-cyan-500/50 hidden">
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-3 pt-4">
-                                <button onclick="app.addRecord('income')" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-black border border-emerald-500/50 text-emerald-400 py-4 rounded-xl font-black tracking-widest transition-all">INGRESO</button>
-                                <button onclick="app.addRecord('expense')" class="bg-rose-500/10 hover:bg-rose-500 hover:text-black border border-rose-500/50 text-rose-400 py-4 rounded-xl font-black tracking-widest transition-all">GASTO</button>
+                                <button onclick="app.addRecord('income')" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-black border border-emerald-500/50 text-emerald-400 py-4 rounded-xl font-black transition-all">INGRESO</button>
+                                <button onclick="app.addRecord('expense')" class="bg-rose-500/10 hover:bg-rose-500 hover:text-black border border-rose-500/50 text-rose-400 py-4 rounded-xl font-black transition-all">GASTO</button>
                             </div>
                         </div>
                     </div>
@@ -166,12 +169,12 @@
 
                     <div class="glass rounded-3xl overflow-hidden border border-white/5">
                         <div class="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
-                            <h3 class="font-bold flex items-center gap-2 text-white"><i data-lucide="list-video"></i> Registros</h3>
-                            <button onclick="app.exportProExcel()" class="bg-emerald-500 text-black px-4 py-2 rounded-lg text-xs font-black no-print">XLS EXPORT</button>
+                            <h3 class="font-bold flex items-center gap-2 text-white uppercase text-xs tracking-widest"><i data-lucide="list-video" class="w-4 h-4"></i> Registros</h3>
+                            <button onclick="app.exportProExcel()" class="bg-emerald-500 text-black px-4 py-2 rounded-lg text-xs font-black no-print">EXPORTAR XLS</button>
                         </div>
                         <div class="overflow-x-auto max-h-[400px]">
                             <table class="w-full text-left">
-                                <thead class="sticky top-0 bg-[#0f172a] text-[10px] uppercase text-slate-400 font-bold border-b border-slate-700">
+                                <thead class="sticky top-0 bg-[#0f172a] text-[10px] uppercase text-slate-400 font-bold tracking-widest border-b border-slate-700">
                                     <tr><th class="px-6 py-4">Fecha</th><th class="px-6 py-4">Desc</th><th class="px-6 py-4">Cat</th><th class="px-6 py-4 text-right">Monto</th><th class="px-6 py-4 text-center no-print">Opt</th></tr>
                                 </thead>
                                 <tbody id="historyTable" class="divide-y divide-white/5 text-sm font-mono"></tbody>
@@ -184,15 +187,15 @@
 
         <div id="viewSubs" class="hidden fade-in">
             <div class="flex justify-between items-center mb-10">
-                <div><h2 class="text-3xl font-black text-white tracking-tighter">SUSCRIPCIONES</h2><p class="text-xs font-mono text-cyan-500 uppercase">Gestión de Gastos Fijos</p></div>
+                <div><h2 class="text-3xl font-black text-white tracking-tighter">SUSCRIPCIONES</h2><p class="text-xs font-mono text-cyan-500">GASTOS FIJOS RECURRENTES</p></div>
                 <button onclick="app.toggleSubForm()" class="bg-cyan-500/20 text-cyan-400 px-6 py-3 rounded-xl font-bold border border-cyan-500/30 no-print">+ NUEVA</button>
             </div>
             <div id="subForm" class="hidden glass p-6 rounded-3xl mb-8 border border-cyan-500/20">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div><label class="text-[10px] font-bold text-slate-500">NOMBRE</label><input id="subName" class="w-full p-4 rounded-xl font-bold outline-none"></div>
-                    <div><label class="text-[10px] font-bold text-slate-500">MONTO</label><input id="subAmount" type="number" class="w-full p-4 rounded-xl font-bold outline-none"></div>
-                    <div><label class="text-[10px] font-bold text-slate-500">DÍA VENC.</label><input id="subDay" type="number" min="1" max="31" class="w-full p-4 rounded-xl font-bold outline-none"></div>
-                    <button onclick="app.addSub()" class="w-full bg-cyan-400 text-black p-4 rounded-xl font-black">GUARDAR</button>
+                    <div><label class="text-[10px] font-bold text-slate-500 uppercase">Nombre</label><input id="subName" class="w-full p-4 rounded-xl font-bold outline-none"></div>
+                    <div><label class="text-[10px] font-bold text-slate-500 uppercase">Monto</label><input id="subAmount" type="number" class="w-full p-4 rounded-xl font-bold outline-none"></div>
+                    <div><label class="text-[10px] font-bold text-slate-500 uppercase">Día Venc.</label><input id="subDay" type="number" min="1" max="31" class="w-full p-4 rounded-xl font-bold outline-none"></div>
+                    <button onclick="app.addSub()" class="w-full bg-cyan-400 text-black p-4 rounded-xl font-black uppercase">Guardar</button>
                 </div>
             </div>
             <div id="subsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -200,7 +203,7 @@
 
         <div id="viewGoals" class="hidden fade-in">
              <div class="flex justify-between items-center mb-10">
-                <div><h2 class="text-3xl font-black text-white tracking-tighter">METAS DE AHORRO</h2><p class="text-xs font-mono text-purple-500 uppercase">Objetivos de Inversión</p></div>
+                <div><h2 class="text-3xl font-black text-white tracking-tighter">METAS DE AHORRO</h2><p class="text-xs font-mono text-purple-500 uppercase tracking-widest">Objetivos de Inversión</p></div>
                 <button onclick="app.addGoalPrompt()" class="bg-purple-500/20 text-purple-400 px-6 py-3 rounded-xl font-bold border border-purple-500/30 no-print">+ NUEVA</button>
             </div>
              <div id="goalsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -208,16 +211,16 @@
 
         <div id="viewMarket" class="hidden fade-in">
              <div class="flex justify-between items-center mb-10">
-                <div><h2 class="text-4xl font-black text-white tracking-tighter uppercase">Market Feed</h2><p class="text-xs font-mono text-slate-500">Live Global Prices</p></div>
+                <div><h2 class="text-4xl font-black text-white tracking-tighter uppercase">Market Feed</h2><p class="text-xs font-mono text-slate-500">Live Global Rates</p></div>
                 <button onclick="app.fetchFullMarket()" id="refreshBtn" class="bg-slate-900 border border-cyan-500/50 p-4 rounded-full text-cyan-400 no-print"><i data-lucide="refresh-cw" id="spinIcon" class="w-6 h-6"></i></button>
             </div>
              <div class="glass p-8 rounded-3xl mb-12 border border-cyan-500/20">
                 <div class="flex flex-col md:flex-row gap-6 items-end">
-                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 uppercase">Cantidad</label><input id="calcAmount" type="number" value="1" onkeyup="app.calcCurrency()" class="w-full p-5 rounded-2xl text-2xl font-black font-mono outline-none border border-slate-700 focus:border-cyan-400 bg-slate-900/50"></div>
-                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 uppercase">Origen</label><select id="calcFrom" onchange="app.calcCurrency()" class="w-full p-5 rounded-2xl font-bold outline-none border border-slate-700 bg-slate-900/50"></select></div>
+                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 uppercase">Cantidad</label><input id="calcAmount" type="number" value="1" onkeyup="app.calcCurrency()" class="w-full p-5 rounded-2xl text-2xl font-black font-mono outline-none border border-slate-700 bg-slate-900/50"></div>
+                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 uppercase">De</label><select id="calcFrom" onchange="app.calcCurrency()" class="w-full p-5 rounded-2xl font-bold outline-none border border-slate-700 bg-slate-900/50"></select></div>
                     <div class="pb-5"><button onclick="app.swapCalc()" class="p-3 rounded-full bg-cyan-400 text-black"><i data-lucide="arrow-right-left"></i></button></div>
-                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 uppercase">Destino</label><select id="calcTo" onchange="app.calcCurrency()" class="w-full p-5 rounded-2xl font-bold outline-none border border-slate-700 bg-slate-900/50"></select></div>
-                    <div class="flex-1 w-full"><div class="bg-black/40 p-5 rounded-2xl text-center"><p class="text-[10px] font-bold text-slate-500 uppercase">Resultado</p><p id="calcResult" class="text-3xl font-black text-cyan-400 font-mono">...</p></div></div>
+                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 uppercase">A</label><select id="calcTo" onchange="app.calcCurrency()" class="w-full p-5 rounded-2xl font-bold outline-none border border-slate-700 bg-slate-900/50"></select></div>
+                    <div class="flex-1 w-full"><div class="bg-black/40 p-5 rounded-2xl text-center"><p class="text-[10px] font-bold text-slate-500 uppercase">Resultado Estimado</p><p id="calcResult" class="text-3xl font-black text-cyan-400 font-mono">...</p></div></div>
                 </div>
             </div>
              <div id="marketGridCrypto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12"></div>
@@ -227,9 +230,9 @@
         <footer class="mt-12 pb-8 text-center opacity-60 no-print">
             <div class="flex items-center justify-center gap-2 mb-2">
                 <i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i>
-                <span class="text-[10px] font-black tracking-[0.2em] text-cyan-400 uppercase">Forjax Enterprise V31 Elite</span>
+                <span class="text-[10px] font-black tracking-[0.2em] text-cyan-400 uppercase">FORJAX ENTERPRISE V31 ELITE</span>
             </div>
-            <p class="text-[10px] text-slate-500 font-mono uppercase">© 2026 Forjax Financial Systems. Master Data Terminal.</p>
+            <p class="text-[10px] text-slate-500 font-mono uppercase">© 2026 FORJAX FINANCIAL SYSTEMS. MASTER TERMINAL.</p>
         </footer>
     </div>
 </div>
@@ -261,11 +264,11 @@ const app = {
         this.updateCategoryDropdown(); 
         this.fillCalcSelects(); 
         this.fetchFullMarket();
-        this.runFinancialAudit(); // Nueva auditoría V31
+        this.runFinancialAudit(); // Nueva inteligencia V31
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
-    // --- V31: AUDITORÍA FINANCIERA INTELIGENTE ---
+    // --- V31 INTELIGENCIA INTEGRADA DISCRETAMENTE ---
     runFinancialAudit() {
         const now = new Date();
         const curM = now.getMonth();
@@ -290,19 +293,19 @@ const app = {
         const diffInc = previous.inc === 0 ? 0 : ((current.inc - previous.inc) / previous.inc) * 100;
         const diffExp = previous.exp === 0 ? 0 : ((current.exp - previous.exp) / previous.exp) * 100;
 
-        document.getElementById("trendIncome").innerText = `${diffInc >= 0 ? '▲' : '▼'} ${Math.abs(diffInc).toFixed(1)}% vs mes ant.`;
-        document.getElementById("trendIncome").className = `text-[9px] font-bold mt-2 ${diffInc >= 0 ? 'text-emerald-500' : 'text-rose-500'}`;
+        document.getElementById("trendIncome").innerText = `${diffInc >= 0 ? '▲' : '▼'} ${Math.abs(diffInc).toFixed(1)}% VS MES ANT.`;
+        document.getElementById("trendIncome").className = `text-[8px] font-bold mt-2 ${diffInc >= 0 ? 'text-emerald-500' : 'text-rose-500'} uppercase`;
         
-        document.getElementById("trendExpense").innerText = `${diffExp >= 0 ? '▲' : '▼'} ${Math.abs(diffExp).toFixed(1)}% vs mes ant.`;
-        document.getElementById("trendExpense").className = `text-[9px] font-bold mt-2 ${diffExp <= 0 ? 'text-emerald-500' : 'text-rose-500'}`;
+        document.getElementById("trendExpense").innerText = `${diffExp >= 0 ? '▲' : '▼'} ${Math.abs(diffExp).toFixed(1)}% VS MES ANT.`;
+        document.getElementById("trendExpense").className = `text-[8px] font-bold mt-2 ${diffExp <= 0 ? 'text-emerald-500' : 'text-rose-500'} uppercase`;
 
         const health = document.getElementById("healthStatus");
         if(current.exp > current.inc) {
-            health.innerText = "HEALTH STATUS: CRITICAL DEFICIT";
-            health.className = "text-xs font-mono text-rose-500 animate-pulse";
+            health.innerText = "SYSTEM STATUS: CRITICAL DEFICIT";
+            health.className = "text-xs font-mono text-rose-500 animate-pulse uppercase";
         } else {
-            health.innerText = "HEALTH STATUS: STABLE SURPLUS";
-            health.className = "text-xs font-mono text-emerald-500";
+            health.innerText = "SYSTEM STATUS: ONLINE";
+            health.className = "text-xs font-mono text-cyan-500 uppercase";
         }
     },
 
@@ -345,15 +348,15 @@ const app = {
 
     openSettings() {
         Swal.fire({
-            title: '<div class="flex flex-col items-center gap-3 mb-2"><div class="p-4 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="server" class="w-8 h-8"></i></div><span class="text-2xl font-black tracking-tight uppercase">Data Terminal</span></div>',
+            title: '<div class="flex flex-col items-center gap-3 mb-2"><div class="p-4 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="server" class="w-8 h-8"></i></div><span class="text-2xl font-black tracking-tight uppercase">Terminal Control</span></div>',
             html: `<div class="grid grid-cols-1 gap-4 mt-4">
                     <button onclick="app.downloadBackup()" class="bg-slate-900 border border-white/10 p-5 rounded-2xl text-left hover:border-cyan-400 transition-all">
-                        <p class="font-bold uppercase text-xs text-white">Exportar Forjax Backup</p>
-                        <p class="text-[9px] text-slate-500 mt-1 uppercase">Descargar todos los registros JSON</p>
+                        <p class="font-bold uppercase text-xs text-white">Exportar Backup JSON</p>
+                        <p class="text-[9px] text-slate-500 mt-1 uppercase">Descarga cifrada de movimientos</p>
                     </button>
                     <button onclick="document.getElementById('importFile').click()" class="bg-slate-900 border border-white/10 p-5 rounded-2xl text-left hover:border-purple-400 transition-all">
-                        <p class="font-bold uppercase text-xs text-white">Importar Terminal Data</p>
-                        <p class="text-[9px] text-slate-500 mt-1 uppercase">Restaurar registros anteriores</p>
+                        <p class="font-bold uppercase text-xs text-white">Restaurar registros</p>
+                        <p class="text-[9px] text-slate-500 mt-1 uppercase">Sobrescribir datos locales</p>
                     </button>
                 </div>`,
             showConfirmButton: false, showCloseButton: true,
@@ -375,7 +378,7 @@ const app = {
         const usedCats = [...new Set(this.data.records.map(r => r.category))].filter(c => !this.defaultCategories.includes(c));
         let html = this.defaultCategories.map(c => `<option value="${c}">${c}</option>`).join('');
         if(usedCats.length > 0) html += `<optgroup label="Histórico Personal">` + usedCats.map(c => `<option value="${c}">${c}</option>`).join('') + `</optgroup>`;
-        html += `<option value="custom" class="bg-cyan-900">✏️ Personalizado...</option>`;
+        html += `<option value="custom" class="bg-cyan-900">✏️ Nueva...</option>`;
         select.innerHTML = html;
     },
 
@@ -440,7 +443,6 @@ const app = {
         if(this.charts.line) this.charts.line.destroy();
         if(this.charts.doughnut) this.charts.doughnut.destroy();
 
-        // --- V31: PATRIMONIO ACUMULATIVO REAL ---
         const sortedAll = [...this.data.records].sort((a,b) => {
             const [da, ma, ya] = a.date.split('/').map(Number);
             const [db, mb, yb] = b.date.split('/').map(Number);
@@ -461,21 +463,20 @@ const app = {
 
         this.charts.line = new Chart(ctxL, {
             type: 'line',
-            data: { labels: dates, datasets: [{ label: 'Capital', data: dates.map(d=>timeData[d]), borderColor: '#00f3ff', tension: 0.4, fill: true, backgroundColor: grad, borderWidth: 2, pointRadius: 0 }] },
+            data: { labels: dates, datasets: [{ label: 'Capital', data: dates.map(d=>timeData[d]), borderColor: '#00f3ff', tension: 0.4, fill: true, backgroundColor: grad, borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#00f3ff' }] },
             options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#64748b', font:{size:10}}}} }
         });
 
         const cat = {}; records.filter(r=>r.type==='expense').forEach(r=>{ cat[r.category]=(cat[r.category]||0)+r.amount });
-        document.getElementById("chartTotal").innerText = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(exp);
+        document.getElementById("chartTotal").innerText = fmt.format(exp);
         const ctxD = document.getElementById("doughnutChart").getContext("2d");
         this.charts.doughnut = new Chart(ctxD, {
             type: 'doughnut',
-            data: { labels: Object.keys(cat), datasets: [{ data: Object.values(cat), backgroundColor: ['#00f3ff','#8b5cf6','#f43f5e','#10b981','#f59e0b'], borderWidth: 0 }] },
+            data: { labels: Object.keys(cat), datasets: [{ data: Object.values(cat), backgroundColor: ['#00f3ff','#8b5cf6','#f43f5e','#10b981','#f59e0b'], borderWidth: 0, hoverOffset: 10 }] },
             options: { responsive:true, maintainAspectRatio:false, cutout:'80%', plugins:{legend:{display:false}}}
         });
     },
 
-    // --- V31: ALERTA DE VENCIMIENTOS ---
     renderSubs() {
         const grid = document.getElementById("subsGrid"); 
         const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
@@ -489,7 +490,7 @@ const app = {
             return `<div class="glass-card p-6 rounded-2xl relative group ${isNear ? 'border-rose-500/50 shadow-neon-purple' : ''}">
                 ${isNear ? `<div class="absolute -top-2 -right-2 bg-rose-500 text-[8px] font-black px-2 py-1 rounded-full text-white animate-bounce">PAGO CERCANO</div>` : ''}
                 <button onclick="app.deleteSub(${s.id})" class="absolute top-4 right-4 text-slate-500 opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-                <div class="flex items-center gap-4 mb-6"><div class="p-3 bg-cyan-500/10 rounded-xl text-cyan-400"><i data-lucide="zap" class="w-6 h-6"></i></div><div><h3 class="font-bold text-current uppercase text-sm">${s.name}</h3><p class="text-[9px] opacity-50 font-bold mt-1">Vence Día ${s.day}</p></div></div>
+                <div class="flex items-center gap-4 mb-6"><div class="p-3 bg-cyan-500/10 rounded-xl text-cyan-400"><i data-lucide="zap" class="w-6 h-6"></i></div><div><h3 class="font-bold text-current uppercase text-sm leading-none">${s.name}</h3><p class="text-[9px] opacity-50 font-bold mt-1 uppercase font-mono">Día de cobro: ${s.day}</p></div></div>
                 <p class="text-3xl font-black blur-sensitive mb-6 font-mono">${fmt.format(s.amount)}</p>
                 <button onclick="app.paySub(${s.id})" class="w-full bg-slate-900 border border-white/10 py-3 rounded-xl text-[10px] font-bold uppercase hover:bg-cyan-500 hover:text-black transition-all">Registrar Pago</button>
             </div>`;
@@ -507,7 +508,7 @@ const app = {
     deleteGoal(id) { this.data.goals = this.data.goals.filter(x=>x.id!==id); this.save(); this.renderGoals(); },
     renderGoals() {
         const grid = document.getElementById("goalsGrid"); const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-        grid.innerHTML = this.data.goals.map(g => { const pct = Math.min((g.current/g.target)*100, 100); return `<div class="glass-card p-6 rounded-2xl relative group"><button onclick="app.deleteGoal(${g.id})" class="absolute top-4 right-4 text-slate-500 opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-3 h-3"></i></button><div class="flex justify-between items-center mb-2"><h3 class="font-bold uppercase text-xs">${g.name}</h3><span class="text-[10px] font-black text-purple-400 font-mono">${Math.round(pct)}%</span></div><div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-4"><div class="bg-gradient-to-r from-cyan-400 to-purple-500 h-full" style="width: ${pct}%"></div></div><div class="flex justify-between items-end mb-4"><div><p class="text-[10px] text-slate-500">AHORRO</p><p class="font-bold blur-sensitive">${fmt.format(g.current)}</p></div><div class="text-right"><p class="text-[10px] text-slate-500">META</p><p class="font-bold blur-sensitive opacity-70">${fmt.format(g.target)}</p></div></div><button onclick="app.depositGoal(${g.id})" class="w-full bg-purple-500/10 text-purple-400 py-3 rounded-xl font-bold border border-purple-500/30 text-[10px]">+ DEPOSITAR</button></div>`; }).join('');
+        grid.innerHTML = this.data.goals.map(g => { const pct = Math.min((g.current/g.target)*100, 100); return `<div class="glass-card p-6 rounded-2xl relative group hover:-translate-y-1"><button onclick="app.deleteGoal(${g.id})" class="absolute top-4 right-4 text-slate-500 opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-3 h-3"></i></button><div class="flex justify-between items-center mb-2"><h3 class="font-bold uppercase text-xs">${g.name}</h3><span class="text-[10px] font-black text-purple-400 font-mono">${Math.round(pct)}%</span></div><div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-4"><div class="bg-gradient-to-r from-cyan-400 to-purple-500 h-full" style="width: ${pct}%"></div></div><div class="flex justify-between items-end mb-4"><div><p class="text-[10px] text-slate-500">AHORRO</p><p class="font-bold blur-sensitive font-mono">${fmt.format(g.current)}</p></div><div class="text-right"><p class="text-[10px] text-slate-500">META</p><p class="font-bold blur-sensitive opacity-70 font-mono">${fmt.format(g.target)}</p></div></div><button onclick="app.depositGoal(${g.id})" class="w-full bg-purple-500/10 text-purple-400 py-3 rounded-xl font-bold border border-purple-500/30 text-[10px] uppercase">+ Depositar</button></div>`; }).join('');
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
@@ -517,8 +518,7 @@ const app = {
             const r=await fetch("https://dolarapi.com/v1/dolares/blue"); const d=await r.json(); 
             document.getElementById("dolarVal").innerText=`$${d.venta}`; this.rates['ARS'] = d.venta; 
         } catch(e){}
-        try { const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8"); const d=await r.json(); d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price); document.getElementById("marketGridCrypto").innerHTML = d.map(c => `<div class="glass-card p-4 rounded-xl flex items-center justify-between"><div class="flex items-center gap-3"><img src="${c.image}" class="w-6 h-6 grayscale"><div><h4 class="font-bold text-[10px] text-white uppercase">${c.symbol.toUpperCase()}</h4></div></div><p class="font-mono font-bold text-xs text-cyan-400">$${c.current_price.toLocaleString()}</p></div>`).join(''); } catch(e){}
-        try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates, d.rates); const list = [{c:'EUR', n:'Euro', f:'eu'}, {c:'GBP', n:'Libra', f:'gb'}, {c:'JPY', n:'Yen', f:'jp'}, {c:'BRL', n:'Real', f:'br'}, {c:'MXN', n:'Peso MX', f:'mx'}]; document.getElementById("marketGridFiat").innerHTML = list.map(x => `<div class="glass-card p-4 rounded-xl text-center"><span class="fi fi-${x.f} text-xl mb-2"></span><p class="text-[9px] text-slate-500 font-bold uppercase">${x.n}</p><p class="font-black text-white text-xs font-mono">${d.rates[x.c] ? d.rates[x.c].toFixed(2) : '--'}</p></div>`).join(''); } catch(e){}
+        try { const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8"); const d=await r.json(); d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price); document.getElementById("marketGridCrypto").innerHTML = d.map(c => `<div class="glass-card p-4 rounded-xl flex items-center justify-between"><div class="flex items-center gap-3"><img src="${c.image}" class="w-6 h-6 grayscale group-hover:grayscale-0"><div><h4 class="font-bold text-[10px] text-white uppercase leading-none">${c.symbol.toUpperCase()}</h4></div></div><p class="font-mono font-bold text-xs text-cyan-400 leading-none">$${c.current_price.toLocaleString()}</p></div>`).join(''); } catch(e){}
         setTimeout(() => document.getElementById("spinIcon").classList.remove("animate-spin-slow"), 1000);
     },
     fillCalcSelects() { const opts = this.currencies.map(o => `<option value="${o.c}">${o.c} - ${o.n}</option>`).join(''); document.getElementById("calcFrom").innerHTML=opts; document.getElementById("calcTo").innerHTML=opts; document.getElementById("calcFrom").value='USD'; document.getElementById("calcTo").value='ARS'; },
@@ -532,7 +532,7 @@ const app = {
     },
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"); [f.value, t.value] = [t.value, f.value]; this.calcCurrency(); },
     togglePrivacy(){ this.privacy=!this.privacy; document.body.classList.toggle("privacy-active"); document.getElementById("btnPrivacy").classList.toggle("text-cyan-400"); },
-    exportProExcel() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha","Desc","Cat","Monto"],...this.data.records.map(r=>[r.date,r.desc,r.category,r.amount])]), "Data"); XLSX.writeFile(wb, "Forjax_Enterprise_Elite.xlsx"); },
+    exportProExcel() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha","Desc","Cat","Monto"],...this.data.records.map(r=>[r.date,r.desc,r.category,r.amount])]), "Data"); XLSX.writeFile(wb, "Forjax_Legacy_Elite.xlsx"); },
     initSession(){ const v=document.getElementById("userInput").value; if(v.length>2){localStorage.setItem("currentUser",v);location.reload();} },
     logout(){ localStorage.removeItem("currentUser");location.reload();}
 };
