@@ -459,31 +459,38 @@ const app = {
     },
 
     render() {
-        const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-        const rec = this.getFilteredRecords();
-        const inc = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
-        const exp = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
-        const bal = inc - exp;
+    // NUEVO: Verificamos si el Modo Pánico está activo desde la BIOS
+    const panicMode = localStorage.getItem("forjax_panic_mode") === "true";
+    
+    const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+    const rec = this.getFilteredRecords();
+    const inc = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
+    const exp = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+    const bal = inc - exp;
 
-        document.getElementById("bIncome").textContent = fmt.format(inc);
-        document.getElementById("bExpense").textContent = fmt.format(exp);
-        document.getElementById("bNet").textContent = fmt.format(bal);
-        document.getElementById("bNet").className = `text-3xl font-black blur-sensitive tracking-tight ${bal >= 0 ? 'text-cyan-400' : 'text-rose-400'}`;
+    // Si hay pánico, mostramos "LOCKED" en lugar de los números
+    document.getElementById("bIncome").textContent = panicMode ? "LOCKED" : fmt.format(inc);
+    document.getElementById("bExpense").textContent = panicMode ? "LOCKED" : fmt.format(exp);
+    document.getElementById("bNet").textContent = panicMode ? "LOCKED" : fmt.format(bal);
+    
+    // Aplicamos un desenfoque extra si hay pánico
+    const kpis = [document.getElementById("bIncome"), document.getElementById("bExpense"), document.getElementById("bNet")];
+    kpis.forEach(el => {
+        if (panicMode) el.classList.add('blur-md', 'select-none');
+        else el.classList.remove('blur-md', 'select-none');
+    });
 
-        const tb = document.getElementById("historyTable");
+    // ... (El resto de la función render con la tabla y gráficos sigue igual)
+    // Pero si querés ocultar también la tabla:
+    const tb = document.getElementById("historyTable");
+    if (panicMode) {
+        tb.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-rose-500 font-black animate-pulse uppercase tracking-[0.5em]">Modo Pánico Activo: Datos Protegidos</td></tr>`;
+    } else {
+        // ... (Tu código original de la tabla que ya tenés)
         if(rec.length === 0) tb.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 text-lg font-mono">NO_DATA</td></tr>`;
-        else tb.innerHTML = rec.map(r => `
-            <tr class="hover:bg-blue-500/10 transition-all border-b border-white/5 last:border-0 group">
-                <td class="px-6 py-4 opacity-70 text-slate-300 group-hover:text-white font-mono">${r.date}</td>
-                <td class="px-6 py-4 font-bold uppercase text-white tracking-wide">${r.desc}</td>
-                <td class="px-6 py-4"><span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider shadow-sm">${r.category}</span></td>
-                <td class="px-6 py-4 text-right font-black font-mono ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive text-lg">${r.type==='income'?'+':'-'}${fmt.format(r.amount)}</td>
-                <td class="text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors p-2 hover:bg-rose-500/10 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
-            </tr>`).join('');
-        
-        this.updateCharts(inc, exp, rec);
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    },
+        else tb.innerHTML = rec.map(r => `...`).join(''); // Tu mapeo original
+    }
+}
 
     updateCharts(inc, exp, records) {
         if(typeof Chart === 'undefined') return; 
