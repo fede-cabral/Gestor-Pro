@@ -303,50 +303,31 @@
 
 <script>
 const app = {
-    // --- MOTOR DE SONIDO (NO REQUIERE ARCHIVOS) ---
+  // --- MOTOR DE SONIDO (NUEVO) ---
     audioCtx: new (window.AudioContext || window.webkitAudioContext)(),
-    
     playSound(type) {
         if (!this.audioCtx) return;
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
         osc.connect(gain);
         gain.connect(this.audioCtx.destination);
-
         const now = this.audioCtx.currentTime;
-        
+
         if (type === 'click') {
-            // Sonido seco y tecnológico (Click de interfaz)
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, now);
-            osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-            osc.start(now);
-            osc.stop(now + 0.05);
-        } 
-        else if (type === 'success') {
-            // Sonido de "Tarea Completada" (Tipo Zelda o Mario)
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(500, now);
-            osc.frequency.linearRampToValueAtTime(1000, now + 0.1);
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-            osc.start(now);
-            osc.stop(now + 0.3);
-        }
-        else if (type === 'error') {
-            // Sonido de "Acceso Denegado"
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, now);
-            osc.frequency.linearRampToValueAtTime(100, now + 0.2);
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
-            osc.start(now);
-            osc.stop(now + 0.2);
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+            osc.start(now); osc.stop(now + 0.05);
+        } else if (type === 'success') {
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(500, now); osc.frequency.linearRampToValueAtTime(1000, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'error') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now); osc.stop(now + 0.2);
         }
     },
-    // ----------------------------------------------
+    // -------------------------------
     user: localStorage.getItem("currentUser"),
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
@@ -531,9 +512,8 @@ const app = {
     },
 
     render() {
-        // 1. Verificar Modo Pánico desde la BIOS
+        // 1. Verificar Modo Pánico
         const panicMode = localStorage.getItem("forjax_panic_mode") === "true";
-
         const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
         const rec = this.getFilteredRecords();
         const inc = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
@@ -545,45 +525,33 @@ const app = {
         const elNet = document.getElementById("bNet");
         const tb = document.getElementById("historyTable");
 
-        // 2. Lógica de Bloqueo Visual
         if (panicMode) {
-            elInc.textContent = "LOCKED";
-            elExp.textContent = "LOCKED";
-            elNet.textContent = "LOCKED";
-            
-            // Efecto borroso
+            // MODO PÁNICO (BLOQUEADO)
+            elInc.textContent = "LOCKED"; elExp.textContent = "LOCKED"; elNet.textContent = "LOCKED";
             elInc.parentElement.classList.add('blur-md', 'select-none', 'grayscale');
             elExp.parentElement.classList.add('blur-md', 'select-none', 'grayscale');
             elNet.parentElement.classList.add('blur-md', 'select-none', 'grayscale');
-            
-            tb.innerHTML = `<tr><td colspan="5" class="text-center py-20 text-rose-500 font-black animate-pulse uppercase tracking-widest border border-rose-500/20 bg-rose-500/5 rounded-xl mt-4">🛑 Protocolo BIOS Activo: Datos Protegidos</td></tr>`;
+            tb.innerHTML = `<tr><td colspan="5" class="text-center py-20 text-rose-500 font-black animate-pulse uppercase tracking-widest border border-rose-500/20 bg-rose-500/5 rounded-xl mt-4">🛑 Protocolo BIOS Activo</td></tr>`;
         } else {
-            // MOSTRAR DATOS NORMALES
-            elInc.textContent = fmt.format(inc);
-            elExp.textContent = fmt.format(exp);
-            elNet.textContent = fmt.format(bal);
-            
-            // Quitar borrosidad y restaurar colores
+            // MODO NORMAL (VISUALIZACIÓN DE LUJO)
+            elInc.textContent = fmt.format(inc); elExp.textContent = fmt.format(exp); elNet.textContent = fmt.format(bal);
             elInc.parentElement.classList.remove('blur-md', 'select-none', 'grayscale');
             elExp.parentElement.classList.remove('blur-md', 'select-none', 'grayscale');
             elNet.parentElement.classList.remove('blur-md', 'select-none', 'grayscale');
             elNet.className = `text-3xl font-black blur-sensitive tracking-tight ${bal >= 0 ? 'text-cyan-400' : 'text-rose-400'}`;
 
-            // RENDERIZADO DE TABLA INTELIGENTE (SEMÁFORO)
             if(rec.length === 0) {
                 tb.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 text-lg font-mono">NO_DATA</td></tr>`;
             } else {
+                // AQUÍ ESTÁ LA MAGIA DEL SEMÁFORO
                 tb.innerHTML = rec.map(r => {
-                    // 1. DEFINIR EL COLOR DE LA FILA SEGÚN BIO-ESTADO
-                    let rowStyle = "border-l-2 border-transparent hover:bg-white/5"; // Estilo base
-                    let iconHtml = ""; // Ícono vacío por defecto
+                    let rowStyle = "border-l-2 border-transparent hover:bg-white/5"; 
+                    let iconHtml = ""; 
 
-                    if (r.bio <= 30) {
-                        // MODO ESTRÉS: Borde rojo y fondo rojizo suave
+                    if (r.bio <= 30) { // ESTRÉS
                         rowStyle = "border-l-2 border-rose-500 bg-rose-500/5 hover:bg-rose-500/10";
                         iconHtml = '<span class="ml-2 text-xs animate-pulse" title="Gasto por Estrés">🔥</span>';
-                    } else if (r.bio >= 90) {
-                        // MODO ZEN: Borde verde y fondo verdoso suave
+                    } else if (r.bio >= 90) { // ZEN
                         rowStyle = "border-l-2 border-emerald-500 bg-emerald-500/5 hover:bg-emerald-500/10";
                         iconHtml = '<span class="ml-2 text-xs" title="Compra Zen">🧘</span>';
                     }
@@ -591,27 +559,14 @@ const app = {
                     return `
                     <tr class="transition-all border-b border-white/5 last:border-0 group ${rowStyle}">
                         <td class="px-6 py-4 opacity-70 text-slate-300 group-hover:text-white font-mono">${r.date}</td>
-                        <td class="px-6 py-4 font-bold uppercase text-white tracking-wide flex items-center">
-                            ${r.desc} ${iconHtml}
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider shadow-sm w-fit">
-                                ${r.category}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right font-black font-mono ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive text-lg">
-                            ${r.type==='income'?'+':'-'}${fmt.format(r.amount)}
-                        </td>
-                        <td class="text-center">
-                            <button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors p-2 hover:bg-rose-500/10 rounded-full">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </td>
+                        <td class="px-6 py-4 font-bold uppercase text-white tracking-wide flex items-center">${r.desc} ${iconHtml}</td>
+                        <td class="px-6 py-4"><span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider shadow-sm w-fit">${r.category}</span></td>
+                        <td class="px-6 py-4 text-right font-black font-mono ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive text-lg">${r.type==='income'?'+':'-'}${fmt.format(r.amount)}</td>
+                        <td class="text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors p-2 hover:bg-rose-500/10 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
                     </tr>`;
                 }).join('');
             }
         }
-       
         this.updateCharts(inc, exp, rec);
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
@@ -783,7 +738,7 @@ const app = {
     // Agrega sonido a TODOS los botones automáticamente
 document.addEventListener('click', (e) => {
     if(e.target.closest('button') || e.target.closest('a')) {
-        app.audioCtx.resume(); // Necesario para desbloquear audio en navegadores
+        if(app.audioCtx.state === 'suspended') app.audioCtx.resume();
         app.playSound('click');
     }
 });
