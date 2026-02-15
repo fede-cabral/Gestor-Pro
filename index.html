@@ -183,15 +183,25 @@
                         <h3 class="flex items-center gap-2 text-lg font-bold mb-6 text-white relative z-10"><i data-lucide="plus" class="text-cyan-400"></i> Nueva Transacción</h3>
                         <div class="space-y-4 relative z-10">
                             <div><label class="text-[10px] font-bold text-slate-500 ml-1">DETALLE</label><input id="transDesc" type="text" class="w-full p-4 rounded-xl font-bold outline-none transition-all"></div>
-                            <div class="flex gap-3">
-                                <div class="w-1/2"><label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label><input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all"></div>
-                                <div class="w-1/2 flex flex-col">
-                                    <label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label>
-                                    <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer">
-                                        </select>
-                                    <input id="customCategoryInput" type="text" placeholder="Escribe la categoría..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none transition-all border border-cyan-500/50 hidden animate-pulse">
-                                </div>
-                            </div>
+                           <div class="flex gap-3">
+    <div class="w-1/3">
+        <label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label>
+        <input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all">
+    </div>
+    <div class="w-1/3 flex flex-col">
+        <label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label>
+        <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer"></select>
+    </div>
+    <div class="w-1/3">
+        <label class="text-[10px] font-bold text-cyan-500 ml-1">BIO-ESTADO</label>
+        <select id="transBio" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer border border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
+            <option value="100">🧘 Zen</option>
+            <option value="70">😐 Normal</option>
+            <option value="30">🔥 Estrés</option>
+        </select>
+    </div>
+</div>
+<input id="customCategoryInput" type="text" placeholder="Escribe la categoría..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none transition-all border border-cyan-500/50 hidden animate-pulse">
                             <div class="grid grid-cols-2 gap-3 pt-4">
                                 <button onclick="app.addRecord('income')" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-black border border-emerald-500/50 text-emerald-400 py-4 rounded-xl font-black tracking-widest transition-all">INGRESO</button>
                                 <button onclick="app.addRecord('expense')" class="bg-rose-500/10 hover:bg-rose-500 hover:text-black border border-rose-500/50 text-rose-400 py-4 rounded-xl font-black tracking-widest transition-all">GASTO</button>
