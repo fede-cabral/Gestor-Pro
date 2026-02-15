@@ -54,13 +54,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-cyan-400">
                 <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Efficiency ROI</p>
-                <h2 id="bioRoi" class="text-6xl font-black font-mono">--</h2>
+                <h2 id="bioRoi" class="text-4xl md:text-5xl font-black font-mono truncate" title="Efficiency ROI">--</h2>
             </div>
             <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden">
                 <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Bio-Energy Core</p>
-                <div class="flex items-baseline gap-2 mb-4"><span id="energyVal" class="text-6xl font-black font-mono">--%</span></div>
-                <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div id="energyBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width: 0%"></div></div>
-            </div>
+                <div class="flex items-baseline gap-2 mb-4">
+                  <span id="energyVal" class="text-4xl md:text-5xl font-black font-mono">--%</span>
+              </div>
             <div id="riskCard" class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500">
                 <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest">Cognitive Risk</p>
                 <h2 id="riskStatus" class="text-xl font-black uppercase italic">Analyzing...</h2>
@@ -94,7 +94,7 @@
                 <div class="h-[400px]"><canvas id="correlationChart"></canvas></div>
             </div>
 
-            <div class="glass p-8 rounded-[3rem] bg-black/40 flex flex-col h-full min-h-[460px]">
+            <div class="glass p-8 rounded-[3rem] bg-black/40 flex flex-col h-full min-h-[450px]">
                 <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2 text-cyan-400"><i data-lucide="terminal"></i> Oracle Intelligence</h3>
                 <div id="oracleOutput" class="flex-1 font-mono text-[10px] space-y-4 overflow-y-auto custom-scroll max-h-[350px]">
                     <p class="text-slate-500">> INITIALIZING_NEURAL_CORE...</p>
