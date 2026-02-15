@@ -733,25 +733,18 @@ const app = {
     togglePrivacy(){ this.privacy=!this.privacy; document.body.classList.toggle("privacy-active"); document.getElementById("btnPrivacy").classList.toggle("text-cyan-400"); },
     exportProExcel() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha","Desc","Cat","Monto"],...this.data.records.map(r=>[r.date,r.desc,r.category,r.amount])]), "Data"); XLSX.writeFile(wb, "ForjaxV30.xlsx"); },
    initSession() { 
-        // 1. Capturamos lo que escribiste (quitando espacios extra)
+        // 1. Capturamos lo que escribiste
         const val = document.getElementById("userInput").value.trim(); 
         
-        console.log("Intentando ingresar con:", val); // Esto aparecerá en la consola (F12)
+        console.log("Intentando ingresar con:", val);
 
         // 2. Validación de seguridad
         if(val.length > 2) {
-            // ÉXITO: Guardamos y entramos
             localStorage.setItem("currentUser", val);
-            
-            // Si el sonido existe, lo reproducimos
             if(this.playSound) this.playSound('success');
-            
-            // Recargamos la página para entrar
             location.reload();
         } else {
-            // ERROR: Nombre muy corto
             if(this.playSound) this.playSound('error');
-            
             Swal.fire({
                 title: 'ACCESO DENEGADO',
                 text: 'El ID debe tener al menos 3 caracteres.',
@@ -762,6 +755,28 @@ const app = {
             });
         }
     },
+
+    logout(){ 
+        localStorage.removeItem("currentUser");
+        location.reload();
+    }
+}; // <--- ¡ESTO ES LO QUE FALTABA! (Cierre del objeto app)
+
+// --- CÓDIGO GLOBAL (FUERA DEL OBJETO APP) ---
+
+// Agrega sonido a TODOS los botones automáticamente
+document.addEventListener('click', (e) => {
+    // Verificamos si app y audioCtx existen antes de usarlos
+    if(typeof app !== 'undefined' && app.audioCtx) {
+        if(e.target.closest('button') || e.target.closest('a')) {
+            if(app.audioCtx.state === 'suspended') app.audioCtx.resume();
+            app.playSound('click');
+        }
+    }
+});
+
+// Iniciamos la app
+app.init();
     // Agrega sonido a TODOS los botones automáticamente
 document.addEventListener('click', (e) => {
     if(e.target.closest('button') || e.target.closest('a')) {
