@@ -618,20 +618,88 @@ const app = {
 
     // --- MARKET ---
     async fetchFullMarket() {
-        document.getElementById("spinIcon").classList.add("animate-spin-slow");
-        const gc = document.getElementById("marketGridCrypto"); const gf = document.getElementById("marketGridFiat");
+        const spin = document.getElementById("spinIcon");
+        const cryptoGrid = document.getElementById("marketGridCrypto");
+        const fiatGrid = document.getElementById("marketGridFiat");
         
-        try { 
-            const r=await fetch("https://dolarapi.com/v1/dolares/blue"); const d=await r.json(); 
-            document.getElementById("dolarVal").innerText=`$${d.venta}`; 
-            this.rates['ARS'] = d.venta; 
-        } catch(e){ console.log("Using offline rate for ARS"); }
+        // 1. Activar animación de carga
+        if(spin) spin.classList.add("animate-spin-slow");
 
-        try { const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&sparkline=false"); const d=await r.json(); d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price); gc.innerHTML = d.map(c => `<div class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-default group"><img src="${c.image}" class="w-10 h-10 rounded-full grayscale group-hover:grayscale-0 transition-all"><div><h4 class="font-bold text-white leading-none">${c.symbol.toUpperCase()}</h4><p class="text-[10px] text-slate-500 font-bold group-hover:text-cyan-400">${c.name}</p></div><div class="ml-auto text-right"><p class="font-mono font-bold text-white">$${c.current_price.toLocaleString()}</p><p class="text-[10px] font-bold ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-rose-400'}">${c.price_change_percentage_24h>=0?'▲':'▼'} ${Math.abs(c.price_change_percentage_24h).toFixed(2)}%</p></div></div>`).join(''); } catch(e){ console.log("Using offline rates for Crypto"); }
+        // Helper para mostrar error lindo si falla
+        const renderError = (container, msg) => {
+            if(container) container.innerHTML = `<div class="col-span-full glass p-4 rounded-xl border border-rose-500/30 flex items-center justify-center gap-3 opacity-70"><i data-lucide="wifi-off" class="text-rose-400"></i><span class="text-xs font-mono text-rose-300 uppercase">${msg}</span></div>`;
+        };
 
-        try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates, d.rates); const list = [{c:'EUR', n:'Euro', f:'eu'}, {c:'GBP', n:'Libra', f:'gb'}, {c:'JPY', n:'Yen', f:'jp'}, {c:'BRL', n:'Real', f:'br'}, {c:'MXN', n:'Peso MX', f:'mx'}]; gf.innerHTML = list.map(x => `<div class="glass-card p-4 rounded-xl flex flex-col items-center text-center gap-2 group hover:border-cyan-500/30"><span class="fi fi-${x.f} text-3xl rounded shadow-lg grayscale group-hover:grayscale-0 transition-all"></span><div><span class="text-xs font-bold text-slate-500 block">${x.n}</span><span class="font-mono font-black text-current text-xl tracking-tight">${d.rates[x.c] ? d.rates[x.c].toFixed(2) : '-'}</span></div></div>`).join(''); } catch(e){ console.log("Using offline rates for Fiat"); }
+        // A. DÓLAR BLUE (Con memoria caché)
+        try {
+            const r = await fetch("https://dolarapi.com/v1/dolares/blue");
+            if (!r.ok) throw new Error("API Error");
+            const d = await r.json();
+            document.getElementById("dolarVal").innerText = `$${d.venta}`;
+            this.rates['ARS'] = d.venta;
+            localStorage.setItem("cache_dolar", d.venta); // Guardamos por si acaso
+        } catch(e) { 
+            console.warn("Dolar Offline, usando caché");
+            const cached = localStorage.getItem("cache_dolar");
+            if(cached) {
+                document.getElementById("dolarVal").innerText = `$${cached} (OFF)`;
+                this.rates['ARS'] = Number(cached);
+            } else {
+                document.getElementById("dolarVal").innerText = "---";
+            }
+        }
+
+        // B. CRIPTO (Con manejo de error)
+        try {
+            const r2 = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=4&sparkline=false");
+            if (!r2.ok) throw new Error("Rate Limit");
+            const d2 = await r2.json();
+            d2.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price);
+            
+            if(cryptoGrid) cryptoGrid.innerHTML = d2.map(c => `
+                <div class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-default group hover:bg-white/5 transition-colors">
+                    <img src="${c.image}" class="w-8 h-8 rounded-full grayscale group-hover:grayscale-0 transition-all">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-white text-xs leading-none truncate">${c.name}</h4>
+                        <p class="text-[10px] text-slate-500 font-bold font-mono uppercase">${c.symbol}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-mono font-bold text-white text-sm">$${c.current_price.toLocaleString()}</p>
+                        <p class="text-[9px] font-bold ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-rose-400'}">
+                            ${c.price_change_percentage_24h>=0?'▲':'▼'} ${Math.abs(c.price_change_percentage_24h).toFixed(1)}%
+                        </p>
+                    </div>
+                </div>`).join('');
+        } catch(e) {
+            renderError(cryptoGrid, "Enlace Cripto Inestable");
+        }
+
+        // C. FIAT (Con manejo de error)
+        try {
+            const r3 = await fetch("https://api.frankfurter.app/latest?from=USD");
+            if (!r3.ok) throw new Error("API Error");
+            const d3 = await r3.json();
+            Object.assign(this.rates, d3.rates);
+            
+            const list = [{c:'EUR', n:'Euro', f:'eu'}, {c:'BRL', n:'Real', f:'br'}, {c:'JPY', n:'Yen', f:'jp'}, {c:'GBP', n:'Libra', f:'gb'}];
+            
+            if(fiatGrid) fiatGrid.innerHTML = list.map(x => `
+                <div class="glass-card p-3 rounded-xl flex flex-col items-center text-center gap-2 hover:border-cyan-500/30 transition-all">
+                    <span class="fi fi-${x.f} text-2xl rounded shadow-lg grayscale hover:grayscale-0 transition-all"></span>
+                    <div>
+                        <span class="text-[9px] font-bold text-slate-500 block uppercase tracking-wider">${x.c}</span>
+                        <span class="font-mono font-black text-white text-sm tracking-tight">${d3.rates[x.c] ? d3.rates[x.c].toFixed(2) : '-'}</span>
+                    </div>
+                </div>`).join('');
+        } catch(e) {
+             renderError(fiatGrid, "Red Global Desconectada");
+        }
         
-        setTimeout(() => document.getElementById("spinIcon").classList.remove("animate-spin-slow"), 2000);
+        // Apagar animación
+        setTimeout(() => {
+            if(spin) spin.classList.remove("animate-spin-slow");
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }, 1000);
     },
     fillCalcSelects() { const opts = this.currencies.map(o => `<option value="${o.c}" data-flag="fi-${o.f}">${o.c} - ${o.n}</option>`).join(''); const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); if(s1.innerHTML.length < 50) { s1.innerHTML=opts; s2.innerHTML=opts; s1.value='USD'; s2.value='ARS'; } this.updateFlags(); },
     updateFlags() { const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); document.getElementById("flagFrom").innerHTML = `<span class="fi fi-${this.currencies.find(c => c.c === s1.value)?.f || 'un'} rounded"></span>`; document.getElementById("flagTo").innerHTML = `<span class="fi fi-${this.currencies.find(c => c.c === s2.value)?.f || 'un'} rounded"></span>`; },
