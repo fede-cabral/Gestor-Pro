@@ -112,14 +112,14 @@
 
             <div class="w-full max-w-sm space-y-4 z-10">
                 <div class="relative group">
-                    <div class="absolute inset-0 bg-cyan-500/20 blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <input id="userInput" type="text" placeholder="ACCESS ID" class="relative w-full p-4 rounded-xl text-center text-lg font-bold font-mono outline-none border-2 border-slate-700 focus:border-cyan-400 focus:shadow-neon-blue transition-all dark:bg-[#0a0f1d]/80 dark:text-white bg-white text-black backdrop-blur-md">
-                </div>
-                <button onclick="app.initSession()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-black py-4 rounded-xl transition-all shadow-neon-blue hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] relative overflow-hidden group">
-                    <span class="relative z-10 tracking-wider">INICIAR SISTEMA</span>
-                    <div class="absolute inset-0 h-full w-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    
-                </button>
+    <div class="absolute inset-0 bg-cyan-500/20 blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    <input id="userInput" type="text" placeholder="ACCESS ID" onkeydown="if(event.key === 'Enter') app.initSession()" class="relative w-full p-4 rounded-xl text-center text-lg font-bold font-mono outline-none border-2 border-slate-700 focus:border-cyan-400 focus:shadow-neon-blue transition-all dark:bg-[#0a0f1d]/80 dark:text-white bg-white text-black backdrop-blur-md">
+</div>
+
+<button onclick="app.initSession()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-black py-4 rounded-xl transition-all shadow-neon-blue hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] relative overflow-hidden group mt-4">
+    <span class="relative z-10 tracking-wider">INICIAR SISTEMA</span>
+    <div class="absolute inset-0 h-full w-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+</button>
             </div>
         </div>
     </div>
@@ -732,17 +732,26 @@ const app = {
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"); [f.value, t.value] = [t.value, f.value]; this.calcCurrency(); },
     togglePrivacy(){ this.privacy=!this.privacy; document.body.classList.toggle("privacy-active"); document.getElementById("btnPrivacy").classList.toggle("text-cyan-400"); },
     exportProExcel() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha","Desc","Cat","Monto"],...this.data.records.map(r=>[r.date,r.desc,r.category,r.amount])]), "Data"); XLSX.writeFile(wb, "ForjaxV30.xlsx"); },
-    initSession(){ 
-        const v = document.getElementById("userInput").value.trim(); 
+   initSession() { 
+        // 1. Capturamos lo que escribiste (quitando espacios extra)
+        const val = document.getElementById("userInput").value.trim(); 
         
-        if(v.length > 2) {
-            // Si el nombre es válido, guardamos y entramos
-            localStorage.setItem("currentUser", v);
-            this.playSound('success'); // ¡Sonido de éxito al loguear!
+        console.log("Intentando ingresar con:", val); // Esto aparecerá en la consola (F12)
+
+        // 2. Validación de seguridad
+        if(val.length > 2) {
+            // ÉXITO: Guardamos y entramos
+            localStorage.setItem("currentUser", val);
+            
+            // Si el sonido existe, lo reproducimos
+            if(this.playSound) this.playSound('success');
+            
+            // Recargamos la página para entrar
             location.reload();
         } else {
-            // Si es muy corto, tiramos error
-            this.playSound('error');
+            // ERROR: Nombre muy corto
+            if(this.playSound) this.playSound('error');
+            
             Swal.fire({
                 title: 'ACCESO DENEGADO',
                 text: 'El ID debe tener al menos 3 caracteres.',
