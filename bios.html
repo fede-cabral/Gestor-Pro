@@ -52,26 +52,35 @@
     <main class="max-w-7xl mx-auto space-y-10">
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-cyan-400">
-                <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Efficiency ROI</p>
-                <h2 id="bioRoi" class="text-4xl md:text-5xl font-black font-mono truncate" title="Efficiency ROI">--</h2>
-            </div>
-            <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden">
-                <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Bio-Energy Core</p>
-               <div class="flex items-baseline gap-2 mb-4">
-    <span id="energyVal" class="text-4xl md:text-5xl font-black font-mono">--%</span>
-</div>
-            <div id="riskCard" class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500">
-                <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest">Cognitive Risk</p>
-                <h2 id="riskStatus" class="text-xl font-black uppercase italic">Analyzing...</h2>
-            </div>
-            <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500 relative overflow-hidden group">
+    
+    <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-cyan-400">
+        <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Efficiency ROI</p>
+        <h2 id="bioRoi" class="text-4xl md:text-5xl font-black font-mono truncate" title="Efficiency ROI">--</h2>
+    </div>
+
+    <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden">
+        <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Bio-Energy Core</p>
+        <div class="flex items-baseline gap-2 mb-4">
+            <span id="energyVal" class="text-4xl md:text-5xl font-black font-mono">--%</span>
+        </div>
+        <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+            <div id="energyBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <div id="riskCard" class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500">
+        <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest">Cognitive Risk</p>
+        <h2 id="riskStatus" class="text-xl font-black uppercase italic">Analyzing...</h2>
+    </div>
+
+    <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500 relative overflow-hidden group">
         <div class="absolute -right-6 -top-6 h-24 w-24 bg-rose-500/20 rounded-full blur-xl group-hover:bg-rose-500/40 transition-all"></div>
         <p class="text-[10px] font-bold text-rose-400 uppercase mb-2 tracking-widest">Stress Cost</p>
         <h2 id="stressCost" class="text-3xl md:text-4xl font-black font-mono text-white truncate" title="Total Cost">$0</h2>
         <p id="stressCount" class="text-[10px] font-bold text-rose-500 mt-1 uppercase tracking-widest">0 FUGAS</p>
     </div>
-        </div>
+
+</div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
