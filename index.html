@@ -772,30 +772,29 @@ const app = {
 
     // --- IA CONNECTIVITY ---
 async askAI() {
-        // 1. CAMBIAMOS EL NOMBRE PARA QUE TE PIDA LA LLAVE DE NUEVO SÍ O SÍ
-        let apiKey = localStorage.getItem("forjax_key_v2"); 
+        // 1. Pedir la llave si no existe
+        let apiKey = localStorage.getItem("forjax_key_final"); 
         
         if (!apiKey) {
             const { value: key } = await Swal.fire({
-                title: 'ACTIVAR CEREBRO IA',
+                title: 'CONECTAR CEREBRO',
                 input: 'text',
-                inputLabel: 'Pegá tu API Key nueva (sin espacios)',
+                inputLabel: 'Pegá tu API Key de Google',
                 inputPlaceholder: 'AIzaSy...',
-                text: 'El sistema necesita renovar credenciales.',
-                background: '#050b14', color: '#fff', confirmButtonColor: '#8b5cf6',
+                text: 'Usaremos la conexión V1 Estable.',
+                background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff',
                 showCancelButton: true
             });
             if (key) {
-                // Limpiamos espacios en blanco por si copiaste mal
-                const cleanKey = key.trim(); 
-                localStorage.setItem("forjax_key_v2", cleanKey);
-                apiKey = cleanKey;
+                // TRUCO: .trim() borra espacios invisibles al principio o final
+                apiKey = key.trim();
+                localStorage.setItem("forjax_key_final", apiKey);
             } else {
-                return; // Cancelado
+                return; 
             }
         }
 
-        // 2. Preparar los datos
+        // 2. Datos
         const rec = this.data.records;
         const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0);
         const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
@@ -805,21 +804,20 @@ async askAI() {
         rec.filter(r=>r.type==='expense').forEach(r=>{ cats[r.category]=(cats[r.category]||0)+r.amount });
         const topGastos = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0, 3).map(x=>`${x[0]}: $${x[1]}`).join(", ");
 
-        const prompt = `Actúa como un asesor financiero experto de Wall Street, sarcástico y breve.
-        Mis datos: Ingresos $${totalInc}, Gastos $${totalExp}, Balance $${balance}.
-        Mayor gasto en: ${topGastos}.
-        
-        Dame 3 consejos duros y directos. Usá emojis. Máximo 50 palabras.`;
+        const prompt = `Soy tu asesor financiero. 
+        Tus números: Ingresos $${totalInc}, Gastos $${totalExp}, Balance $${balance}.
+        Gastas mucho en: ${topGastos}.
+        Dame 3 consejos duros, directos y breves (max 50 palabras). Usá emojis.`;
 
         // 3. UI
         const box = document.getElementById("aiResponseBox");
         const txt = document.getElementById("aiText");
         box.classList.remove("hidden");
-        txt.innerHTML = "📡 CONECTANDO CON GEMINI 1.5 FLASH...";
+        txt.innerHTML = "📡 CONECTANDO CON SERVIDOR V1...";
 
         try {
-            // 4. URL CORREGIDA Y SIMPLIFICADA
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            // CAMBIO CLAVE: Usamos 'v1' en vez de 'v1beta' y 'gemini-1.5-flash'
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -829,20 +827,16 @@ async askAI() {
 
             const data = await response.json();
             
-            // Si hay error en la respuesta de Google
             if(data.error) {
-                console.error("Error de Google:", data.error);
-                // Si la llave es inválida, la borramos para que te la pida de nuevo la próxima
-                if(data.error.code === 400 || data.error.code === 403) {
-                    localStorage.removeItem("forjax_key_v2");
-                    throw new Error("Llave rechazada. Probá de nuevo.");
-                }
-                throw new Error(data.error.message);
+                console.error("Error Google:", data.error);
+                // Si falla, borramos la clave para probar de nuevo
+                localStorage.removeItem("forjax_key_final");
+                throw new Error(data.error.message || "Modelo no encontrado o Key inválida");
             }
 
             const aiMessage = data.candidates[0].content.parts[0].text;
 
-            // 5. Escribir respuesta
+            // Escribir respuesta
             txt.innerHTML = "";
             let i = 0;
             function typeWriter() {
@@ -855,7 +849,7 @@ async askAI() {
             typeWriter();
 
         } catch (error) {
-            txt.innerHTML = "❌ ERROR: " + error.message;
+            txt.innerHTML = "❌ ERROR: " + error.message + ". <br>Refrescá la página e intenta pegar la Key de nuevo.";
         }
     },
 
