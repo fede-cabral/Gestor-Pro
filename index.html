@@ -247,7 +247,7 @@
                     <div class="glass rounded-3xl overflow-hidden border border-white/5">
                         <div class="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
                             <h3 class="font-bold flex items-center gap-2 text-white"><i data-lucide="list-video"></i> Registros</h3>
-                            <button onclick="app.exportProExcel()" class="bg-emerald-500 text-black px-4 py-2 rounded-lg text-xs font-black flex items-center gap-2 hover:bg-emerald-400 transition-all shadow-neon-blue"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> EXPORTAR</button>
+                            <button onclick="app.exportProExcel()" class="bg-emerald-500 text-black px-4 py-2 rounded-lg text-xs font-black flex items-center gap-2 hover:bg-emerald-400 transition-all shadow-neon-blue"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> EXPORTAR PRO</button>
                         </div>
                         <div class="overflow-x-auto max-h-[400px] custom-scroll">
                             <table class="w-full text-left">
@@ -364,31 +364,23 @@ const app = {
     // --- LÓGICA SENIOR: FINANCIAL FORECASTING ---
     calculateForecasting() {
         const rec = this.data.records;
-        // 1. Obtener saldo actual
         const currentBalance = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0) - 
                                rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
 
-        // 2. Filtrar gastos de los últimos 30 días
         const now = new Date();
         const thirtyDaysAgo = new Date(); 
         thirtyDaysAgo.setDate(now.getDate() - 30);
         
         const recentExpenses = rec.filter(r => {
-            const parts = r.date.split('/'); // Asumiendo formato dd/mm/aaaa
+            const parts = r.date.split('/'); 
             const rDate = new Date(parts[2], parts[1]-1, parts[0]);
             return rDate >= thirtyDaysAgo && r.type === 'expense';
         });
 
-        // 3. Calcular Burn Rate (Gasto Promedio Diario)
         const totalRecentExpense = recentExpenses.reduce((a,c) => a + c.amount, 0);
-        // Evitamos división por cero si es el día 1, ponemos mínimo 1
         const burnRate = totalRecentExpense / 30; 
-
-        // 4. Calcular Runway (Días de vida financiera)
-        // Si el burnRate es 0, sobrevivís infinito (o hasta que te aburras)
         const runway = burnRate > 0 ? Math.floor(currentBalance / burnRate) : 9999;
 
-        // 5. Renderizar en el DOM
         const elBurn = document.getElementById("predBurn");
         const elRun = document.getElementById("predRunway");
         const elStatus = document.getElementById("predStatus");
@@ -409,7 +401,6 @@ const app = {
                 if(runway > 365) elRun.innerText = "+1 AÑO 🚀";
                 else elRun.innerText = runway + " DÍAS";
                 
-                // Colores dinámicos según salud financiera
                 if(runway < 30) {
                     elRun.className = "text-xl font-mono font-bold text-rose-400";
                     elStatus.innerText = "CUIDADO: Reserva baja";
@@ -536,6 +527,97 @@ const app = {
         a.click(); 
     },
     restoreData(i) { const f = i.files[0]; const r = new FileReader(); r.onload = (e) => { this.data = JSON.parse(e.target.result); this.save(); location.reload(); }; r.readAsText(f); },
+
+    // --- SENIOR EXCEL EXPORT START ---
+    exportProExcel() { 
+        Swal.fire({title:'Generando Reporte...', text:'Compilando hojas de cálculo', didOpen:()=>{Swal.showLoading()}});
+
+        const rec = this.data.records;
+        const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+
+        // 1. DATA PREP
+        const totalInc = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
+        const totalExp = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+        const stressExp = rec.filter(r=>r.type==='expense' && r.bio <= 30).reduce((a,c)=>a+c.amount,0);
+        
+        // Burn Rate
+        const now = new Date(); const d30 = new Date(); d30.setDate(now.getDate()-30);
+        const recentExp = rec.filter(r=>{const p=r.date.split('/');return new Date(p[2],p[1]-1,p[0])>=d30 && r.type==='expense'}).reduce((a,c)=>a+c.amount,0);
+        const burnRate = recentExp/30;
+        const runway = burnRate>0 ? Math.floor((totalInc-totalExp)/burnRate) : 999;
+
+        // --- HOJA 1: DASHBOARD ---
+        const ws_dash_data = [
+            [{v:"FORJAX FINANCIAL REPORT", t:'s', s:{font:{bold:true, sz:18, color:{rgb:"00F3FF"}}, fill:{fgColor:{rgb:"050B14"}}}}],
+            ["Generado el:", new Date().toLocaleDateString()],
+            ["Usuario:", this.user.toUpperCase()],
+            [],
+            [{v:"KPIs PRINCIPALES", t:'s', s:{font:{bold:true, color:{rgb:"FFFFFF"}}, fill:{fgColor:{rgb:"1E293B"}}}}],
+            ["Balance Total", {v: totalInc-totalExp, t:'n', z:'$#,##0'}],
+            ["Ingresos Totales", {v: totalInc, t:'n', z:'$#,##0'}],
+            ["Gastos Totales", {v: totalExp, t:'n', z:'$#,##0'}],
+            [],
+            [{v:"SALUD FINANCIERA (IA)", t:'s', s:{font:{bold:true, color:{rgb:"FFFFFF"}}, fill:{fgColor:{rgb:"7C3AED"}}}}],
+            ["Burn Rate (Diario)", {v: burnRate, t:'n', z:'$#,##0.00'}],
+            ["Runway (Días)", runway > 900 ? "Infinito" : runway],
+            ["Costo de Estrés (Fugas)", {v: stressExp, t:'n', z:'$#,##0'}],
+        ];
+
+        // --- HOJA 2: REGISTROS DETALLADOS ---
+        const ws_data_header = [
+            {v:"FECHA", s:{font:{bold:true, color:{rgb:"FFF"}}, fill:{fgColor:{rgb:"0F172A"}}}},
+            {v:"DESCRIPCIÓN", s:{font:{bold:true, color:{rgb:"FFF"}}, fill:{fgColor:{rgb:"0F172A"}}}},
+            {v:"CATEGORÍA", s:{font:{bold:true, color:{rgb:"FFF"}}, fill:{fgColor:{rgb:"0F172A"}}}},
+            {v:"TIPO", s:{font:{bold:true, color:{rgb:"FFF"}}, fill:{fgColor:{rgb:"0F172A"}}}},
+            {v:"MONTO", s:{font:{bold:true, color:{rgb:"FFF"}}, fill:{fgColor:{rgb:"0F172A"}}}},
+            {v:"BIO-ESTADO", s:{font:{bold:true, color:{rgb:"FFF"}}, fill:{fgColor:{rgb:"0F172A"}}}}
+        ];
+
+        const ws_data_rows = rec.map(r => [
+            r.date, 
+            r.desc, 
+            r.category, 
+            r.type === 'income' ? 'INGRESO' : 'GASTO',
+            {v: r.amount, t:'n', z:'$#,##0'},
+            r.bio === 100 ? 'ZEN' : (r.bio === 30 ? 'ESTRÉS' : 'NORMAL')
+        ]);
+
+        // --- HOJA 3: AUDITORIA BIO ---
+        const bioZen = rec.filter(r=>r.type==='expense' && r.bio===100).reduce((a,c)=>a+c.amount,0);
+        const bioNorm = rec.filter(r=>r.type==='expense' && r.bio===70).reduce((a,c)=>a+c.amount,0);
+        const bioStress = rec.filter(r=>r.type==='expense' && r.bio===30).reduce((a,c)=>a+c.amount,0);
+
+        const ws_bio_data = [
+            [{v:"ANÁLISIS DE GASTO EMOCIONAL", t:'s', s:{font:{bold:true, sz:14}}}],
+            [],
+            ["Estado Emocional", "Monto Gastado"],
+            ["🧘 ZEN (Decisión Consciente)", {v:bioZen, t:'n', z:'$#,##0'}],
+            ["😐 NORMAL (Rutina)", {v:bioNorm, t:'n', z:'$#,##0'}],
+            ["🔥 ESTRÉS (Impulsivo)", {v:bioStress, t:'n', z:'$#,##0'}]
+        ];
+
+        // CREAR LIBRO
+        const wb = XLSX.utils.book_new();
+        
+        const sheet1 = XLSX.utils.aoa_to_sheet(ws_dash_data);
+        const sheet2 = XLSX.utils.aoa_to_sheet([ws_data_header, ...ws_data_rows]);
+        const sheet3 = XLSX.utils.aoa_to_sheet(ws_bio_data);
+
+        // Anchos de columna
+        sheet1['!cols'] = [{wch:20}, {wch:20}];
+        sheet2['!cols'] = [{wch:12}, {wch:30}, {wch:15}, {wch:10}, {wch:15}, {wch:15}];
+        sheet3['!cols'] = [{wch:25}, {wch:20}];
+
+        XLSX.utils.book_append_sheet(wb, sheet1, "DASHBOARD_V30");
+        XLSX.utils.book_append_sheet(wb, sheet2, "REGISTROS_RAW");
+        XLSX.utils.book_append_sheet(wb, sheet3, "AUDITORIA_BIO");
+
+        setTimeout(() => {
+            XLSX.writeFile(wb, `FORJAX_Reporte_${this.user}_${new Date().toISOString().split('T')[0]}.xlsx`);
+            Swal.close();
+        }, 800);
+    },
+    // --- SENIOR EXCEL EXPORT END ---
 
     updateCategoryDropdown() {
         const select = document.getElementById("transCategory");
@@ -666,7 +748,7 @@ const app = {
         }
        
         this.updateCharts(inc, exp, rec);
-        this.calculateForecasting(); // <--- CORREGIDO AQUÍ (ERA "HIS")
+        this.calculateForecasting(); 
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
@@ -762,7 +844,6 @@ const app = {
     
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"); [f.value, t.value] = [t.value, f.value]; this.calcCurrency(); },
     togglePrivacy(){ this.privacy=!this.privacy; document.body.classList.toggle("privacy-active"); document.getElementById("btnPrivacy").classList.toggle("text-cyan-400"); },
-    exportProExcel() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha","Desc","Cat","Monto"],...this.data.records.map(r=>[r.date,r.desc,r.category,r.amount])]), "Data"); XLSX.writeFile(wb, "ForjaxV30.xlsx"); },
     initSession(){ const v=document.getElementById("userInput").value; if(v.length>2){localStorage.setItem("currentUser",v);location.reload();} },
     logout(){ localStorage.removeItem("currentUser");location.reload();}
 };
