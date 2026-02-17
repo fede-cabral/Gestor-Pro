@@ -771,58 +771,55 @@ const app = {
     logout(){ localStorage.removeItem("currentUser");location.reload();},
 
     // --- IA CONNECTIVITY ---
-    async askAI() {
-        // 1. Verificar si tenemos la API KEY guardada
-        let apiKey = localStorage.getItem("forjax_ai_key");
+async askAI() {
+        // 1. CAMBIAMOS EL NOMBRE PARA QUE TE PIDA LA LLAVE DE NUEVO SÍ O SÍ
+        let apiKey = localStorage.getItem("forjax_key_v2"); 
         
         if (!apiKey) {
             const { value: key } = await Swal.fire({
-                title: 'ACTIVAR MÓDULO IA',
+                title: 'ACTIVAR CEREBRO IA',
                 input: 'text',
-                inputLabel: 'Ingresá tu Google Gemini API Key',
+                inputLabel: 'Pegá tu API Key nueva (sin espacios)',
                 inputPlaceholder: 'AIzaSy...',
-                text: 'Obtenela gratis en aistudio.google.com',
+                text: 'El sistema necesita renovar credenciales.',
                 background: '#050b14', color: '#fff', confirmButtonColor: '#8b5cf6',
                 showCancelButton: true
             });
             if (key) {
-                localStorage.setItem("forjax_ai_key", key);
-                apiKey = key;
+                // Limpiamos espacios en blanco por si copiaste mal
+                const cleanKey = key.trim(); 
+                localStorage.setItem("forjax_key_v2", cleanKey);
+                apiKey = cleanKey;
             } else {
                 return; // Cancelado
             }
         }
 
-        // 2. Preparar los datos para la IA
+        // 2. Preparar los datos
         const rec = this.data.records;
         const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0);
         const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
         const balance = totalInc - totalExp;
         
-        // Sacar gastos por categoría para darle contexto
         const cats = {};
         rec.filter(r=>r.type==='expense').forEach(r=>{ cats[r.category]=(cats[r.category]||0)+r.amount });
         const topGastos = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0, 3).map(x=>`${x[0]}: $${x[1]}`).join(", ");
 
-        const prompt = `Actúa como un asesor financiero experto, sarcástico y directo (estilo Wall Street). 
-        Analiza mis datos actuales:
-        - Ingresos totales: $${totalInc}
-        - Gastos totales: $${totalExp}
-        - Balance: $${balance}
-        - Mis mayores fugas de dinero son: ${topGastos}
+        const prompt = `Actúa como un asesor financiero experto de Wall Street, sarcástico y breve.
+        Mis datos: Ingresos $${totalInc}, Gastos $${totalExp}, Balance $${balance}.
+        Mayor gasto en: ${topGastos}.
         
-        Dame 3 consejos cortos, accionables y duros. Si el balance es negativo, retame. Si es positivo, dame una idea de inversión agresiva. 
-        Usá emojis. Sé breve. No uses markdown complejo, solo texto.`;
+        Dame 3 consejos duros y directos. Usá emojis. Máximo 50 palabras.`;
 
-        // 3. UI de "Pensando..."
+        // 3. UI
         const box = document.getElementById("aiResponseBox");
         const txt = document.getElementById("aiText");
         box.classList.remove("hidden");
-        txt.innerHTML = "📡 CONECTANDO CON RED NEURONAL... ANALIZANDO PATRONES...";
+        txt.innerHTML = "📡 CONECTANDO CON GEMINI 1.5 FLASH...";
 
         try {
-            // 4. Llamada a la API de GEMINI
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`, {
+            // 4. URL CORREGIDA Y SIMPLIFICADA
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -832,29 +829,33 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
 
             const data = await response.json();
             
+            // Si hay error en la respuesta de Google
             if(data.error) {
+                console.error("Error de Google:", data.error);
+                // Si la llave es inválida, la borramos para que te la pida de nuevo la próxima
+                if(data.error.code === 400 || data.error.code === 403) {
+                    localStorage.removeItem("forjax_key_v2");
+                    throw new Error("Llave rechazada. Probá de nuevo.");
+                }
                 throw new Error(data.error.message);
             }
 
             const aiMessage = data.candidates[0].content.parts[0].text;
 
-            // 5. Mostrar resultado tipo máquina de escribir
+            // 5. Escribir respuesta
             txt.innerHTML = "";
             let i = 0;
-            const speed = 20;
             function typeWriter() {
                 if (i < aiMessage.length) {
                     txt.innerHTML += aiMessage.charAt(i) === '\n' ? '<br>' : aiMessage.charAt(i);
                     i++;
-                    setTimeout(typeWriter, speed);
+                    setTimeout(typeWriter, 20);
                 }
             }
             typeWriter();
 
         } catch (error) {
-            console.error(error);
-            txt.innerHTML = "❌ ERROR DE CONEXIÓN: Verifica tu API Key o tu internet. " + error.message;
-            localStorage.removeItem("forjax_ai_key"); // Borramos la key por si estaba mal
+            txt.innerHTML = "❌ ERROR: " + error.message;
         }
     },
 
