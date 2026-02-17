@@ -84,3 +84,64 @@ footer {
 .btn-export:hover{
     background:#0284c7;
 }
+
+/* --- ESTILOS DEL SIMULADOR DE INVERSIONES --- */
+.investment-container {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-top: 2rem; /* Separación de lo de arriba */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Sombrean suave */
+    border-left: 6px solid #2ecc71; /* Borde verde lateral */
+}
+
+.investment-card {
+    display: grid;
+    gap: 15px; /* Espacio entre inputs */
+    margin-top: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.btn-invest {
+    background-color: #2c3e50; /* Color oscuro serio */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-invest:hover {
+    background-color: #1a252f; /* Más oscuro al pasar el mouse */
+}
+
+.result-box {
+    background-color: #f1f8e9; /* Verde muy clarito de fondo */
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px dashed #2ecc71;
+}
+
+.hidden { display: none; } /* Clase para ocultar cosas */
+
+.profit-text { color: #27ae60; font-size: 1.5em; margin: 5px 0; }
+.total-text { color: #333; font-size: 1.2em; }
