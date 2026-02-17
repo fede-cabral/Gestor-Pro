@@ -1,0 +1,21 @@
+{
+  "name": "FORJAX V40",
+  "short_name": "Forjax",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#050b14",
+  "theme_color": "#00f3ff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "forjax_logo_metal.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "forjax_logo_metal.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
