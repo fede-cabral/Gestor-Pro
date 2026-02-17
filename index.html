@@ -738,7 +738,7 @@ const app = {
     togglePrivacy(){ this.privacy=!this.privacy; document.body.classList.toggle("privacy-active"); document.getElementById("btnPrivacy").classList.toggle("text-cyan-400"); },
     logout(){ localStorage.removeItem("currentUser");location.reload();},
 
-    // 1. INICIAR SESIÓN MANUAL
+    // 1. INICIAR SESIÓN MANUAL (Ahora dentro del objeto)
     initSession() { 
         const v = document.getElementById("userInput").value.trim(); 
         if (v.length > 1) {
@@ -759,7 +759,7 @@ const app = {
         }
     },
 
-    // 2. INICIAR SESIÓN BIOMÉTRICA
+    // 2. INICIAR SESIÓN BIOMÉTRICA (Ahora dentro del objeto)
     async bioLogin() {
         if (!window.PublicKeyCredential) {
             return Swal.fire({
