@@ -13,6 +13,12 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css"/>
 
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#050b14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="forjax_logo_metal.png">
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -95,11 +101,6 @@
         .blur-sensitive { transition: filter 0.3s ease; }
         body.privacy-active .blur-sensitive { filter: blur(8px); }
     </style>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#050b14">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="forjax_logo_metal.png">
 </head>
 
 <body class="min-h-[100dvh] pb-20 selection:bg-cyan-400 selection:text-black">
@@ -108,7 +109,7 @@
     <div class="relative w-full max-w-lg p-4 text-center fade-in">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-cyan-500/20 blur-[120px] rounded-full pointer-events-none"></div>
         
-<div class="glass relative p-8 md:p-12 rounded-3xl border-2 border-cyan-500/20 shadow-neon-blue flex flex-col items-center max-w-sm w-full">
+        <div class="glass relative p-8 md:p-12 rounded-3xl border-2 border-cyan-500/20 shadow-neon-blue flex flex-col items-center max-w-sm w-full mx-auto">
             
             <div class="mb-8 relative group">
                 <div class="absolute inset-0 bg-cyan-400 blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full"></div>
@@ -140,7 +141,6 @@
             <p class="mt-4 text-[10px] text-slate-600 font-mono text-center">
                 V40 ENTERPRISE • SECURE CONNECTION
             </p>
-        </div>
         </div>
     </div>
 </div>
@@ -736,17 +736,15 @@ const app = {
     
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"); [f.value, t.value] = [t.value, f.value]; this.calcCurrency(); },
     togglePrivacy(){ this.privacy=!this.privacy; document.body.classList.toggle("privacy-active"); document.getElementById("btnPrivacy").classList.toggle("text-cyan-400"); },
-    initSession(){ const v=document.getElementById("userInput").value; if(v.length>2){localStorage.setItem("currentUser",v);location.reload();} },
-    logout(){ localStorage.removeItem("currentUser");location.reload();}
-};
-app.init();
-initSession() { 
-        const v = document.getElementById("userInput").value.trim(); // .trim() quita espacios accidentales
+    logout(){ localStorage.removeItem("currentUser");location.reload();},
+
+    // 1. INICIAR SESIÓN MANUAL
+    initSession() { 
+        const v = document.getElementById("userInput").value.trim(); 
         if (v.length > 1) {
             localStorage.setItem("currentUser", v);
-            localStorage.setItem("lastUser", v); // GUARDAMOS PARA LA PRÓXIMA BIOMETRÍA
+            localStorage.setItem("lastUser", v); 
             
-            // Animación de éxito antes de recargar
             const btn = document.querySelector("button[onclick='app.initSession()']");
             if(btn) btn.innerHTML = "🔓 ACCEDIENDO...";
             
@@ -761,9 +759,8 @@ initSession() {
         }
     },
 
-    // 2. INICIAR SESIÓN BIOMÉTRICA (Actualizado)
+    // 2. INICIAR SESIÓN BIOMÉTRICA
     async bioLogin() {
-        // Verificar si el navegador soporta biometría básica
         if (!window.PublicKeyCredential) {
             return Swal.fire({
                 icon: 'info', 
@@ -773,7 +770,6 @@ initSession() {
             });
         }
 
-        // Verificar si ya conocemos al usuario (si entró alguna vez antes)
         const lastUser = localStorage.getItem("lastUser");
         if (!lastUser) {
             return Swal.fire({
@@ -785,7 +781,6 @@ initSession() {
         }
 
         try {
-            // Invocamos la seguridad nativa del OS
             const challenge = new Uint8Array(32);
             window.crypto.getRandomValues(challenge);
             
@@ -803,10 +798,7 @@ initSession() {
                 attestation: "direct"
             };
 
-            // Esto hace saltar el popup (Huella/Cara)
             await navigator.credentials.create({ publicKey });
-
-            // SI PASA EL AWAIT, ES QUE EL CELULAR DIJO "OK" ✅
             
             Swal.fire({
                 icon: 'success',
@@ -821,7 +813,6 @@ initSession() {
 
         } catch (error) {
             console.error(error);
-            // El usuario canceló o falló la huella
             Swal.fire({
                 toast: true, position: 'bottom', icon: 'error', 
                 title: 'No se pudo verificar la huella', 
@@ -829,8 +820,19 @@ initSession() {
                 background: '#1e293b', color:'#fff'
             });
         }
-    },
-// FUNCIÓN DE INVERSIONES
+    }
+};
+
+app.init();
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('App lista para instalar: ', reg.scope))
+            .catch(err => console.log('Error SW: ', err));
+    });
+}
+
 function calculateInvestment() {
     let capital = parseFloat(document.getElementById('investCapital').value);
     let days = parseFloat(document.getElementById('investDays').value);
