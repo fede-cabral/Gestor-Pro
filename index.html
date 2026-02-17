@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V40 ENTERPRISE</title>
+    <title>FORJAX Terminal - V50 AI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -116,7 +116,7 @@
                 <img src="forjax_logo_metal.png" alt="FORJAX Logo" class="relative w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-[0_0_25px_rgba(0,243,255,0.6)] hover:scale-105 transition-transform duration-500">
             </div>
 
-<div class="w-full space-y-4 z-10">
+            <div class="w-full space-y-4 z-10">
                 <div class="space-y-3">
                     <div class="relative group">
                         <label class="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Usuario / ID</label>
@@ -146,7 +146,7 @@
             </button>
             
             <p class="mt-4 text-[10px] text-slate-600 font-mono text-center">
-                V40 ENTERPRISE • SECURE CONNECTION
+                V50 AI • SECURE CONNECTION
             </p>
         </div>
     </div>
@@ -177,6 +177,31 @@
                     </a>
                     <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black shadow-neon-blue transition-all">ESTE MES</button>
                     <button onclick="app.setFilter('all')" id="filterAll" class="px-6 py-2 rounded-md text-xs font-bold text-slate-400 hover:text-white transition-all">HISTÓRICO</button>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-3xl mb-10 border border-purple-500/30 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-purple-900/10 group-hover:bg-purple-900/20 transition-all"></div>
+                <div class="absolute -right-10 -top-10 bg-purple-500 blur-[100px] w-64 h-64 opacity-20"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 bg-black rounded-full border border-purple-500 shadow-neon-purple animate-pulse">
+                            <i data-lucide="bot" class="w-8 h-8 text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-white tracking-tight">FORJAX AI ADVISOR</h3>
+                            <p class="text-xs text-purple-300 font-mono">POWERED BY GEMINI NEURAL ENGINE</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="app.askAI()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2 hover:scale-105">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i> ANALIZAR MIS FINANZAS
+                    </button>
+                </div>
+                
+                <div id="aiResponseBox" class="hidden mt-6 p-6 bg-black/40 rounded-xl border-l-4 border-purple-500">
+                    <p id="aiText" class="text-sm font-mono text-slate-300 leading-relaxed typing-effect"></p>
                 </div>
             </div>
 
@@ -745,20 +770,105 @@ const app = {
     togglePrivacy(){ this.privacy=!this.privacy; document.body.classList.toggle("privacy-active"); document.getElementById("btnPrivacy").classList.toggle("text-cyan-400"); },
     logout(){ localStorage.removeItem("currentUser");location.reload();},
 
-    // 1. INICIAR SESIÓN MANUAL (Ahora dentro del objeto)
-   initSession() { 
+    // --- IA CONNECTIVITY ---
+    async askAI() {
+        // 1. Verificar si tenemos la API KEY guardada
+        let apiKey = localStorage.getItem("forjax_ai_key");
+        
+        if (!apiKey) {
+            const { value: key } = await Swal.fire({
+                title: 'ACTIVAR MÓDULO IA',
+                input: 'text',
+                inputLabel: 'Ingresá tu Google Gemini API Key',
+                inputPlaceholder: 'AIzaSy...',
+                text: 'Obtenela gratis en aistudio.google.com',
+                background: '#050b14', color: '#fff', confirmButtonColor: '#8b5cf6',
+                showCancelButton: true
+            });
+            if (key) {
+                localStorage.setItem("forjax_ai_key", key);
+                apiKey = key;
+            } else {
+                return; // Cancelado
+            }
+        }
+
+        // 2. Preparar los datos para la IA
+        const rec = this.data.records;
+        const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0);
+        const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
+        const balance = totalInc - totalExp;
+        
+        // Sacar gastos por categoría para darle contexto
+        const cats = {};
+        rec.filter(r=>r.type==='expense').forEach(r=>{ cats[r.category]=(cats[r.category]||0)+r.amount });
+        const topGastos = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0, 3).map(x=>`${x[0]}: $${x[1]}`).join(", ");
+
+        const prompt = `Actúa como un asesor financiero experto, sarcástico y directo (estilo Wall Street). 
+        Analiza mis datos actuales:
+        - Ingresos totales: $${totalInc}
+        - Gastos totales: $${totalExp}
+        - Balance: $${balance}
+        - Mis mayores fugas de dinero son: ${topGastos}
+        
+        Dame 3 consejos cortos, accionables y duros. Si el balance es negativo, retame. Si es positivo, dame una idea de inversión agresiva. 
+        Usá emojis. Sé breve. No uses markdown complejo, solo texto.`;
+
+        // 3. UI de "Pensando..."
+        const box = document.getElementById("aiResponseBox");
+        const txt = document.getElementById("aiText");
+        box.classList.remove("hidden");
+        txt.innerHTML = "📡 CONECTANDO CON RED NEURONAL... ANALIZANDO PATRONES...";
+
+        try {
+            // 4. Llamada a la API de GEMINI
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
+            });
+
+            const data = await response.json();
+            
+            if(data.error) {
+                throw new Error(data.error.message);
+            }
+
+            const aiMessage = data.candidates[0].content.parts[0].text;
+
+            // 5. Mostrar resultado tipo máquina de escribir
+            txt.innerHTML = "";
+            let i = 0;
+            const speed = 20;
+            function typeWriter() {
+                if (i < aiMessage.length) {
+                    txt.innerHTML += aiMessage.charAt(i) === '\n' ? '<br>' : aiMessage.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+            typeWriter();
+
+        } catch (error) {
+            console.error(error);
+            txt.innerHTML = "❌ ERROR DE CONEXIÓN: Verifica tu API Key o tu internet. " + error.message;
+            localStorage.removeItem("forjax_ai_key"); // Borramos la key por si estaba mal
+        }
+    },
+
+    // 1. INICIAR SESIÓN MANUAL (CON PASSWORD)
+    initSession() { 
         const u = document.getElementById("userInput").value.trim().toUpperCase(); 
         const p = document.getElementById("userPass").value.trim();
 
-        // Validaciones básicas
         if (u.length < 2) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Ingresá un usuario válido'});
         if (p.length < 4) return Swal.fire({toast:true, position:'top', icon:'warning', title:'La contraseña debe tener 4+ caracteres'});
 
-        // Buscamos si este usuario ya tiene contraseña guardada
         const savedPass = localStorage.getItem(u + "_password");
 
         if (!savedPass) {
-            // CASO 1: USUARIO NUEVO (O PRIMERA VEZ PONIENDO CLAVE)
             Swal.fire({
                 title: 'Crear Credenciales',
                 text: `¿Querés registrar "${u}" con esa contraseña?`,
@@ -769,17 +879,14 @@ const app = {
                 background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Guardamos la contraseña y entramos
                     localStorage.setItem(u + "_password", p);
                     this.completeLogin(u);
                 }
             });
         } else {
-            // CASO 2: USUARIO EXISTENTE (VERIFICAR)
             if (p === savedPass) {
                 this.completeLogin(u);
             } else {
-                // Contraseña incorrecta
                 Swal.fire({
                     icon: 'error',
                     title: 'ACCESO DENEGADO',
@@ -787,7 +894,6 @@ const app = {
                     background: '#050b14', color: '#fff', 
                     timer: 2000, showConfirmButton: false
                 });
-                // Efecto visual de error en el input
                 document.getElementById("userPass").value = "";
                 document.getElementById("userPass").classList.add("border-rose-500");
                 setTimeout(()=>document.getElementById("userPass").classList.remove("border-rose-500"), 500);
@@ -795,10 +901,9 @@ const app = {
         }
     },
 
-    // Función auxiliar para no repetir código
     completeLogin(user) {
         localStorage.setItem("currentUser", user);
-        localStorage.setItem("lastUser", user); // Esto habilita la huella para la próxima
+        localStorage.setItem("lastUser", user); 
         
         const btn = document.querySelector("button[onclick='app.initSession()']");
         if(btn) btn.innerHTML = "🔓 ACCEDIENDO...";
@@ -806,7 +911,7 @@ const app = {
         setTimeout(() => location.reload(), 500);
     },
 
-    // 2. INICIAR SESIÓN BIOMÉTRICA (Ahora dentro del objeto)
+    // 2. INICIAR SESIÓN BIOMÉTRICA
     async bioLogin() {
         if (!window.PublicKeyCredential) {
             return Swal.fire({
