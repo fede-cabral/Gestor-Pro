@@ -21,7 +21,7 @@
                     fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
                     colors: { dark: '#050b14', neon: '#00f3ff' },
                     boxShadow: { 
-                        'neon-blue': '0 0 20px rgba(0, 243, 255, 0.5)', // Sombra neón más intensa para el login
+                        'neon-blue': '0 0 20px rgba(0, 243, 255, 0.5)',
                         'neon-purple': '0 0 15px rgba(139, 92, 246, 0.3)'
                     },
                     animation: { 'spin-slow': 'spin 3s linear infinite' }
@@ -35,7 +35,7 @@
         
         body { font-family: 'Outfit', sans-serif; transition: background-color 0.3s, color 0.3s; }
         
-        /* DARK MODE - Fondo con textura similar a la imagen del logo */
+        /* DARK MODE */
         .dark body { 
             background-color: #050b14; 
             color: #f8fafc; 
@@ -72,7 +72,7 @@
         .nav-btn { padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; }
         .dark .nav-btn { color: #94a3b8; } .dark .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
         .light .nav-btn { color: #64748b; } .light .nav-btn:hover { color: #0f172a; background: rgba(0,0,0,0.05); }
-         
+          
         .nav-btn.active { box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
         .dark .nav-btn.active { background: #00f3ff; color: #050b14; }
         .light .nav-btn.active { background: #0284c7; color: white; box-shadow: 0 0 20px rgba(2, 132, 199, 0.3); }
@@ -118,7 +118,6 @@
                 <button onclick="app.initSession()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-black py-4 rounded-xl transition-all shadow-neon-blue hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] relative overflow-hidden group">
                     <span class="relative z-10 tracking-wider">INICIAR SISTEMA</span>
                     <div class="absolute inset-0 h-full w-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    
                 </button>
             </div>
         </div>
@@ -146,9 +145,38 @@
                 <div><h2 class="text-4xl font-black tracking-tighter text-white">DASHBOARD</h2><p class="text-xs font-mono text-cyan-500">SYSTEM STATUS: ONLINE</p></div>
                 <div class="glass p-1 rounded-lg flex gap-1">
                     <a href="bios.html" class="nav-btn hover:text-cyan-400 transition-all">
-    <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> BIOS TERMINAL
-</a>                    <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black shadow-neon-blue transition-all">ESTE MES</button>
+                        <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> BIOS TERMINAL
+                    </a>
+                    <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black shadow-neon-blue transition-all">ESTE MES</button>
                     <button onclick="app.setFilter('all')" id="filterAll" class="px-6 py-2 rounded-md text-xs font-bold text-slate-400 hover:text-white transition-all">HISTÓRICO</button>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-2xl mb-10 border-l-4 border-purple-500 relative overflow-hidden">
+                <div class="absolute right-0 top-0 p-4 opacity-5"><i data-lucide="brain-circuit" class="w-32 h-32"></i></div>
+                <div class="flex flex-col md:flex-row justify-between items-end relative z-10 gap-6">
+                    <div>
+                        <h3 class="text-xs font-black uppercase tracking-widest text-purple-400 mb-2 flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-4 h-4"></i> Algoritmo de Predicción
+                        </h3>
+                        <div class="flex gap-8">
+                            <div>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase">Burn Rate (Diario)</p>
+                                <p id="predBurn" class="text-xl font-mono font-bold text-white">Calculando...</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase">Runway (Supervivencia)</p>
+                                <p id="predRunway" class="text-xl font-mono font-bold text-emerald-400">-- días</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Proyección a 30 días</p>
+                        <div id="predBarContainer" class="w-48 h-2 bg-slate-800 rounded-full overflow-hidden mb-1">
+                            <div id="predBar" class="h-full bg-gradient-to-r from-purple-500 to-cyan-400 w-0 transition-all duration-1000"></div>
+                        </div>
+                        <p id="predStatus" class="text-xs font-black text-white">Analizando patrones...</p>
+                    </div>
                 </div>
             </div>
 
@@ -183,25 +211,25 @@
                         <h3 class="flex items-center gap-2 text-lg font-bold mb-6 text-white relative z-10"><i data-lucide="plus" class="text-cyan-400"></i> Nueva Transacción</h3>
                         <div class="space-y-4 relative z-10">
                             <div><label class="text-[10px] font-bold text-slate-500 ml-1">DETALLE</label><input id="transDesc" type="text" class="w-full p-4 rounded-xl font-bold outline-none transition-all"></div>
-                           <div class="flex gap-3">
-    <div class="w-1/3">
-        <label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label>
-        <input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all">
-    </div>
-    <div class="w-1/3 flex flex-col">
-        <label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label>
-        <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer"></select>
-    </div>
-    <div class="w-1/3">
-        <label class="text-[10px] font-bold text-cyan-500 ml-1">BIO-ESTADO</label>
-        <select id="transBio" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer border border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
-            <option value="100">🧘 Zen</option>
-            <option value="70">😐 Normal</option>
-            <option value="30">🔥 Estrés</option>
-        </select>
-    </div>
-</div>
-<input id="customCategoryInput" type="text" placeholder="Escribe la categoría..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none transition-all border border-cyan-500/50 hidden animate-pulse">
+                            <div class="flex gap-3">
+                                <div class="w-1/3">
+                                    <label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label>
+                                    <input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all">
+                                </div>
+                                <div class="w-1/3 flex flex-col">
+                                    <label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label>
+                                    <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer"></select>
+                                </div>
+                                <div class="w-1/3">
+                                    <label class="text-[10px] font-bold text-cyan-500 ml-1">BIO-ESTADO</label>
+                                    <select id="transBio" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer border border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
+                                        <option value="100">🧘 Zen</option>
+                                        <option value="70">😐 Normal</option>
+                                        <option value="30">🔥 Estrés</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input id="customCategoryInput" type="text" placeholder="Escribe la categoría..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none transition-all border border-cyan-500/50 hidden animate-pulse">
                             <div class="grid grid-cols-2 gap-3 pt-4">
                                 <button onclick="app.addRecord('income')" class="bg-emerald-500/10 hover:bg-emerald-500 hover:text-black border border-emerald-500/50 text-emerald-400 py-4 rounded-xl font-black tracking-widest transition-all">INGRESO</button>
                                 <button onclick="app.addRecord('expense')" class="bg-rose-500/10 hover:bg-rose-500 hover:text-black border border-rose-500/50 text-rose-400 py-4 rounded-xl font-black tracking-widest transition-all">GASTO</button>
@@ -232,35 +260,36 @@
                     </div>
                 </div>
             </div>
-        <div class="glass p-8 rounded-3xl mt-10 border border-cyan-500/20 fade-in">
-    <h2 class="text-2xl font-black text-white mb-6 flex items-center gap-2">
-        <i data-lucide="trending-up" class="text-emerald-400"></i> SIMULADOR PLAZO FIJO
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-            <label class="text-[10px] font-bold text-slate-500 ml-1">CAPITAL ($)</label>
-            <input id="investCapital" type="number" placeholder="Ej: 100000" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
-        </div>
-        <div>
-            <label class="text-[10px] font-bold text-slate-500 ml-1">DÍAS</label>
-            <input id="investDays" type="number" placeholder="Ej: 30" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
-        </div>
-        <div>
-            <label class="text-[10px] font-bold text-slate-500 ml-1">TASA ANUAL (%)</label>
-            <input id="investRate" type="number" placeholder="Ej: 110" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
-        </div>
-    </div>
-    <button onclick="calculateInvestment()" class="w-full mt-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl transition-all shadow-lg uppercase tracking-widest">
-        Calcular Rendimiento
-    </button>
 
-    <div id="resultBox" class="hidden mt-6 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-center">
-        <p class="text-xs text-emerald-400 font-bold uppercase mb-1">Interés Ganado</p>
-        <h3 id="showInterest" class="text-3xl font-black text-white mb-2">$0.00</h3>
-        <p class="text-xs text-slate-500 font-bold uppercase mb-1">Total al Vencimiento</p>
-        <h4 id="showTotal" class="text-xl font-bold text-emerald-400">$0.00</h4>
-    </div>
-</div> 
+            <div class="glass p-8 rounded-3xl mt-10 border border-cyan-500/20 fade-in">
+                <h2 class="text-2xl font-black text-white mb-6 flex items-center gap-2">
+                    <i data-lucide="trending-up" class="text-emerald-400"></i> SIMULADOR PLAZO FIJO
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 ml-1">CAPITAL ($)</label>
+                        <input id="investCapital" type="number" placeholder="Ej: 100000" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 ml-1">DÍAS</label>
+                        <input id="investDays" type="number" placeholder="Ej: 30" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 ml-1">TASA ANUAL (%)</label>
+                        <input id="investRate" type="number" placeholder="Ej: 110" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
+                    </div>
+                </div>
+                <button onclick="calculateInvestment()" class="w-full mt-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl transition-all shadow-lg uppercase tracking-widest">
+                    Calcular Rendimiento
+                </button>
+
+                <div id="resultBox" class="hidden mt-6 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-center">
+                    <p class="text-xs text-emerald-400 font-bold uppercase mb-1">Interés Ganado</p>
+                    <h3 id="showInterest" class="text-3xl font-black text-white mb-2">$0.00</h3>
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">Total al Vencimiento</p>
+                    <h4 id="showTotal" class="text-xl font-bold text-emerald-400">$0.00</h4>
+                </div>
+            </div> 
         </div>
 
         <div id="viewSubs" class="hidden fade-in">
@@ -332,6 +361,74 @@
 
 <script>
 const app = {
+    // --- LÓGICA SENIOR: FINANCIAL FORECASTING ---
+    calculateForecasting() {
+        const rec = this.data.records;
+        // 1. Obtener saldo actual
+        const currentBalance = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0) - 
+                               rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+
+        // 2. Filtrar gastos de los últimos 30 días
+        const now = new Date();
+        const thirtyDaysAgo = new Date(); 
+        thirtyDaysAgo.setDate(now.getDate() - 30);
+        
+        const recentExpenses = rec.filter(r => {
+            const parts = r.date.split('/'); // Asumiendo formato dd/mm/aaaa
+            const rDate = new Date(parts[2], parts[1]-1, parts[0]);
+            return rDate >= thirtyDaysAgo && r.type === 'expense';
+        });
+
+        // 3. Calcular Burn Rate (Gasto Promedio Diario)
+        const totalRecentExpense = recentExpenses.reduce((a,c) => a + c.amount, 0);
+        // Evitamos división por cero si es el día 1, ponemos mínimo 1
+        const burnRate = totalRecentExpense / 30; 
+
+        // 4. Calcular Runway (Días de vida financiera)
+        // Si el burnRate es 0, sobrevivís infinito (o hasta que te aburras)
+        const runway = burnRate > 0 ? Math.floor(currentBalance / burnRate) : 9999;
+
+        // 5. Renderizar en el DOM
+        const elBurn = document.getElementById("predBurn");
+        const elRun = document.getElementById("predRunway");
+        const elStatus = document.getElementById("predStatus");
+        const elBar = document.getElementById("predBar");
+        
+        if(elBurn) {
+            const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+            
+            elBurn.innerText = fmt.format(burnRate) + " / día";
+            
+            if (currentBalance <= 0) {
+                elRun.innerText = "0 DÍAS 💀";
+                elRun.className = "text-xl font-mono font-bold text-rose-500 animate-pulse";
+                elStatus.innerText = "ALERTA: QUIEBRA TÉCNICA";
+                elBar.style.width = "5%";
+                elBar.className = "h-full bg-rose-500 w-0 transition-all duration-1000";
+            } else {
+                if(runway > 365) elRun.innerText = "+1 AÑO 🚀";
+                else elRun.innerText = runway + " DÍAS";
+                
+                // Colores dinámicos según salud financiera
+                if(runway < 30) {
+                    elRun.className = "text-xl font-mono font-bold text-rose-400";
+                    elStatus.innerText = "CUIDADO: Reserva baja";
+                    elBar.className = "h-full bg-rose-500 transition-all duration-1000";
+                    elBar.style.width = "20%";
+                } else if (runway < 90) {
+                    elRun.className = "text-xl font-mono font-bold text-yellow-400";
+                    elStatus.innerText = "ESTABLE: Precaución";
+                    elBar.className = "h-full bg-yellow-400 transition-all duration-1000";
+                    elBar.style.width = "50%";
+                } else {
+                    elRun.className = "text-xl font-mono font-bold text-emerald-400";
+                    elStatus.innerText = "SÓLIDO: Crecimiento";
+                    elBar.className = "h-full bg-emerald-400 transition-all duration-1000";
+                    elBar.style.width = "100%";
+                }
+            }
+        }
+    },
     user: localStorage.getItem("currentUser"),
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
@@ -480,6 +577,7 @@ const app = {
 
         if(!d || a<=0) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Datos incompletos', showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'});
         
+
         // Guardamos incluyendo el bio-estado (b)
         this.data.records.unshift({ 
             id: Date.now(), 
@@ -513,6 +611,7 @@ const app = {
     },
 
     render() {
+        
         // 1. Verificar Modo Pánico desde la BIOS
         const panicMode = localStorage.getItem("forjax_panic_mode") === "true";
 
@@ -567,6 +666,7 @@ const app = {
         }
        
         this.updateCharts(inc, exp, rec);
+        this.calculateForecasting(); // <--- CORREGIDO AQUÍ (ERA "HIS")
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
