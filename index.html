@@ -746,24 +746,64 @@ const app = {
     logout(){ localStorage.removeItem("currentUser");location.reload();},
 
     // 1. INICIAR SESIÓN MANUAL (Ahora dentro del objeto)
-    initSession() { 
-        const v = document.getElementById("userInput").value.trim(); 
-        if (v.length > 1) {
-            localStorage.setItem("currentUser", v);
-            localStorage.setItem("lastUser", v); 
-            
-            const btn = document.querySelector("button[onclick='app.initSession()']");
-            if(btn) btn.innerHTML = "🔓 ACCEDIENDO...";
-            
-            setTimeout(() => location.reload(), 500);
-        } else {
+   initSession() { 
+        const u = document.getElementById("userInput").value.trim().toUpperCase(); 
+        const p = document.getElementById("userPass").value.trim();
+
+        // Validaciones básicas
+        if (u.length < 2) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Ingresá un usuario válido'});
+        if (p.length < 4) return Swal.fire({toast:true, position:'top', icon:'warning', title:'La contraseña debe tener 4+ caracteres'});
+
+        // Buscamos si este usuario ya tiene contraseña guardada
+        const savedPass = localStorage.getItem(u + "_password");
+
+        if (!savedPass) {
+            // CASO 1: USUARIO NUEVO (O PRIMERA VEZ PONIENDO CLAVE)
             Swal.fire({
-                toast: true, position: 'top', icon: 'warning', 
-                title: 'Escribí un usuario válido', 
-                showConfirmButton: false, timer: 1500,
-                background: this.theme === 'dark' ? '#1e293b' : '#fff'
+                title: 'Crear Credenciales',
+                text: `¿Querés registrar "${u}" con esa contraseña?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, Registrar',
+                cancelButtonText: 'Cancelar',
+                background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Guardamos la contraseña y entramos
+                    localStorage.setItem(u + "_password", p);
+                    this.completeLogin(u);
+                }
             });
+        } else {
+            // CASO 2: USUARIO EXISTENTE (VERIFICAR)
+            if (p === savedPass) {
+                this.completeLogin(u);
+            } else {
+                // Contraseña incorrecta
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ACCESO DENEGADO',
+                    text: 'Contraseña incorrecta',
+                    background: '#050b14', color: '#fff', 
+                    timer: 2000, showConfirmButton: false
+                });
+                // Efecto visual de error en el input
+                document.getElementById("userPass").value = "";
+                document.getElementById("userPass").classList.add("border-rose-500");
+                setTimeout(()=>document.getElementById("userPass").classList.remove("border-rose-500"), 500);
+            }
         }
+    },
+
+    // Función auxiliar para no repetir código
+    completeLogin(user) {
+        localStorage.setItem("currentUser", user);
+        localStorage.setItem("lastUser", user); // Esto habilita la huella para la próxima
+        
+        const btn = document.querySelector("button[onclick='app.initSession()']");
+        if(btn) btn.innerHTML = "🔓 ACCEDIENDO...";
+        
+        setTimeout(() => location.reload(), 500);
     },
 
     // 2. INICIAR SESIÓN BIOMÉTRICA (Ahora dentro del objeto)
