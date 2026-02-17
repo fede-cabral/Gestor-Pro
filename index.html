@@ -232,6 +232,35 @@
                     </div>
                 </div>
             </div>
+        <div class="glass p-8 rounded-3xl mt-10 border border-cyan-500/20 fade-in">
+    <h2 class="text-2xl font-black text-white mb-6 flex items-center gap-2">
+        <i data-lucide="trending-up" class="text-emerald-400"></i> SIMULADOR PLAZO FIJO
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+            <label class="text-[10px] font-bold text-slate-500 ml-1">CAPITAL ($)</label>
+            <input id="investCapital" type="number" placeholder="Ej: 100000" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
+        </div>
+        <div>
+            <label class="text-[10px] font-bold text-slate-500 ml-1">DÍAS</label>
+            <input id="investDays" type="number" placeholder="Ej: 30" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
+        </div>
+        <div>
+            <label class="text-[10px] font-bold text-slate-500 ml-1">TASA ANUAL (%)</label>
+            <input id="investRate" type="number" placeholder="Ej: 110" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all">
+        </div>
+    </div>
+    <button onclick="calculateInvestment()" class="w-full mt-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl transition-all shadow-lg uppercase tracking-widest">
+        Calcular Rendimiento
+    </button>
+
+    <div id="resultBox" class="hidden mt-6 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-center">
+        <p class="text-xs text-emerald-400 font-bold uppercase mb-1">Interés Ganado</p>
+        <h3 id="showInterest" class="text-3xl font-black text-white mb-2">$0.00</h3>
+        <p class="text-xs text-slate-500 font-bold uppercase mb-1">Total al Vencimiento</p>
+        <h4 id="showTotal" class="text-xl font-bold text-emerald-400">$0.00</h4>
+    </div>
+</div> 
         </div>
 
         <div id="viewSubs" class="hidden fade-in">
@@ -638,6 +667,29 @@ const app = {
     logout(){ localStorage.removeItem("currentUser");location.reload();}
 };
 app.init();
+// FUNCIÓN DE INVERSIONES
+function calculateInvestment() {
+    let capital = parseFloat(document.getElementById('investCapital').value);
+    let days = parseFloat(document.getElementById('investDays').value);
+    let rate = parseFloat(document.getElementById('investRate').value);
+
+    if (!capital || !days || !rate) {
+        Swal.fire({ icon: 'error', title: 'Faltan datos', text: 'Completá todos los campos.' });
+        return; 
+    }
+
+    let interest = (capital * rate * days) / 36500; // Fórmula TNA simple
+    let total = capital + interest;
+
+    document.getElementById('showInterest').innerText = "+ $" + interest.toLocaleString('es-AR', {minimumFractionDigits: 2});
+    document.getElementById('showTotal').innerText = "$" + total.toLocaleString('es-AR', {minimumFractionDigits: 2});
+
+    let resultBox = document.getElementById('resultBox');
+    resultBox.classList.remove('hidden');
+    
+    // Confeti de éxito
+    if(typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+}
 </script>
 </body>
 </html>
