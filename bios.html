@@ -2,221 +2,242 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX BIOS v2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FORJAX BIOS - MOBILE DECK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
+        /* RESET & BASICS */
         body {
             background-color: #000;
-            color: #33ff00;
-            font-family: 'VT323', monospace;
+            color: #0f0;
+            font-family: 'Share Tech Mono', monospace;
             overflow: hidden;
-            margin: 0;
-            height: 100vh;
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            line-height: 1.2;
-            cursor: none; /* Oculta el mouse para más realismo */
+            height: 100dvh; /* Dynamic Height para móviles */
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* EFECTO CRT (Monitor Viejo) */
-        .crt::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
+        /* CRT SCANLINES & FLICKER */
+        .scanlines {
+            position: fixed; top: 0; left: 0; w-full; h-full; pointer-events: none; z-index: 10;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
+            background-size: 100% 3px, 3px 100%;
+            animation: flicker 0.15s infinite;
         }
+        @keyframes flicker { 0% { opacity: 0.9; } 50% { opacity: 1.0; } 100% { opacity: 0.9; } }
 
-        .crt::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
-            z-index: 2;
-            pointer-events: none;
+        /* TERMINAL AREA */
+        #terminal {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            text-transform: uppercase;
+            font-size: 14px;
+            text-shadow: 0 0 5px #0f0;
+            padding-bottom: 20px;
         }
-
-        .text-glow { text-shadow: 0 0 5px #33ff00, 0 0 10px #33ff00; }
-        .text-red-glow { color: #ff0000; text-shadow: 0 0 5px #ff0000; }
-        .text-yellow-glow { color: #ffff00; text-shadow: 0 0 5px #ffff00; }
-
-        .blink { animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-
-        /* Scrollbar oculta pero funcional */
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
         
-        #console { padding: 2rem; padding-bottom: 5rem; height: 100%; overflow-y: auto; }
+        /* COLORS & EFFECTS */
+        .sys-ok { color: #0f0; text-shadow: 0 0 8px #0f0; }
+        .sys-warn { color: #ffff00; text-shadow: 0 0 8px #ffff00; }
+        .sys-crit { color: #ff003c; text-shadow: 0 0 10px #ff003c; font-weight: bold; }
+        .sys-dim { color: #005500; }
+
+        /* GLITCH TEXT EFFECT */
+        .glitch { animation: glitch 1s linear infinite; }
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px,0) skew(0deg); }
+            4%, 60% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
+        }
+
+        /* MOBILE CONTROLS (FOOTER) */
+        #controls {
+            height: 80px;
+            border-top: 2px solid #005500;
+            background: #050b14;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1px;
+            z-index: 20;
+        }
+        .btn-bio {
+            background: #001100;
+            color: #005500;
+            border: none;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+        }
+        .btn-bio:active { background: #0f0; color: #000; }
+        .btn-bio.panic-active { background: #ff003c; color: #fff; animation: pulseRed 0.5s infinite; }
+        
+        @keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* SHUTDOWN ANIMATION */
+        .shutdown { animation: turn-off 0.55s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        @keyframes turn-off {
+            0% { transform: scale(1, 1.3) translate3d(0, 0, 0); filter: brightness(1); opacity: 1; }
+            60% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(10); }
+            100% { transform: scale(0.000, 0.0001) translate3d(0, 0, 0); filter: brightness(50); opacity: 0; }
+        }
     </style>
 </head>
-<body class="crt">
+<body>
 
-    <div id="console"></div>
+    <div class="scanlines"></div>
+    
+    <div id="terminal"></div>
+
+    <div id="controls">
+        <button class="btn-bio" onclick="cmdReboot()">
+            <span>[ R ]</span>
+            <span class="text-[10px]">REBOOT</span>
+        </button>
+        <button class="btn-bio" id="btnPanic" onclick="cmdPanic()">
+            <span>[ P ]</span>
+            <span class="text-[10px]">LOCK DATA</span>
+        </button>
+        <button class="btn-bio" onclick="cmdExit()">
+            <span>[ ESC ]</span>
+            <span class="text-[10px]">DASHBOARD</span>
+        </button>
+    </div>
 
     <script>
-        // --- SONIDO DE TECLA (Opcional, muy sutil) ---
-        const playBeep = () => {
-            // Descomentar si querés sonido, a veces los navegadores lo bloquean sin interacción
-            // const a = new AudioContext(); const o = a.createOscillator(); const g = a.createGain();
-            // o.connect(g); g.connect(a.destination); o.frequency.value = 800; g.gain.value = 0.02;
-            // o.start(); setTimeout(() => o.stop(), 50);
-        };
+        // --- MOTOR BIOS ---
+        const term = document.getElementById('terminal');
+        const user = localStorage.getItem("currentUser") || "UNKNOWN";
+        
+        // VIBRACIÓN (HAPTIC FEEDBACK)
+        const vibe = (ms = 10) => { if (navigator.vibrate) navigator.vibrate(ms); };
 
-        const term = document.getElementById('console');
-        const user = localStorage.getItem("currentUser") || "GUEST";
-        const panicState = localStorage.getItem("forjax_panic_mode") === "true";
-
-        // --- DATOS REALES ---
+        // DATOS REALES
         const p = user + "_";
         const rec = JSON.parse(localStorage.getItem(p + "records")) || [];
-        const subs = JSON.parse(localStorage.getItem(p + "subs")) || [];
-        
-        const income = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
-        const expense = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
-        const balance = income - expense;
-        const totalSubs = subs.reduce((a,c)=>a+c.amount,0);
-        
-        // --- LÓGICA DE ESCRITURA ---
-        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+        const inc = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
+        const exp = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+        const bal = inc - exp;
 
-        async function print(text, style = "", delay = 20) {
-            const line = document.createElement('div');
-            line.className = style;
-            term.appendChild(line);
+        // SISTEMA DE ESCRITURA RÁPIDA
+        const print = async (txt, type="sys-ok", speed=10) => {
+            const div = document.createElement('div');
+            div.className = type;
+            term.appendChild(div);
+            div.scrollIntoView();
             
-            // Auto scroll
-            window.scrollTo(0, document.body.scrollHeight);
-            term.scrollTop = term.scrollHeight;
-
-            for (let i = 0; i < text.length; i++) {
-                line.innerHTML += text.charAt(i);
-                // playBeep(); // Si activás el audio
-                await sleep(delay);
-            }
-        }
-
-        async function boot() {
-            await print("FORJAX BIOS (C) 2026 FINANCIAL SYSTEMS INC.", "text-slate-500", 5);
-            await print("CHECKING MEMORY: 640K OK", "", 5);
-            await print("LOADING KERNEL...", "", 10);
-            await sleep(500);
-            await print("MOUNTING VOLUME 'WALLET'...", "", 10);
-            await sleep(300);
-            await print("ACCESSING NEURAL NETWORK...", "", 10);
-            await sleep(800);
+            // Si es mensaje crítico, vibra más fuerte
+            if(type.includes("crit")) vibe(50);
             
-            // ASCII ART
-            term.innerHTML += `<pre class="text-glow font-bold leading-none my-4">
-  ______ ____  _____       _    __   __
- |  ____/ __ \\|  __ \\     | |   \\ \\ / /
- | |__ | |  | | |__) |    | | __ \\ V / 
- |  __|| |  | |  _  / _   | |/ _\\ > <  
- | |   | |__| | | \\ \\| |__| | (_| / . \\ 
- |_|    \\____/|_|  \\_\\\\____/ \\__,_/_/ \\_\\
-            </pre>`;
-            
-            await print(`> USER DETECTED: [ ${user.toUpperCase()} ]`, "text-white font-bold");
-            await print("> DECRYPTING FINANCIAL RECORDS...", "blink");
-            await sleep(1500);
-            
-            // REMOVE BLINK
-            term.lastChild.classList.remove("blink");
-            term.lastChild.innerHTML = "> DECRYPTING FINANCIAL RECORDS... [OK]";
-
-            await print("----------------------------------------");
-            await print("SYSTEM DIAGNOSTICS REPORT:", "text-white underline");
-            await sleep(200);
-
-            // DATA REAL
-            await print(`> TOTAL INCOME STREAMS:  $${income.toLocaleString()}`);
-            await sleep(100);
-            await print(`> TOTAL BURN RATE:       $${expense.toLocaleString()}`);
-            await sleep(100);
-            
-            let balColor = balance >= 0 ? "text-glow" : "text-red-glow";
-            let balText = balance >= 0 ? "OPTIMAL" : "CRITICAL FAILURE";
-            await print(`> NET LIQUIDITY:         $${balance.toLocaleString()}`, balColor);
-            await print(`> SYSTEM STATUS:         [ ${balText} ]`, balColor);
-            
-            await print(`> ACTIVE SUBSCRIPTIONS:  ${subs.length} (Impact: $${totalSubs}/mo)`);
-            
-            // BIO ANALISIS
-            const bioStress = rec.filter(r => r.bio === 30).length;
-            if (bioStress > 5) {
-                await print(`> WARNING: HIGH CORTISOL LEVELS DETECTED IN SPENDING.`, "text-red-glow blink");
+            // Escritura caracter por caracter
+            if (speed > 0) {
+                let i = 0;
+                const timer = setInterval(() => {
+                    div.innerText += txt.charAt(i);
+                    i++;
+                    if (i >= txt.length) clearInterval(timer);
+                }, speed);
+                await new Promise(r => setTimeout(r, txt.length * speed + 50));
             } else {
-                await print(`> BIO-METRICS: STABLE.`, "text-glow");
+                div.innerHTML = txt; // HTML directo para bloques grandes
+                await new Promise(r => setTimeout(r, 50));
             }
+        };
 
-            await print("----------------------------------------");
-            await sleep(500);
+        // SECUENCIA DE ARRANQUE
+        const boot = async () => {
+            vibe([20, 30, 20]); // Doble vibración al inicio
+            await print("INITIALIZING FORJAX KERNEL V.50...", "sys-dim", 20);
+            await print("LOADING NEURAL MODULES... [OK]", "sys-dim", 5);
+            await print("BYPASSING SECURITY FIREWALL... [SUCCESS]", "sys-dim", 5);
+            
+            await print(`> IDENTITY CONFIRMED: ${user}`, "sys-ok");
+            
+            const ascii = `
+   ▄█    █▄       ▄████████  ▄████████  ▄█   ▄█▄ 
+  ███    ███     ███    ███ ███    ███ ███ ▄███▀ 
+  ███    ███     ███    ███ ███    ███ ███▐██▀   
+ ▄███▄▄▄▄███▄▄   ███    ███ ███    ███ ███▀▀▀    
+▀▀███▀▀▀▀███▀  ▀███████████ ███    ███ ███       
+  ███    ███     ███    ███ ███    ███ ███       
+  ███    ███     ███    ███ ███    ███ ███       
+  ███    ███     ███    ███ ███    ███ ███       
+`;
+            // Imprimir ASCII de golpe para que no tarde
+            const pre = document.createElement('pre');
+            pre.className = "text-[10px] leading-none text-emerald-500 my-4 font-bold glitch";
+            pre.innerText = ascii;
+            term.appendChild(pre);
+            vibe(30);
 
-            // MENU INTERACTIVO
-            await showMenu();
+            await print("-------------------------------------", "sys-dim", 0);
+            await print("FINANCIAL DIAGNOSTICS:", "sys-warn underline", 0);
+            await print(`> TOTAL CASHFLOW:    $${inc.toLocaleString()}`, "sys-ok", 5);
+            await print(`> SYSTEM BURN RATE:  $${exp.toLocaleString()}`, "sys-crit", 5);
+            
+            let balStyle = bal >= 0 ? "sys-ok" : "sys-crit glitch";
+            await print(`> NET LIQUIDITY:     $${bal.toLocaleString()}`, balStyle, 20);
+            
+            await print("-------------------------------------", "sys-dim", 0);
+            await print("> TOUCH INTERFACE ENABLED.", "sys-dim");
+            await print("> WAITING FOR INPUT...", "blink");
+
+            updatePanicVisuals();
+        };
+
+        // --- COMANDOS ---
+
+        function updatePanicVisuals() {
+            const isPanic = localStorage.getItem("forjax_panic_mode") === "true";
+            const btn = document.getElementById("btnPanic");
+            if(isPanic) {
+                btn.classList.add("panic-active");
+                print("> SYSTEM LOCKED. DATA MASKED.", "sys-crit");
+            } else {
+                btn.classList.remove("panic-active");
+            }
         }
 
-        async function showMenu() {
-            const status = localStorage.getItem("forjax_panic_mode") === "true" ? "ACTIVE" : "INACTIVE";
-            const color = status === "ACTIVE" ? "text-red-glow" : "text-slate-500";
-
-            await print("");
-            await print("COMMANDS AVAILABLE:", "text-white");
-            await print(" [ESC] RETURN TO DASHBOARD (GUI)");
-            await print(" [P]   TOGGLE PANIC MODE (LOCK DATA)");
-            await print(" [R]   REBOOT SYSTEM (RELOAD)");
+        function cmdPanic() {
+            vibe(100); // Vibración fuerte
+            const current = localStorage.getItem("forjax_panic_mode") === "true";
+            localStorage.setItem("forjax_panic_mode", !current);
             
-            await print("");
-            await print(`CURRENT SECURITY PROTOCOL: [ ${status} ]`, color + " id-status");
-            
-            const cursor = document.createElement('div');
-            cursor.innerHTML = `root@${user.toLowerCase()}:~# <span class="blink">_</span>`;
-            term.appendChild(cursor);
-            
-            window.scrollTo(0, document.body.scrollHeight);
+            if (!current) {
+                print("!!! ACTIVATING PRIVACY PROTOCOL !!!", "sys-crit glitch");
+                print("> DATA ENCRYPTION: ENABLED", "sys-crit");
+            } else {
+                print("> DEACTIVATING PROTOCOL...", "sys-ok");
+                print("> DATA VISIBLE.", "sys-ok");
+            }
+            updatePanicVisuals();
         }
 
-        // --- TECLADO ---
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape") {
-                document.body.style.transition = "opacity 1s";
-                document.body.style.opacity = "0";
-                setTimeout(() => window.location.href = "index.html", 1000);
-            }
-            if (e.key.toLowerCase() === "r") {
-                location.reload();
-            }
-            if (e.key.toLowerCase() === "p") {
-                const current = localStorage.getItem("forjax_panic_mode") === "true";
-                const newState = !current;
-                localStorage.setItem("forjax_panic_mode", newState);
-                
-                // Efecto visual instantáneo
-                const el = document.getElementsByClassName("id-status")[0];
-                if (el) {
-                    if (newState) {
-                        el.innerText = "CURRENT SECURITY PROTOCOL: [ ACTIVE ]";
-                        el.className = "text-red-glow id-status blink";
-                        print("> !!! SECURITY OVERRIDE ENABLED !!!", "text-red-glow");
-                        print("> DASHBOARD DATA WILL BE MASKED.", "text-red-glow");
-                    } else {
-                        el.innerText = "CURRENT SECURITY PROTOCOL: [ INACTIVE ]";
-                        el.className = "text-glow id-status";
-                        print("> SECURITY PROTOCOL DISENGAGED.", "text-glow");
-                        print("> DASHBOARD DATA VISIBLE.", "text-slate-500");
-                    }
-                }
-            }
-        });
+        function cmdReboot() {
+            vibe(30);
+            location.reload();
+        }
+
+        function cmdExit() {
+            vibe(50);
+            print("> TERMINATING SESSION...", "sys-warn");
+            document.body.classList.add("shutdown"); // Animación TV vieja
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 600);
+        }
 
         // INICIAR
-        boot();
+        setTimeout(boot, 100);
 
     </script>
 </body>
