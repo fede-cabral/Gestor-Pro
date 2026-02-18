@@ -1,308 +1,361 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FORJAX BIOS - TRADER DECK</title>
+    <title>FORJAX PRO TERMINAL</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
-        /* RESET & BASICS */
+        /* CONFIGURACIÓN BASE */
         body {
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Share Tech Mono', monospace;
-            overflow: hidden;
+            background-color: #0b0e14; /* Fondo oscuro profesional */
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Cero scroll */
             height: 100dvh;
             display: flex;
             flex-direction: column;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* CRT EFFECTS */
-        .scanlines {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 3px, 3px 100%;
-            animation: flicker 0.15s infinite;
-        }
-        @keyframes flicker { 0% { opacity: 0.9; } 50% { opacity: 1.0; } 100% { opacity: 0.9; } }
+        /* FUENTE DE NÚMEROS (TIPO TRADING) */
+        .mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px; }
 
-        /* TERMINAL AREA */
-        #terminal {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: hidden; /* Evitamos scroll manual, todo fijo */
-            display: flex;
-            flex-direction: column;
-            font-size: 13px;
-            text-shadow: 0 0 5px #0f0;
+        /* PANELES DE VIDRIO PRO */
+        .panel {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            display: flex; flex-direction: column;
             position: relative;
         }
 
-        /* SECCIONES DEL LAYOUT */
-        .header-log { height: 35%; overflow-y: auto; border-bottom: 1px solid #004400; padding-bottom: 10px; margin-bottom: 10px; }
-        .bio-deck { height: 65%; display: flex; flex-direction: column; gap: 5px; opacity: 0; transition: opacity 1s; }
-        
-        /* TEXT STYLES */
-        .sys-ok { color: #0f0; }
-        .sys-warn { color: #ffff00; }
-        .sys-crit { color: #ff003c; font-weight: bold; text-shadow: 0 0 10px #ff003c; }
-        .sys-dim { color: #005500; }
-        .glitch { animation: glitch 1s linear infinite; }
-        @keyframes glitch { 2%, 64% { transform: translate(2px,0) skew(0deg); } 4%, 60% { transform: translate(-2px,0) skew(0deg); } 62% { transform: translate(0,0) skew(5deg); } }
+        /* COLORES DE MERCADO */
+        .up { color: #10b981; } /* Verde Suba */
+        .down { color: #f43f5e; } /* Rojo Baja */
+        .bg-up { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .bg-down { background: rgba(244, 63, 94, 0.1); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.2); }
 
-        /* BIO METRICS GRID */
-        .metric-row { display: flex; justify-content: space-between; align-items: center; border: 1px solid #003300; padding: 8px; background: #001100; }
-        .metric-label { font-size: 10px; color: #008800; letter-spacing: 1px; }
-        .metric-val { font-size: 24px; font-weight: bold; }
-        .ecg-line { height: 30px; width: 100%; display: flex; align-items: flex-end; gap: 2px; overflow: hidden; margin-top: 5px; opacity: 0.7; }
-        .ecg-bar { width: 4px; background: #0f0; transition: height 0.1s; }
-
-        /* CONTROLS */
-        #controls {
-            height: 70px;
-            border-top: 2px solid #005500;
-            background: #050b14;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1px;
-            z-index: 20;
-        }
-        .btn-bio {
-            background: #001100; color: #005500; border: none;
-            font-family: 'Share Tech Mono', monospace; font-size: 1rem; font-weight: bold;
+        /* BOTONES DE CONTROL */
+        .btn-control {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            border-radius: 8px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: all 0.2s;
         }
-        .btn-bio:active { background: #0f0; color: #000; }
-        .panic-active { background: #ff003c !important; color: #fff !important; animation: pulseRed 0.5s infinite; }
-        @keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .btn-control:active { background: #334155; color: #fff; transform: scale(0.98); }
 
-        /* SHUTDOWN */
-        .shutdown { animation: turn-off 0.55s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-        @keyframes turn-off {
-            0% { transform: scale(1, 1.3); filter: brightness(1); opacity: 1; }
-            100% { transform: scale(0, 0); filter: brightness(50); opacity: 0; }
+        /* PANTALLA DE BLOQUEO (PRIVACY SHIELD) */
+        #privacyLayer {
+            position: fixed; inset: 0; z-index: 50;
+            background: rgba(5, 5, 10, 0.6); /* Oscuro pero translúcido */
+            backdrop-filter: blur(25px); /* BLUR FUERTE */
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: all 0.3s ease;
         }
+        #privacyLayer.active { opacity: 1; pointer-events: auto; }
+
+        /* El botón de desbloqueo debe estar POR ENCIMA de todo */
+        #unlockBtnContainer {
+            z-index: 60; 
+            pointer-events: auto;
+        }
+
+        /* ANIMACIONES */
+        .pulse-dot { width: 6px; height: 6px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { opacity: 1; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
     </style>
 </head>
-<body>
+<body class="p-2 pb-safe">
 
-    <div class="scanlines"></div>
-    
-    <div id="terminal">
-        <div id="bootLog" class="header-log"></div>
-
-        <div id="bioDeck" class="bio-deck">
-            <div class="flex justify-between border-b border-[#004400] pb-1">
-                <span class="text-xs text-[#008800]">DEVICE: WATCH_ULTRA_2</span>
-                <span class="text-xs text-[#008800] blink">● LINKED</span>
-            </div>
-
-            <div class="metric-row">
-                <div>
-                    <div class="metric-label">HEART RATE (BPM)</div>
-                    <div id="bpmVal" class="metric-val text-emerald-400">--</div>
-                </div>
-                <div class="text-right">
-                    <div class="metric-label">ZONE</div>
-                    <div id="bpmZone" class="text-xs font-bold text-white">CALIBRATING</div>
-                </div>
-            </div>
-            <div id="ecgGraph" class="ecg-line"></div>
-
-            <div class="metric-row">
-                <div>
-                    <div class="metric-label">CORTISOL LVL</div>
-                    <div id="stressVal" class="metric-val text-yellow-400">--%</div>
-                </div>
-                <div>
-                    <div class="metric-label">FOCUS STATE</div>
-                    <div id="focusVal" class="metric-val text-cyan-400">--%</div>
-                </div>
-            </div>
-
-            <div class="border border-[#003300] p-2 bg-[#000500] mt-auto">
-                <div class="text-[10px] text-[#005500] mb-1">MARKET FEED (FOREX/CRYPTO)</div>
-                <div id="marketTick" class="text-xs font-mono text-white truncate">WAITING FOR TICKER...</div>
+    <div id="privacyLayer">
+        <div id="unlockBtnContainer" class="flex flex-col items-center">
+            <div class="bg-black/80 border border-slate-700 p-8 rounded-2xl shadow-2xl text-center">
+                <i data-lucide="lock" class="w-12 h-12 text-slate-400 mx-auto mb-4"></i>
+                <h2 class="text-xl font-bold text-white mb-1">TERMINAL LOCKED</h2>
+                <p class="text-xs text-slate-500 mb-6">Restricted Access</p>
+                <button onclick="togglePanic()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-bold text-sm tracking-wide shadow-lg w-full">
+                    DESBLOQUEAR
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="controls">
-        <button class="btn-bio" onclick="location.reload()"><span>[ R ]</span><span class="text-[8px]">REBOOT</span></button>
-        <button class="btn-bio" id="btnPanic" onclick="cmdPanic()"><span>[ P ]</span><span class="text-[8px]">LOCK</span></button>
-        <button class="btn-bio" onclick="cmdExit()"><span>[ ESC ]</span><span class="text-[8px]">EXIT</span></button>
+    <header class="flex justify-between items-center h-12 mb-2 px-2">
+        <div class="flex items-center gap-3">
+            <div class="bg-slate-800 p-2 rounded-lg border border-slate-700">
+                <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
+            </div>
+            <div>
+                <h1 class="text-xs font-bold text-slate-300 tracking-wider">FORJAX <span class="text-indigo-400">PRO</span></h1>
+                <div class="flex items-center gap-1.5">
+                    <div class="pulse-dot"></div>
+                    <p class="text-[10px] text-emerald-500 font-bold mono">CONNECTED <span id="ping" class="text-slate-500 font-normal">14ms</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <p id="clock" class="text-sm font-bold text-white mono">00:00:00</p>
+            <p class="text-[10px] text-slate-500" id="currentDate">--/--/--</p>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-3 gap-2 mb-2 h-20">
+        <div class="panel p-2 justify-center">
+            <div class="flex justify-between items-start">
+                <span class="text-[10px] font-bold text-slate-400">USD BLUE</span>
+                <i data-lucide="dollar-sign" class="w-3 h-3 text-slate-500"></i>
+            </div>
+            <p class="text-lg font-bold text-white mono mt-1" id="dolarPrice">Loading...</p>
+            <p class="text-[10px] up mono">▲ BUY</p>
+        </div>
+        <div class="panel p-2 justify-center">
+            <div class="flex justify-between items-start">
+                <span class="text-[10px] font-bold text-slate-400">BITCOIN</span>
+                <i data-lucide="bitcoin" class="w-3 h-3 text-slate-500"></i>
+            </div>
+            <p class="text-lg font-bold text-white mono mt-1" id="btcPrice">...</p>
+            <p class="text-[10px] text-slate-500 mono" id="btcChange">--%</p>
+        </div>
+        <div class="panel p-2 justify-center border-indigo-500/30 bg-indigo-500/5">
+            <div class="flex justify-between items-start">
+                <span class="text-[10px] font-bold text-indigo-300">LIQUIDEZ</span>
+                <i data-lucide="wallet" class="w-3 h-3 text-indigo-400"></i>
+            </div>
+            <p class="text-lg font-bold text-white mono mt-1" id="userLiquidity">...</p>
+            <p class="text-[10px] text-indigo-400 mono">NETO</p>
+        </div>
+    </div>
+
+    <div class="panel flex-1 mb-2 p-1 overflow-hidden relative">
+        <div class="absolute top-2 left-3 z-10 flex gap-2">
+            <span class="text-[10px] font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700">BTC/USDT</span>
+            <span class="text-[10px] font-bold text-slate-400">1H</span>
+        </div>
+        <div class="w-full h-full">
+            <canvas id="tradingChart"></canvas>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 h-28 mb-2">
+        <div class="panel p-2">
+            <div class="flex justify-between border-b border-slate-700 pb-1 mb-1">
+                <span class="text-[10px] text-slate-400">ORDER BOOK</span>
+                <span class="text-[10px] text-slate-400">QTY</span>
+            </div>
+            <div class="flex flex-col gap-0.5 text-[10px] mono overflow-hidden" id="orderBook">
+                </div>
+        </div>
+
+        <div class="panel p-2">
+            <p class="text-[10px] font-bold text-slate-400 mb-2">SESSION P&L</p>
+            <div class="flex items-end gap-1">
+                <span class="text-2xl font-bold text-emerald-400 mono">+1.2%</span>
+                <span class="text-[10px] text-slate-500 mb-1">24H</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                <div class="bg-emerald-500 h-full w-[65%]"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-2">VOL: 24.5M USD</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-2 h-14">
+        <button onclick="location.reload()" class="btn-control">
+            <i data-lucide="refresh-cw" class="w-5 h-5 mb-0.5"></i>
+            <span class="text-[9px] font-bold">SYNC</span>
+        </button>
+        
+        <button onclick="togglePanic()" class="btn-control text-indigo-400 border-indigo-900/50">
+            <i data-lucide="eye-off" class="w-5 h-5 mb-0.5"></i>
+            <span class="text-[9px] font-bold">HIDE</span>
+        </button>
+
+        <button class="btn-control text-emerald-400 border-emerald-900/50 opacity-50 cursor-not-allowed">
+            <i data-lucide="arrow-up-right" class="w-5 h-5 mb-0.5"></i>
+            <span class="text-[9px] font-bold">TRADE</span>
+        </button>
+
+        <button onclick="window.location.href='index.html'" class="btn-control text-rose-400 border-rose-900/50">
+            <i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i>
+            <span class="text-[9px] font-bold">EXIT</span>
+        </button>
     </div>
 
     <script>
-        const log = document.getElementById('bootLog');
-        const bioDeck = document.getElementById('bioDeck');
-        const user = localStorage.getItem("currentUser") || "TRADER";
-        
-        const vibe = (ms) => { if(navigator.vibrate) navigator.vibrate(ms); };
-        
-        // --- 1. SISTEMA DE ARRANQUE ---
-        const print = async (txt, color="sys-ok") => {
-            const div = document.createElement('div');
-            div.className = color;
-            div.innerText = txt;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-            await new Promise(r => setTimeout(r, 50)); // Muy rápido
-        };
+        // --- INICIALIZACIÓN ---
+        const user = localStorage.getItem("currentUser") || "GUEST";
+        const p = user + "_";
+        let isPanic = localStorage.getItem("forjax_panic_mode") === "true";
+        let chart;
 
-        const boot = async () => {
-            vibe(20);
-            await print("FORJAX BIOS V.50 [TRADER_EDITION]", "sys-dim");
-            await print("> CPU: NEURAL ENGINE X1... OK", "sys-dim");
-            await print("> MEM: 128TB CLOUD... OK", "sys-dim");
-            await print("> CRYPTO WALLET... SYNCED", "sys-ok");
-            await print("> SCANNING BLUETOOTH...", "sys-warn");
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            startClock();
+            loadUserData();
+            initChart();
+            fetchMarketData();
+            simulateOrderBook();
             
-            await new Promise(r => setTimeout(r, 400)); // Pequeña pausa dramática
-            await print("> DEVICE FOUND: [WATCH_ULTRA_2]", "sys-ok");
-            await print("> ESTABLISHING BIO-LINK...", "blink");
-            
-            await new Promise(r => setTimeout(r, 600));
-            await print("> CONNECTION ESTABLISHED.", "sys-ok");
-            
-            // Mostrar Panel Biométrico
-            bioDeck.style.opacity = "1";
-            startBioEngine();
-            updatePanicVisuals();
-        };
-
-        // --- 2. MOTOR DE SIMULACIÓN BIOMÉTRICA ---
-        let currentBPM = 72;
-        let stress = 15;
-        let focus = 88;
-        
-        function startBioEngine() {
-            // Inicializar gráfico ECG
-            const ecg = document.getElementById('ecgGraph');
-            for(let i=0; i<40; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'ecg-bar';
-                bar.style.height = '2px';
-                ecg.appendChild(bar);
-            }
-
-            // Loop principal (cada 1s)
-            setInterval(() => {
-                // Fluctuación random del corazón
-                const volatility = Math.random();
-                if(volatility > 0.7) currentBPM += Math.floor(Math.random() * 5); 
-                else if(volatility < 0.3) currentBPM -= Math.floor(Math.random() * 4);
-                
-                // Limites humanos
-                if(currentBPM < 55) currentBPM = 58;
-                if(currentBPM > 160) currentBPM = 155;
-
-                // Calculo de estrés
-                stress = Math.floor((currentBPM - 60) * 1.2);
-                if(stress < 5) stress = 5; if(stress > 99) stress = 99;
-
-                // Calculo de Foco (Inverso al estrés, pero no lineal)
-                focus = 100 - Math.floor(stress * 0.6) + Math.floor(Math.random() * 5);
-                if(focus > 100) focus = 100;
-
-                updateDOM();
-            }, 800);
-
-            // Loop visual rápido (ECG) cada 50ms
-            setInterval(updateECG, 50);
-
-            // Loop de Mercado Falso
-            setInterval(updateMarketTicker, 1500);
-        }
-
-        function updateDOM() {
-            document.getElementById('bpmVal').innerText = currentBPM;
-            document.getElementById('stressVal').innerText = stress + "%";
-            document.getElementById('focusVal').innerText = focus + "%";
-
-            // Color del BPM
-            const bpmEl = document.getElementById('bpmVal');
-            const zoneEl = document.getElementById('bpmZone');
-            
-            if(currentBPM < 90) { 
-                bpmEl.className = "metric-val text-emerald-400"; 
-                zoneEl.innerText = "RESTING / CALM";
-                zoneEl.className = "text-xs font-bold text-emerald-500";
-            } else if(currentBPM < 120) { 
-                bpmEl.className = "metric-val text-yellow-400"; 
-                zoneEl.innerText = "AEROBIC / TRADING";
-                zoneEl.className = "text-xs font-bold text-yellow-500";
-            } else { 
-                bpmEl.className = "metric-val text-rose-500 glitch"; 
-                zoneEl.innerText = "!!! ADRENALINE !!!";
-                zoneEl.className = "text-xs font-bold text-rose-500 blink";
-                vibe(30); // Vibra si estás muy manija
-            }
-        }
-
-        function updateECG() {
-            const bars = document.querySelectorAll('.ecg-bar');
-            // Mover alturas a la izquierda
-            for(let i=0; i<bars.length-1; i++) {
-                bars[i].style.height = bars[i+1].style.height;
-                // Color map
-                const h = parseInt(bars[i].style.height);
-                bars[i].style.background = h > 20 ? '#ff003c' : '#0f0';
-            }
-            // Generar nueva barra a la derecha
-            // Simulamos el pico QRS de un latido
-            let newH = 2;
-            const now = Date.now();
-            // Simular latido basado en BPM
-            const beatInterval = 60000 / currentBPM; 
-            if (now % beatInterval < 100) {
-                newH = Math.random() * 25 + 5; // Pico alto
-            } else {
-                newH = Math.random() * 4 + 2; // Ruido base
-            }
-            bars[bars.length-1].style.height = newH + 'px';
-        }
-
-        const tickers = ["BTC/USD 96,420 ▲", "ETH/USD 2,850 ▼", "EUR/USD 1.082 ▬", "XAU/USD 2,050 ▲", "NVDA 890.50 ▲", "TSLA 175.20 ▼"];
-        function updateMarketTicker() {
-            const t = tickers[Math.floor(Math.random() * tickers.length)];
-            const el = document.getElementById('marketTick');
-            el.innerText = `>> FEED: ${t} [VOL: ${(Math.random()*100).toFixed(2)}M]`;
-            if(t.includes("▼")) el.className = "text-xs font-mono text-rose-400 truncate";
-            else el.className = "text-xs font-mono text-emerald-400 truncate";
-        }
-
-        // --- 3. COMANDOS ---
-        function updatePanicVisuals() {
-            const isPanic = localStorage.getItem("forjax_panic_mode") === "true";
-            const btn = document.getElementById("btnPanic");
+            // Forzar estado inicial correcto del Pánico
             if(isPanic) {
-                btn.classList.add("panic-active");
-                print("> SYSTEM LOCKED.", "sys-crit");
+                document.getElementById('privacyLayer').classList.add('active');
             } else {
-                btn.classList.remove("panic-active");
+                document.getElementById('privacyLayer').classList.remove('active');
+            }
+        });
+
+        // --- 1. DATOS DEL USUARIO ---
+        function loadUserData() {
+            const rec = JSON.parse(localStorage.getItem(p + "records")) || [];
+            const inc = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
+            const exp = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+            const net = inc - exp;
+            
+            // Formato compacto para traders (1.2k, 1M)
+            const fmt = (n) => {
+                if(n > 1000000) return "$" + (n/1000000).toFixed(2) + "M";
+                if(n > 1000) return "$" + (n/1000).toFixed(1) + "k";
+                return "$" + n.toLocaleString();
+            };
+            document.getElementById('userLiquidity').innerText = fmt(net);
+        }
+
+        // --- 2. API DE MERCADO REAL ---
+        async function fetchMarketData() {
+            // Dolar Blue
+            try {
+                const res = await fetch("https://dolarapi.com/v1/dolares/blue");
+                const data = await res.json();
+                document.getElementById('dolarPrice').innerText = `$${data.venta}`;
+            } catch(e) { document.getElementById('dolarPrice').innerText = "$1200"; }
+
+            // Crypto (Bitcoin)
+            try {
+                const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true");
+                const data = await res.json();
+                const price = data.bitcoin.usd;
+                const change = data.bitcoin.usd_24h_change.toFixed(2);
+                
+                document.getElementById('btcPrice').innerText = price.toLocaleString();
+                const elChange = document.getElementById('btcChange');
+                elChange.innerText = `${change > 0 ? '+' : ''}${change}%`;
+                elChange.className = `text-[10px] mono ${change >= 0 ? 'up' : 'down'}`;
+            } catch(e) { 
+                document.getElementById('btcPrice').innerText = "96,500"; 
             }
         }
 
-        function cmdPanic() {
-            vibe(50);
-            const current = localStorage.getItem("forjax_panic_mode") === "true";
-            localStorage.setItem("forjax_panic_mode", !current);
-            updatePanicVisuals();
+        // --- 3. GRÁFICO CHART.JS ESTILO TRADINGVIEW ---
+        function initChart() {
+            const ctx = document.getElementById('tradingChart').getContext('2d');
+            
+            // Generar datos fake realistas
+            let dataPoints = [];
+            let price = 65000;
+            for(let i=0; i<60; i++) {
+                price = price + (Math.random() - 0.5) * 200;
+                dataPoints.push(price);
+            }
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)'); // Verde
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(60).fill(''),
+                    datasets: [{
+                        data: dataPoints,
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        backgroundColor: gradient,
+                        fill: true,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false } // Ocultar ejes para look limpio
+                    },
+                    animation: { duration: 0 } // Performance
+                }
+            });
+
+            // Simular Live Ticker
+            setInterval(() => {
+                const last = dataPoints[dataPoints.length-1];
+                const newVal = last + (Math.random() - 0.5) * 50;
+                dataPoints.push(newVal);
+                dataPoints.shift();
+                chart.update('none'); // Update sin animación pesada
+            }, 1000);
         }
 
-        function cmdExit() {
-            vibe(30);
-            document.body.classList.add("shutdown");
-            setTimeout(() => window.location.href = "index.html", 400);
+        // --- 4. LIBRO DE ÓRDENES (SIMULADO) ---
+        function simulateOrderBook() {
+            const container = document.getElementById('orderBook');
+            const refresh = () => {
+                let html = '';
+                // Ventas (Rojo)
+                for(let i=0; i<3; i++) {
+                    const p = (96000 + i*10 + Math.random()*5).toFixed(0);
+                    const q = (Math.random()*0.5).toFixed(4);
+                    html += `<div class="flex justify-between down"><span class="opacity-80">${p}</span><span>${q}</span></div>`;
+                }
+                html += `<div class="h-px bg-slate-700 my-1 opacity-50"></div>`;
+                // Compras (Verde)
+                for(let i=0; i<3; i++) {
+                    const p = (95900 - i*10 - Math.random()*5).toFixed(0);
+                    const q = (Math.random()*0.5).toFixed(4);
+                    html += `<div class="flex justify-between up"><span class="opacity-80">${p}</span><span>${q}</span></div>`;
+                }
+                container.innerHTML = html;
+            };
+            setInterval(refresh, 2000);
+            refresh();
         }
 
-        // START
-        boot();
+        // --- 5. LÓGICA DE PÁNICO (FIXED) ---
+        function togglePanic() {
+            // Invertir estado
+            isPanic = !isPanic;
+            localStorage.setItem("forjax_panic_mode", isPanic);
+
+            const layer = document.getElementById('privacyLayer');
+            
+            if (isPanic) {
+                layer.classList.add('active'); // Activa el Blur
+                if(navigator.vibrate) navigator.vibrate(50);
+            } else {
+                layer.classList.remove('active'); // Quita el Blur
+                if(navigator.vibrate) navigator.vibrate([20, 30]);
+            }
+        }
+
+        // --- UTILIDADES ---
+        function startClock() {
+            const dateEl = document.getElementById('currentDate');
+            dateEl.innerText = new Date().toLocaleDateString('es-AR');
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+                document.getElementById('ping').innerText = Math.floor(Math.random() * 20 + 10) + "ms";
+            }, 1000);
+        }
 
     </script>
 </body>
