@@ -1,261 +1,223 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX BIOS - Neural Intelligence Suite</title>
+    <title>FORJAX BIOS v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-                    colors: { neon: '#00f3ff', bio: '#ff2d55' },
-                }
-            }
-        }
-    </script>
-<style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
-        
-        :root { --neon: #00f3ff; } /* Variable para el Bio-Theme */
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
-        body { font-family: 'Outfit', sans-serif; transition: all 0.5s ease; }
-        
-        .dark body { background-color: #050b14; color: #f8fafc; }
-        
-        /* Aplicamos la variable --neon a los bordes y sombras */
-        .dark .glass { 
-            background: rgba(10, 15, 30, 0.8); 
-            backdrop-filter: blur(15px); 
-            border: 1px solid var(--neon); 
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); 
+        body {
+            background-color: #000;
+            color: #33ff00;
+            font-family: 'VT323', monospace;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            line-height: 1.2;
+            cursor: none; /* Oculta el mouse para más realismo */
         }
+
+        /* EFECTO CRT (Monitor Viejo) */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .crt::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .text-glow { text-shadow: 0 0 5px #33ff00, 0 0 10px #33ff00; }
+        .text-red-glow { color: #ff0000; text-shadow: 0 0 5px #ff0000; }
+        .text-yellow-glow { color: #ffff00; text-shadow: 0 0 5px #ffff00; }
+
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* Scrollbar oculta pero funcional */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
         
-        .nav-btn.active { box-shadow: 0 0 20px var(--neon); background: var(--neon) !important; color: #050b14 !important; }
-        
-        .text-neon { color: var(--neon); }
-        .border-neon { border-color: var(--neon); }
+        #console { padding: 2rem; padding-bottom: 5rem; height: 100%; overflow-y: auto; }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="crt">
 
-    <header class="max-w-7xl mx-auto flex justify-between items-center mb-12">
-        <div class="flex items-center gap-4">
-            <a href="index.html" class="p-3 glass rounded-full hover:bg-cyan-500/10 text-cyan-400"><i data-lucide="arrow-left"></i></a>
-            <div>
-                <h1 class="text-4xl font-black tracking-tighter uppercase neon-text">Forjax <span class="text-cyan-400">BIOS</span></h1>
-                <p class="text-xs font-mono text-slate-500 uppercase tracking-[0.35em]">Neural Oracle System</p>
-            </div>
-        </div>
-        
-        <button id="panicBtn" onclick="bios.togglePanic()" class="glass px-6 py-3 rounded-2xl flex items-center gap-4 border-white/10 group transition-all">
-            <div id="panicDot" class="h-3 w-3 bg-slate-500 rounded-full"></div>
-            <span id="panicLabel" class="text-xs font-black font-mono tracking-wider uppercase">Modo Pánico: OFF</span>
-        </button>
-    </header>
-
-    <main class="max-w-7xl mx-auto space-y-10">
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    
-    <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-cyan-400">
-        <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Efficiency ROI</p>
-        <h2 id="bioRoi" class="text-4xl md:text-5xl font-black font-mono truncate" title="Efficiency ROI">--</h2>
-    </div>
-
-    <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden">
-        <p class="text-[10px] font-bold text-cyan-300 uppercase mb-2 tracking-widest">Bio-Energy Core</p>
-        <div class="flex items-baseline gap-2 mb-4">
-            <span id="energyVal" class="text-4xl md:text-5xl font-black font-mono">--%</span>
-        </div>
-        <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-            <div id="energyBar" class="h-full bg-cyan-400 transition-all duration-1000" style="width: 0%"></div>
-        </div>
-    </div>
-
-    <div id="riskCard" class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500">
-        <p class="text-[10px] font-bold text-rose-300 uppercase mb-2 tracking-widest">Cognitive Risk</p>
-        <h2 id="riskStatus" class="text-xl font-black uppercase italic">Analyzing...</h2>
-    </div>
-
-    <div class="glass p-8 rounded-[2.5rem] border-l-[6px] border-rose-500 relative overflow-hidden group">
-        <div class="absolute -right-6 -top-6 h-24 w-24 bg-rose-500/20 rounded-full blur-xl group-hover:bg-rose-500/40 transition-all"></div>
-        <p class="text-[10px] font-bold text-rose-400 uppercase mb-2 tracking-widest">Stress Cost</p>
-        <h2 id="stressCost" class="text-3xl md:text-4xl font-black font-mono text-white truncate" title="Total Cost">$0</h2>
-        <p id="stressCount" class="text-[10px] font-bold text-rose-500 mt-1 uppercase tracking-widest">0 FUGAS</p>
-    </div>
-
-</div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            
-            <div class="lg:col-span-1 space-y-6">
-                <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2"><i data-lucide="award" class="text-yellow-500"></i> Achievements</h3>
-                <div class="space-y-4">
-                    <div id="badgeZen" class="glass p-4 rounded-2xl flex items-center gap-4 badge-locked transition-all duration-700">
-                        <div class="p-3 bg-emerald-500/20 rounded-xl text-emerald-400"><i data-lucide="sparkles"></i></div>
-                        <div><p class="text-xs font-black uppercase">Zen Master</p><p class="text-[9px] text-slate-500 uppercase">Sin gastos impulsivos</p></div>
-                    </div>
-                    <div id="badgeWhale" class="glass p-4 rounded-2xl flex items-center gap-4 badge-locked transition-all duration-700">
-                        <div class="p-3 bg-purple-500/20 rounded-xl text-purple-400"><i data-lucide="gem"></i></div>
-                        <div><p class="text-xs font-black uppercase">Capital Whale</p><p class="text-[9px] text-slate-500 uppercase">Ingreso High-Score</p></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-2 glass p-10 rounded-[3rem]">
-                <h3 class="text-sm font-black uppercase tracking-widest mb-10 flex items-center gap-3"><i data-lucide="activity" class="text-cyan-400"></i> Neural Correlation</h3>
-                <div class="h-[400px]"><canvas id="correlationChart"></canvas></div>
-            </div>
-
-            <div class="glass p-8 rounded-[3rem] bg-black/40 flex flex-col h-full min-h-[450px]">
-                <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2 text-cyan-400"><i data-lucide="terminal"></i> Oracle Intelligence</h3>
-                <div id="oracleOutput" class="flex-1 font-mono text-[10px] space-y-4 overflow-y-auto custom-scroll max-h-[350px]">
-                    <p class="text-slate-500">> INITIALIZING_NEURAL_CORE...</p>
-                </div>
-            </div>
-        </div>
-    </main>
+    <div id="console"></div>
 
     <script>
-        const bios = {
-            panicMode: localStorage.getItem("forjax_panic_mode") === "true",
-
-            init() {
-                const user = localStorage.getItem("currentUser");
-                const records = JSON.parse(localStorage.getItem(user + "_records")) || [];
-                
-                this.calculateStats(records);
-                this.renderChart(records);
-                this.runOracle(records);
-                this.checkAchievements(records);
-                this.updatePanicUI();
-                
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-            },
-
-            togglePanic() {
-                this.panicMode = !this.panicMode;
-                localStorage.setItem("forjax_panic_mode", this.panicMode);
-                this.updatePanicUI();
-                
-                Swal.fire({
-                    title: this.panicMode ? 'MODO PÁNICO ACTIVADO' : 'SISTEMA RESTAURADO',
-                    text: this.panicMode ? 'Datos en V30 bloqueados por seguridad cognitiva.' : 'V30 operativa nuevamente.',
-                    icon: this.panicMode ? 'warning' : 'success',
-                    background: '#0f172a', color: '#fff', confirmButtonColor: '#00f3ff'
-                });
-            },
-
-            updatePanicUI() {
-                const btn = document.getElementById("panicBtn");
-                const dot = document.getElementById("panicDot");
-                const label = document.getElementById("panicLabel");
-
-                if (this.panicMode) {
-                    btn.classList.add("panic-active");
-                    dot.classList.replace("bg-slate-500", "bg-rose-500");
-                    dot.classList.add("animate-ping");
-                    label.innerText = "Modo Pánico: ON";
-                    label.classList.add("text-rose-500");
-                } else {
-                    btn.classList.remove("panic-active");
-                    dot.classList.replace("bg-rose-500", "bg-slate-500");
-                    dot.classList.remove("animate-ping");
-                    label.innerText = "Modo Pánico: OFF";
-                    label.classList.remove("text-rose-500");
-                }
-            },
-
-            calculateStats(records) {
-    if(!records.length) return;
-
-    // 1. CÁLCULOS ORIGINALES (ROI, Energía, Riesgo)
-    const totalInc = records.filter(r => r.type === 'income').reduce((a,c) => a+c.amount, 0);
-    const totalExp = records.filter(r => r.type === 'expense').reduce((a,c) => a+c.amount, 0);
-    const efficiency = (totalInc / (totalExp || 1)).toFixed(2);
-    document.getElementById("bioRoi").innerText = efficiency + "x";
-
-    const energy = Math.max(15, 100 - (records.length * 1.5));
-    document.getElementById("energyVal").innerText = Math.round(energy) + "%";
-    document.getElementById("energyBar").style.width = energy + "%";
-
-    const risk = document.getElementById("riskStatus");
-    risk.innerText = energy < 45 ? "FATIGA CRÍTICA" : "ESTADO ÓPTIMO";
-    risk.className = `text-xl font-black uppercase italic ${energy < 45 ? 'text-rose-500' : 'text-emerald-400'}`;
-
-    // --- LO NUEVO: CÁLCULO DE ESTRÉS ---
-    
-    // Filtramos gastos donde bio sea 30 (fuego) o menor
-    const stressTx = records.filter(r => r.type === 'expense' && (r.bio === 30));
-    
-    // Sumamos el total
-    const stressTotal = stressTx.reduce((acc, curr) => acc + curr.amount, 0);
-    
-    // Formateamos como moneda ($)
-    const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-
-    // Inyectamos en la tarjeta nueva
-    document.getElementById("stressCost").innerText = fmt.format(stressTotal);
-    document.getElementById("stressCount").innerText = `${stressTx.length} FUGAS DETECTADAS`;
-},
-
-            checkAchievements(records) {
-                if(!records.length) return;
-                // Zen Master: No hay gastos con bio <= 30
-                const noImpulsive = records.filter(r => r.type === 'expense').every(r => (r.bio || 70) > 30);
-                if(noImpulsive) document.getElementById("badgeZen").classList.replace("badge-locked", "badge-unlocked");
-                
-                // Capital Whale: Algún ingreso > 100.000
-                const bigIncome = records.some(r => r.type === 'income' && r.amount >= 100000);
-                if(bigIncome) document.getElementById("badgeWhale").classList.replace("badge-locked", "badge-unlocked");
-            },
-
-            runOracle(records) {
-                const output = document.getElementById("oracleOutput");
-                const stressExp = records.filter(r => r.type === 'expense' && (r.bio || 70) <= 30);
-                
-                let html = '<p class="text-cyan-500/50">> PATTERN_RECOGNITION_STARTED...</p>';
-                setTimeout(() => {
-                    if(stressExp.length > 0) {
-                        html += `<div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg"><p class="text-rose-400 font-bold mb-1">Detección de Fuga</p><p class="text-xs text-slate-400">Tus emociones drenan capital en: ${stressExp[0].desc}</p></div>`;
-                    } else {
-                        html += `<div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg"><p class="text-emerald-400 font-bold mb-1">Mente de Acero</p><p class="text-xs text-slate-400">No hay rastro de impulsividad en tus últimos registros.</p></div>`;
-                    }
-                    output.innerHTML = html;
-                }, 1000);
-            },
-
-            renderChart(records) {
-                const ctx = document.getElementById('correlationChart').getContext('2d');
-                const last = [...records].reverse().slice(-10);
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: last.map(r => r.desc),
-                        datasets: [
-                            { label: 'Capital', data: last.map(r => r.amount), borderColor: '#00f3ff', tension: 0.4, fill: true, backgroundColor: 'rgba(0, 243, 255, 0.05)' },
-                            { label: 'Neural Pulse', data: last.map(r => r.bio || 70), borderColor: '#ff2d55', borderDash: [5, 5], tension: 0.4, yAxisID: 'y1' }
-                        ]
-                    },
-                    options: { 
-                        responsive: true, maintainAspectRatio: false, 
-                        plugins: { legend: { display: false } },
-                        scales: { 
-                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
-                            y1: { display: false, min: 0, max: 100 },
-                            x: { grid: { display: false }, ticks: { color: '#64748b' } }
-                        }
-                    }
-                });
-            }
+        // --- SONIDO DE TECLA (Opcional, muy sutil) ---
+        const playBeep = () => {
+            // Descomentar si querés sonido, a veces los navegadores lo bloquean sin interacción
+            // const a = new AudioContext(); const o = a.createOscillator(); const g = a.createGain();
+            // o.connect(g); g.connect(a.destination); o.frequency.value = 800; g.gain.value = 0.02;
+            // o.start(); setTimeout(() => o.stop(), 50);
         };
-        window.onload = () => bios.init();
+
+        const term = document.getElementById('console');
+        const user = localStorage.getItem("currentUser") || "GUEST";
+        const panicState = localStorage.getItem("forjax_panic_mode") === "true";
+
+        // --- DATOS REALES ---
+        const p = user + "_";
+        const rec = JSON.parse(localStorage.getItem(p + "records")) || [];
+        const subs = JSON.parse(localStorage.getItem(p + "subs")) || [];
+        
+        const income = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0);
+        const expense = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+        const balance = income - expense;
+        const totalSubs = subs.reduce((a,c)=>a+c.amount,0);
+        
+        // --- LÓGICA DE ESCRITURA ---
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        async function print(text, style = "", delay = 20) {
+            const line = document.createElement('div');
+            line.className = style;
+            term.appendChild(line);
+            
+            // Auto scroll
+            window.scrollTo(0, document.body.scrollHeight);
+            term.scrollTop = term.scrollHeight;
+
+            for (let i = 0; i < text.length; i++) {
+                line.innerHTML += text.charAt(i);
+                // playBeep(); // Si activás el audio
+                await sleep(delay);
+            }
+        }
+
+        async function boot() {
+            await print("FORJAX BIOS (C) 2026 FINANCIAL SYSTEMS INC.", "text-slate-500", 5);
+            await print("CHECKING MEMORY: 640K OK", "", 5);
+            await print("LOADING KERNEL...", "", 10);
+            await sleep(500);
+            await print("MOUNTING VOLUME 'WALLET'...", "", 10);
+            await sleep(300);
+            await print("ACCESSING NEURAL NETWORK...", "", 10);
+            await sleep(800);
+            
+            // ASCII ART
+            term.innerHTML += `<pre class="text-glow font-bold leading-none my-4">
+  ______ ____  _____       _    __   __
+ |  ____/ __ \\|  __ \\     | |   \\ \\ / /
+ | |__ | |  | | |__) |    | | __ \\ V / 
+ |  __|| |  | |  _  / _   | |/ _\\ > <  
+ | |   | |__| | | \\ \\| |__| | (_| / . \\ 
+ |_|    \\____/|_|  \\_\\\\____/ \\__,_/_/ \\_\\
+            </pre>`;
+            
+            await print(`> USER DETECTED: [ ${user.toUpperCase()} ]`, "text-white font-bold");
+            await print("> DECRYPTING FINANCIAL RECORDS...", "blink");
+            await sleep(1500);
+            
+            // REMOVE BLINK
+            term.lastChild.classList.remove("blink");
+            term.lastChild.innerHTML = "> DECRYPTING FINANCIAL RECORDS... [OK]";
+
+            await print("----------------------------------------");
+            await print("SYSTEM DIAGNOSTICS REPORT:", "text-white underline");
+            await sleep(200);
+
+            // DATA REAL
+            await print(`> TOTAL INCOME STREAMS:  $${income.toLocaleString()}`);
+            await sleep(100);
+            await print(`> TOTAL BURN RATE:       $${expense.toLocaleString()}`);
+            await sleep(100);
+            
+            let balColor = balance >= 0 ? "text-glow" : "text-red-glow";
+            let balText = balance >= 0 ? "OPTIMAL" : "CRITICAL FAILURE";
+            await print(`> NET LIQUIDITY:         $${balance.toLocaleString()}`, balColor);
+            await print(`> SYSTEM STATUS:         [ ${balText} ]`, balColor);
+            
+            await print(`> ACTIVE SUBSCRIPTIONS:  ${subs.length} (Impact: $${totalSubs}/mo)`);
+            
+            // BIO ANALISIS
+            const bioStress = rec.filter(r => r.bio === 30).length;
+            if (bioStress > 5) {
+                await print(`> WARNING: HIGH CORTISOL LEVELS DETECTED IN SPENDING.`, "text-red-glow blink");
+            } else {
+                await print(`> BIO-METRICS: STABLE.`, "text-glow");
+            }
+
+            await print("----------------------------------------");
+            await sleep(500);
+
+            // MENU INTERACTIVO
+            await showMenu();
+        }
+
+        async function showMenu() {
+            const status = localStorage.getItem("forjax_panic_mode") === "true" ? "ACTIVE" : "INACTIVE";
+            const color = status === "ACTIVE" ? "text-red-glow" : "text-slate-500";
+
+            await print("");
+            await print("COMMANDS AVAILABLE:", "text-white");
+            await print(" [ESC] RETURN TO DASHBOARD (GUI)");
+            await print(" [P]   TOGGLE PANIC MODE (LOCK DATA)");
+            await print(" [R]   REBOOT SYSTEM (RELOAD)");
+            
+            await print("");
+            await print(`CURRENT SECURITY PROTOCOL: [ ${status} ]`, color + " id-status");
+            
+            const cursor = document.createElement('div');
+            cursor.innerHTML = `root@${user.toLowerCase()}:~# <span class="blink">_</span>`;
+            term.appendChild(cursor);
+            
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        // --- TECLADO ---
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                document.body.style.transition = "opacity 1s";
+                document.body.style.opacity = "0";
+                setTimeout(() => window.location.href = "index.html", 1000);
+            }
+            if (e.key.toLowerCase() === "r") {
+                location.reload();
+            }
+            if (e.key.toLowerCase() === "p") {
+                const current = localStorage.getItem("forjax_panic_mode") === "true";
+                const newState = !current;
+                localStorage.setItem("forjax_panic_mode", newState);
+                
+                // Efecto visual instantáneo
+                const el = document.getElementsByClassName("id-status")[0];
+                if (el) {
+                    if (newState) {
+                        el.innerText = "CURRENT SECURITY PROTOCOL: [ ACTIVE ]";
+                        el.className = "text-red-glow id-status blink";
+                        print("> !!! SECURITY OVERRIDE ENABLED !!!", "text-red-glow");
+                        print("> DASHBOARD DATA WILL BE MASKED.", "text-red-glow");
+                    } else {
+                        el.innerText = "CURRENT SECURITY PROTOCOL: [ INACTIVE ]";
+                        el.className = "text-glow id-status";
+                        print("> SECURITY PROTOCOL DISENGAGED.", "text-glow");
+                        print("> DASHBOARD DATA VISIBLE.", "text-slate-500");
+                    }
+                }
+            }
+        });
+
+        // INICIAR
+        boot();
+
     </script>
 </body>
 </html>
