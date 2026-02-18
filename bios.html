@@ -19,17 +19,27 @@
             }
         }
     </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { font-family: 'Outfit', sans-serif; background-color: #050b14; color: #f8fafc; background-image: radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%); overflow-x: hidden; }
-        .glass { background: rgba(10, 15, 30, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(0, 243, 255, 0.15); transition: all 0.3s ease; }
-        .glass:hover { border-color: rgba(0, 243, 255, 0.4); }
-        .neon-text { text-shadow: 0 0 15px rgba(0, 243, 255, 0.8); }
-        .badge-locked { filter: grayscale(1) opacity(0.2); border: 1px dashed rgba(255,255,255,0.1); }
-        .badge-unlocked { filter: none; opacity: 1; border: 1px solid #00f3ff; background: rgba(0, 243, 255, 0.1); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
-        .panic-active { border-color: #ff2d55 !important; background: rgba(255, 45, 85, 0.2) !important; box-shadow: 0 0 30px rgba(255, 45, 85, 0.5); }
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        :root { --neon: #00f3ff; } /* Variable para el Bio-Theme */
+
+        body { font-family: 'Outfit', sans-serif; transition: all 0.5s ease; }
+        
+        .dark body { background-color: #050b14; color: #f8fafc; }
+        
+        /* Aplicamos la variable --neon a los bordes y sombras */
+        .dark .glass { 
+            background: rgba(10, 15, 30, 0.8); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid var(--neon); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); 
+        }
+        
+        .nav-btn.active { box-shadow: 0 0 20px var(--neon); background: var(--neon) !important; color: #050b14 !important; }
+        
+        .text-neon { color: var(--neon); }
+        .border-neon { border-color: var(--neon); }
     </style>
 </head>
 <body class="p-6 md:p-12">
