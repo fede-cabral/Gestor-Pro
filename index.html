@@ -887,13 +887,14 @@ const app = {
         if(typeof lucide !== 'undefined') lucide.createIcons();
     },
 
-    async askAI() {
+async askAI() {
+        // 1. OBTENER O PEDIR CLAVE
         let apiKey = localStorage.getItem("forjax_key_final");
         if (!apiKey) {
             const { value: key } = await Swal.fire({
                 title: 'CONFIGURAR GEMINI AI',
                 input: 'text',
-                inputPlaceholder: 'Pegá la clave que copiaste de AI Studio...',
+                inputPlaceholder: 'Pegá tu API Key de Google AI Studio...',
                 background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff'
             });
             if (key) {
@@ -902,42 +903,66 @@ const app = {
             } else return;
         }
 
+        // 2. PREPARAR INTERFAZ
         const box = document.getElementById("aiResponseBox");
         const txt = document.getElementById("aiText");
         box.classList.remove("hidden");
-        txt.innerHTML = "📡 CONECTANDO CON NEURAL ENGINE...";
+        txt.innerHTML = "📡 INICIANDO PROTOCOLO NEURAL...";
 
+        // 3. DATOS PARA LA IA
         const rec = this.data.records;
         const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0);
         const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
-        const prompt = `Analizá mis finanzas: Ingresos $${totalInc}, Gastos $${totalExp}. Dame 3 consejos breves con emojis en español.`;
+        const prompt = `Soy un asesor financiero cyberpunk. Ingresos: $${totalInc}, Gastos: $${totalExp}. Dame 3 consejos breves y duros (máximo 2 líneas cada uno) con emojis.`;
 
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        // 4. FUNCIÓN INTERNA DE LLAMADA (Para reusar)
+        const callGemini = async (modelName) => {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
-
             const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
+            if (data.error) throw new Error(data.error.message || "Error API");
+            return data.candidates[0].content.parts[0].text;
+        };
 
-            if (data.candidates && data.candidates[0].content) {
-                const aiMessage = data.candidates[0].content.parts[0].text;
-                txt.innerHTML = "";
-                let i = 0;
-                const typeWriter = () => {
-                    if (i < aiMessage.length) {
-                        txt.innerHTML += aiMessage.charAt(i) === '\n' ? '<br>' : aiMessage.charAt(i);
-                        i++;
-                        setTimeout(typeWriter, 15);
-                    }
-                };
-                typeWriter();
+        // 5. INTENTO PRINCIPAL CON FALLBACK
+        try {
+            let aiMessage = "";
+            try {
+                // Intento A: Modelo Rápido (Flash)
+                txt.innerHTML = "📡 CONECTANDO MOTOR FLASH...";
+                aiMessage = await callGemini("gemini-1.5-flash");
+            } catch (e) {
+                console.warn("Flash falló, probando Pro...", e);
+                // Intento B: Modelo Clásico (Pro) - Si falla el anterior
+                txt.innerHTML = "⚠️ REENRUTANDO A MOTOR PRO...";
+                aiMessage = await callGemini("gemini-pro");
             }
+
+            // 6. ESCRIBIR RESPUESTA (Efecto Hacker)
+            txt.innerHTML = "";
+            let i = 0;
+            const typeWriter = () => {
+                if (i < aiMessage.length) {
+                    const char = aiMessage.charAt(i);
+                    txt.innerHTML += char === '\n' ? '<br>' : char;
+                    i++;
+                    setTimeout(typeWriter, 15);
+                }
+            };
+            typeWriter();
+
         } catch (error) {
-            txt.innerHTML = `❌ ERROR: ${error.message}. <br><br><b>Clave reseteada. Refrescá y pegá la clave de nuevo.</b>`;
-            localStorage.removeItem("forjax_key_final");
+            // 7. SI TODO FALLA
+            txt.innerHTML = `❌ ERROR CRÍTICO: La clave API no funciona con ningún modelo.<br><br>
+            <span class="text-rose-500 font-bold">SOLUCIÓN:</span><br>
+            1. Entrá a <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline text-cyan-400">aistudio.google.com</a><br>
+            2. Creá una clave nueva.<br>
+            3. Tocá el botón de abajo para resetear.<br><br>
+            <button onclick="localStorage.removeItem('forjax_key_final'); location.reload();" class="bg-rose-500 text-white px-4 py-2 rounded font-bold">RESETEAR CLAVE AHORA</button>`;
         }
     },
     initSession() { 
