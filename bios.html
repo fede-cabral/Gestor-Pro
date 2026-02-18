@@ -114,12 +114,13 @@
     </div>
 
     <script>
-        // --- MOTOR BIOS ---
+        // --- MOTOR BIOS V50 TURBO ---
         const term = document.getElementById('terminal');
         const user = localStorage.getItem("currentUser") || "UNKNOWN";
+        let skipBoot = false; // Variable para saltar la intro
         
-        // VIBRACIÓN (HAPTIC FEEDBACK)
-        const vibe = (ms = 10) => { if (navigator.vibrate) navigator.vibrate(ms); };
+        // VIBRACIÓN (HAPTIC FEEDBACK) - Corta y seca
+        const vibe = (ms = 5) => { if (navigator.vibrate) navigator.vibrate(ms); };
 
         // DATOS REALES
         const p = user + "_";
@@ -128,116 +129,133 @@
         const exp = rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
         const bal = inc - exp;
 
-        // SISTEMA DE ESCRITURA RÁPIDA
-        const print = async (txt, type="sys-ok", speed=10) => {
+        // SISTEMA DE ESCRITURA (Ahora con modo Turbo)
+        const print = async (txt, type="sys-ok", speed=5) => {
             const div = document.createElement('div');
             div.className = type;
             term.appendChild(div);
             div.scrollIntoView();
             
-            // Si es mensaje crítico, vibra más fuerte
-            if(type.includes("crit")) vibe(50);
+            // Si el usuario tocó la pantalla, imprimimos de una sin animación
+            if (skipBoot) {
+                div.innerHTML = txt;
+                return; 
+            }
+
+            // Si es crítico, vibra
+            if(type.includes("crit")) vibe(15);
             
-            // Escritura caracter por caracter
             if (speed > 0) {
                 let i = 0;
-                const timer = setInterval(() => {
-                    div.innerText += txt.charAt(i);
-                    i++;
-                    if (i >= txt.length) clearInterval(timer);
-                }, speed);
-                await new Promise(r => setTimeout(r, txt.length * speed + 50));
+                // Promesa para esperar que termine de escribir
+                await new Promise(resolve => {
+                    const timer = setInterval(() => {
+                        if(skipBoot) { // Chequeo constante por si toca durante el loop
+                            div.innerHTML = txt;
+                            clearInterval(timer);
+                            resolve();
+                            return;
+                        }
+                        div.innerText += txt.charAt(i);
+                        i++;
+                        if (i >= txt.length) {
+                            clearInterval(timer);
+                            resolve();
+                        }
+                    }, speed);
+                });
             } else {
-                div.innerHTML = txt; // HTML directo para bloques grandes
-                await new Promise(r => setTimeout(r, 50));
+                div.innerHTML = txt;
             }
         };
 
-        // SECUENCIA DE ARRANQUE
+        // LISTENER PARA SALTAR INTRO (TAP TO SKIP)
+        document.body.addEventListener('click', () => {
+            if(!skipBoot) {
+                skipBoot = true;
+                vibe(10);
+            }
+        });
+
+        // SECUENCIA DE ARRANQUE (A LOS PEDOS)
         const boot = async () => {
-            vibe([20, 30, 20]); // Doble vibración al inicio
-            await print("INITIALIZING FORJAX KERNEL V.50...", "sys-dim", 20);
-            await print("LOADING NEURAL MODULES... [OK]", "sys-dim", 5);
-            await print("BYPASSING SECURITY FIREWALL... [SUCCESS]", "sys-dim", 5);
-            
-            await print(`> IDENTITY CONFIRMED: ${user}`, "sys-ok");
+            vibe(10);
+            // Velocidad 0 = Instantáneo, Velocidad 2 = Muy rápido
+            await print("FORJAX KERNEL V.50... [OK]", "sys-dim", 0); 
+            await print("LOADING MODULES... [OK]", "sys-dim", 0);
+            await print(`> USER: ${user}`, "sys-ok", 2);
             
             const ascii = `
-   ▄█    █▄       ▄████████  ▄████████  ▄█   ▄█▄ 
-  ███    ███     ███    ███ ███    ███ ███ ▄███▀ 
-  ███    ███     ███    ███ ███    ███ ███▐██▀   
- ▄███▄▄▄▄███▄▄   ███    ███ ███    ███ ███▀▀▀    
-▀▀███▀▀▀▀███▀  ▀███████████ ███    ███ ███       
-  ███    ███     ███    ███ ███    ███ ███       
-  ███    ███     ███    ███ ███    ███ ███       
-  ███    ███     ███    ███ ███    ███ ███       
+   ▄█   ▄█▄  ▄██████▄     ▄████████  ▄█   ▄█▄ 
+  ███ ▄███▀ ███    ███   ███    ███ ███ ▄███▀ 
+  ███▐██▀   ███    ███   ███    ███ ███▐██▀   
+ ▄█████▀    ███    ███  ▄███▄▄▄▄███ ███▀▀▀    
+▀▀█████▄    ███    ███ ▀▀███▀▀▀▀███ ███       
+  ███▐██▄   ███    ███   ███    ███ ███       
+  ███ ▀███▄ ███    ███   ███    ███ ███       
+  ███   ▀█▀  ▀██████▀    ███    ███ █▀        
 `;
-            // Imprimir ASCII de golpe para que no tarde
+            // El arte ASCII siempre instantáneo
             const pre = document.createElement('pre');
-            pre.className = "text-[10px] leading-none text-emerald-500 my-4 font-bold glitch";
+            pre.className = "text-[10px] leading-none text-emerald-500 my-2 font-bold glitch";
             pre.innerText = ascii;
             term.appendChild(pre);
-            vibe(30);
 
             await print("-------------------------------------", "sys-dim", 0);
-            await print("FINANCIAL DIAGNOSTICS:", "sys-warn underline", 0);
-            await print(`> TOTAL CASHFLOW:    $${inc.toLocaleString()}`, "sys-ok", 5);
-            await print(`> SYSTEM BURN RATE:  $${exp.toLocaleString()}`, "sys-crit", 5);
+            await print(`> CASHFLOW: $${inc.toLocaleString()}`, "sys-ok", 0); // Instantáneo
+            await print(`> BURN RATE: $${exp.toLocaleString()}`, "sys-crit", 0); // Instantáneo
             
             let balStyle = bal >= 0 ? "sys-ok" : "sys-crit glitch";
-            await print(`> NET LIQUIDITY:     $${bal.toLocaleString()}`, balStyle, 20);
+            await print(`> LIQUIDITY: $${bal.toLocaleString()}`, balStyle, 5); // Un poco de drama en el saldo
             
             await print("-------------------------------------", "sys-dim", 0);
-            await print("> TOUCH INTERFACE ENABLED.", "sys-dim");
-            await print("> WAITING FOR INPUT...", "blink");
+            await print("> SYSTEM READY.", "blink", 0);
 
             updatePanicVisuals();
         };
 
-        // --- COMANDOS ---
+        // --- COMANDOS Y VISUALES ---
 
         function updatePanicVisuals() {
             const isPanic = localStorage.getItem("forjax_panic_mode") === "true";
             const btn = document.getElementById("btnPanic");
             if(isPanic) {
                 btn.classList.add("panic-active");
-                print("> SYSTEM LOCKED. DATA MASKED.", "sys-crit");
+                if(!skipBoot) print("> SYSTEM LOCKED.", "sys-crit", 0);
             } else {
                 btn.classList.remove("panic-active");
             }
         }
 
         function cmdPanic() {
-            vibe(100); // Vibración fuerte
+            vibe(50);
             const current = localStorage.getItem("forjax_panic_mode") === "true";
             localStorage.setItem("forjax_panic_mode", !current);
             
-            if (!current) {
-                print("!!! ACTIVATING PRIVACY PROTOCOL !!!", "sys-crit glitch");
-                print("> DATA ENCRYPTION: ENABLED", "sys-crit");
-            } else {
-                print("> DEACTIVATING PROTOCOL...", "sys-ok");
-                print("> DATA VISIBLE.", "sys-ok");
-            }
+            // Feedback instantáneo sin animación de texto lenta
+            const msg = !current ? "> PRIVACY ACTIVE [LOCKED]" : "> PRIVACY INACTIVE [OPEN]";
+            const style = !current ? "sys-crit glitch" : "sys-ok";
+            print(msg, style, 0);
+            
             updatePanicVisuals();
         }
 
         function cmdReboot() {
-            vibe(30);
+            vibe(20);
             location.reload();
         }
 
         function cmdExit() {
-            vibe(50);
-            print("> TERMINATING SESSION...", "sys-warn");
-            document.body.classList.add("shutdown"); // Animación TV vieja
+            vibe(30);
+            // Animación CSS pura, sin espera de JS
+            document.body.classList.add("shutdown"); 
             setTimeout(() => {
                 window.location.href = "index.html";
-            }, 600);
+            }, 400); // Salida rápida (0.4s)
         }
 
-        // INICIAR
-        setTimeout(boot, 100);
+        // ARRANQUE INMEDIATO
+        boot();
 
     </script>
 </body>
