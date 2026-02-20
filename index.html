@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORJAX Terminal - V50 AI</title>
+    <title>FORJAX Terminal - V50 Cloud</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -42,18 +42,12 @@
         :root { --neon: #00f3ff; }
         body { font-family: 'Outfit', sans-serif; transition: background-color 0.3s, color 0.3s; }
         
-        /* DARK MODE */
-        .dark body { 
-            background-color: #050b14; 
-            color: #f8fafc; 
-            background-image: radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%); 
-        }
+        .dark body { background-color: #050b14; color: #f8fafc; background-image: radial-gradient(circle at 50% 0%, #0c1220 0%, #050b14 80%); }
         .dark .glass { background: rgba(10, 15, 30, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(0, 243, 255, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
         .dark .glass-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); }
         .dark input, .dark select { background: #0a0f1d !important; color: #fff !important; border: 1px solid #1e293b !important; }
         .dark input::placeholder { color: #475569; }
         
-        /* LIGHT MODE */
         .light body { background-color: #f8fafc; color: #020617; background-image: radial-gradient(circle at 50% 0%, #e2e8f0 0%, #f8fafc 60%); }
         .light .glass { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         .light .glass-card { background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -61,36 +55,23 @@
         .light .text-white { color: #020617 !important; } 
         .light .text-slate-400 { color: #475569 !important; }
 
-        /* Common */
         .glass-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-3px); }
         .dark .glass-card:hover { border-color: var(--neon); box-shadow: 0 10px 40px -10px rgba(0, 243, 255, 0.15); }
         .light .glass-card:hover { border-color: #0ea5e9; box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.2); }
 
-        /* Navbar */
-        .nav-container {
-            position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 50;
-            padding: 0.4rem; border-radius: 999px; display: flex; gap: 0.3rem;
-            backdrop-filter: blur(20px); transition: all 0.3s;
-        }
+        .nav-container { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 50; padding: 0.4rem; border-radius: 999px; display: flex; gap: 0.3rem; backdrop-filter: blur(20px); transition: all 0.3s; }
         .dark .nav-container { background: rgba(5, 11, 20, 0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7); }
         .light .nav-container { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); }
-
         .nav-btn { padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; }
         .dark .nav-btn { color: #94a3b8; } .dark .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
         .light .nav-btn { color: #64748b; } .light .nav-btn:hover { color: #0f172a; background: rgba(0,0,0,0.05); }
-          
         .nav-btn.active { box-shadow: 0 0 20px var(--neon); }
         .dark .nav-btn.active { background: var(--neon); color: #050b14; }
         .light .nav-btn.active { background: #0284c7; color: white; box-shadow: 0 0 20px rgba(2, 132, 199, 0.3); }
         
-        /* SweetAlert */
-        div:where(.swal2-container) div:where(.swal2-popup) {
-            background: #0f172a !important; border: 2px solid #1e293b !important; color: #fff !important; border-radius: 1.5rem !important;
-        }
-        .light div:where(.swal2-container) div:where(.swal2-popup) {
-            background: #fff !important; border: 1px solid #cbd5e1 !important; color: #020617 !important;
-        }
+        div:where(.swal2-container) div:where(.swal2-popup) { background: #0f172a !important; border: 2px solid #1e293b !important; color: #fff !important; border-radius: 1.5rem !important; }
+        .light div:where(.swal2-container) div:where(.swal2-popup) { background: #fff !important; border: 1px solid #cbd5e1 !important; color: #020617 !important; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -130,8 +111,8 @@
                     </div>
                 </div>
                 
-                <button onclick="app.initSession()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-black py-4 rounded-xl transition-all shadow-neon-blue hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] uppercase tracking-widest mt-2">
-                    INGRESAR
+                <button id="loginBtn" onclick="app.initSession()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-black py-4 rounded-xl transition-all shadow-neon-blue hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] uppercase tracking-widest mt-2">
+                    CONECTAR NUBE
                 </button>
             </div>
 
@@ -147,7 +128,7 @@
             </button>
             
             <p class="mt-4 text-[10px] text-slate-600 font-mono text-center">
-                V50 AI • SECURE CONNECTION
+                V50 CLOUD • <span class="text-emerald-500 animate-pulse">LIVE SYNC ACTIVE</span>
             </p>
         </div>
     </div>
@@ -172,15 +153,11 @@
         
         <div id="viewWallet" class="fade-in">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div><h2 class="text-4xl font-black tracking-tighter text-white">DASHBOARD</h2><p class="text-xs font-mono text-cyan-500">SYSTEM STATUS: ONLINE</p></div>
+                <div><h2 class="text-4xl font-black tracking-tighter text-white">DASHBOARD</h2><p class="text-xs font-mono text-emerald-500 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> CLOUD SYNC: CONNECTED</p></div>
                 
                 <div class="glass p-1 rounded-lg flex flex-wrap justify-center gap-1">
-                    <a href="bios.html" class="nav-btn hover:text-cyan-400 transition-all">
-                        <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> BIOS TERMINAL
-                    </a>
-                    <button onclick="app.setCategoryLimit()" class="nav-btn hover:text-rose-400 transition-all">
-                        <i data-lucide="target" class="w-4 h-4 text-rose-400"></i> SET LÍMITES
-                    </button>
+                    <a href="bios.html" class="nav-btn hover:text-cyan-400 transition-all"><i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> BIOS TERMINAL</a>
+                    <button onclick="app.setCategoryLimit()" class="nav-btn hover:text-rose-400 transition-all"><i data-lucide="target" class="w-4 h-4 text-rose-400"></i> SET LÍMITES</button>
                     <button onclick="app.setFilter('month')" id="filterMonth" class="px-6 py-2 rounded-md text-xs font-bold bg-cyan-400 text-black shadow-neon-blue transition-all">ESTE MES</button>
                     <button onclick="app.setFilter('all')" id="filterAll" class="px-6 py-2 rounded-md text-xs font-bold text-slate-400 hover:text-white transition-all">HISTÓRICO</button>
                 </div>
@@ -189,26 +166,16 @@
             <div class="glass p-8 rounded-3xl mb-10 border border-purple-500/30 relative overflow-hidden group">
                 <div class="absolute inset-0 bg-purple-900/10 group-hover:bg-purple-900/20 transition-all"></div>
                 <div class="absolute -right-10 -top-10 bg-purple-500 blur-[100px] w-64 h-64 opacity-20"></div>
-                
                 <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div class="flex items-center gap-4">
-                        <div class="p-4 bg-black rounded-full border border-purple-500 shadow-neon-purple animate-pulse">
-                            <i data-lucide="bot" class="w-8 h-8 text-purple-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-black text-white tracking-tight">FORJAX AI ADVISOR</h3>
-                            <p class="text-xs text-purple-300 font-mono">POWERED BY GEMINI NEURAL ENGINE</p>
-                        </div>
+                        <div class="p-4 bg-black rounded-full border border-purple-500 shadow-neon-purple animate-pulse"><i data-lucide="bot" class="w-8 h-8 text-purple-400"></i></div>
+                        <div><h3 class="text-xl font-black text-white tracking-tight">FORJAX AI ADVISOR</h3><p class="text-xs text-purple-300 font-mono">POWERED BY GEMINI NEURAL ENGINE</p></div>
                     </div>
-                    
                     <button onclick="app.askAI()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2 hover:scale-105">
                         <i data-lucide="sparkles" class="w-5 h-5"></i> ANALIZAR MIS FINANZAS
                     </button>
                 </div>
-                
-                <div id="aiResponseBox" class="hidden mt-6 p-6 bg-black/40 rounded-xl border-l-4 border-purple-500">
-                    <p id="aiText" class="text-sm font-mono text-slate-300 leading-relaxed"></p>
-                </div>
+                <div id="aiResponseBox" class="hidden mt-6 p-6 bg-black/40 rounded-xl border-l-4 border-purple-500"><p id="aiText" class="text-sm font-mono text-slate-300 leading-relaxed"></p></div>
             </div>
 
             <div class="glass p-6 rounded-2xl mb-10 border-l-4 border-purple-500 relative overflow-hidden">
@@ -261,22 +228,9 @@
                         <div class="space-y-4 relative z-10">
                             <div><label class="text-[10px] font-bold text-slate-500 ml-1">DETALLE</label><input id="transDesc" type="text" class="w-full p-4 rounded-xl font-bold outline-none transition-all"></div>
                             <div class="flex gap-3">
-                                <div class="w-1/3">
-                                    <label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label>
-                                    <input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all">
-                                </div>
-                                <div class="w-1/3 flex flex-col">
-                                    <label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label>
-                                    <select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer"></select>
-                                </div>
-                                <div class="w-1/3">
-                                    <label class="text-[10px] font-bold text-cyan-500 ml-1">BIO-ESTADO</label>
-                                    <select id="transBio" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer border border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
-                                        <option value="100">🧘 Zen</option>
-                                        <option value="70">😐 Normal</option>
-                                        <option value="30">🔥 Estrés</option>
-                                    </select>
-                                </div>
+                                <div class="w-1/3"><label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label><input id="transAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all"></div>
+                                <div class="w-1/3 flex flex-col"><label class="text-[10px] font-bold text-slate-500 ml-1">CATEGORÍA</label><select id="transCategory" onchange="app.checkCustomCategory()" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer"></select></div>
+                                <div class="w-1/3"><label class="text-[10px] font-bold text-cyan-500 ml-1">BIO-ESTADO</label><select id="transBio" class="w-full p-4 rounded-xl font-bold outline-none cursor-pointer border border-cyan-500/30 text-cyan-600 dark:text-cyan-400"><option value="100">🧘 Zen</option><option value="70">😐 Normal</option><option value="30">🔥 Estrés</option></select></div>
                             </div>
                             <input id="customCategoryInput" type="text" placeholder="Escribe la categoría..." class="w-full p-4 mt-2 rounded-xl font-bold outline-none transition-all border border-cyan-500/50 hidden animate-pulse">
                             <div class="grid grid-cols-2 gap-3 pt-4">
@@ -297,10 +251,7 @@
                         <div class="p-6 border-b border-white/5 flex flex-col md:flex-row justify-between items-center bg-black/20 gap-4">
                             <div class="flex items-center gap-4 w-full md:w-auto">
                                 <h3 class="font-bold flex items-center gap-2 text-white"><i data-lucide="list-video"></i> Registros</h3>
-                                <div class="relative flex-1 md:w-64">
-                                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-                                    <input type="text" id="tableSearch" onkeyup="app.applySearch(this.value)" placeholder="BUSCAR REGISTRO..." class="w-full pl-10 pr-4 py-2 bg-black/40 border border-white/10 rounded-lg text-xs font-mono text-cyan-400 focus:border-cyan-400 outline-none uppercase">
-                                </div>
+                                <div class="relative flex-1 md:w-64"><i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="tableSearch" onkeyup="app.applySearch(this.value)" placeholder="BUSCAR REGISTRO..." class="w-full pl-10 pr-4 py-2 bg-black/40 border border-white/10 rounded-lg text-xs font-mono text-cyan-400 focus:border-cyan-400 outline-none uppercase"></div>
                             </div>
                             <button onclick="app.exportEnterpriseReport()" class="w-full md:w-auto bg-gradient-to-r from-emerald-500 to-emerald-400 text-black px-4 py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2 hover:from-emerald-400 hover:to-emerald-300 transition-all shadow-neon-blue border border-emerald-400/50">
                                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> REPORTE ENTERPRISE
@@ -317,13 +268,13 @@
                     </div>
                 </div>
             </div>
-
+            
             <div class="glass p-8 rounded-3xl mt-10 border border-cyan-500/20 fade-in">
                 <h2 class="text-2xl font-black text-white mb-6 flex items-center gap-2"><i data-lucide="trending-up" class="text-emerald-400"></i> SIMULADOR PLAZO FIJO</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div><label class="text-[10px] font-bold text-slate-500 ml-1">CAPITAL ($)</label><input id="investCapital" type="number" placeholder="Ej: 100000" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
-                    <div><label class="text-[10px] font-bold text-slate-500 ml-1">DÍAS</label><input id="investDays" type="number" placeholder="Ej: 30" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
-                    <div><label class="text-[10px] font-bold text-slate-500 ml-1">TASA ANUAL (%)</label><input id="investRate" type="number" placeholder="Ej: 110" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
+                    <div><label class="text-[10px] font-bold text-slate-500 ml-1">CAPITAL ($)</label><input id="investCapital" type="number" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
+                    <div><label class="text-[10px] font-bold text-slate-500 ml-1">DÍAS</label><input id="investDays" type="number" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
+                    <div><label class="text-[10px] font-bold text-slate-500 ml-1">TASA ANUAL (%)</label><input id="investRate" type="number" class="w-full p-4 rounded-xl font-bold outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
                 </div>
                 <button onclick="calculateInvestment()" class="w-full mt-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl transition-all shadow-lg uppercase tracking-widest">Calcular Rendimiento</button>
                 <div id="resultBox" class="hidden mt-6 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-center">
@@ -340,9 +291,9 @@
             </div>
             <div id="subForm" class="hidden glass p-6 rounded-3xl mb-8 border border-cyan-500/20">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div class="md:col-span-1"><label class="text-[10px] font-bold text-slate-500 ml-1">NOMBRE</label><input id="subName" placeholder="Ej: Netflix" class="w-full p-4 rounded-xl font-bold outline-none transition-all"></div>
-                    <div class="md:col-span-1"><label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label><input id="subAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" placeholder="$" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all"></div>
-                    <div class="md:col-span-1"><label class="text-[10px] font-bold text-slate-500 ml-1">DÍA VENC.</label><input id="subDay" type="number" min="1" max="31" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" placeholder="1-31" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all"></div>
+                    <div class="md:col-span-1"><label class="text-[10px] font-bold text-slate-500 ml-1">NOMBRE</label><input id="subName" class="w-full p-4 rounded-xl font-bold outline-none transition-all"></div>
+                    <div class="md:col-span-1"><label class="text-[10px] font-bold text-slate-500 ml-1">MONTO</label><input id="subAmount" type="number" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all"></div>
+                    <div class="md:col-span-1"><label class="text-[10px] font-bold text-slate-500 ml-1">DÍA VENC.</label><input id="subDay" type="number" class="w-full p-4 rounded-xl font-bold font-mono outline-none transition-all"></div>
                     <button onclick="app.addSub()" class="w-full bg-cyan-400 hover:bg-cyan-300 text-black p-4 rounded-xl font-black transition-all shadow-neon-blue">GUARDAR</button>
                 </div>
             </div>
@@ -369,7 +320,7 @@
                 <div class="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none"></div>
                 <h3 class="text-sm font-black text-cyan-400 mb-6 flex items-center gap-2 uppercase tracking-widest"><i data-lucide="binary" class="w-4 h-4"></i> Convertidor Universal</h3>
                 <div class="flex flex-col md:flex-row gap-6 items-end relative z-10">
-                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 ml-1 mb-2 block tracking-wider">CANTIDAD</label><input id="calcAmount" type="number" min="0" onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" value="1" onkeyup="app.calcCurrency()" class="w-full p-5 rounded-2xl text-2xl font-bold font-mono outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
+                    <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 ml-1 mb-2 block tracking-wider">CANTIDAD</label><input id="calcAmount" type="number" min="0" value="1" onkeyup="app.calcCurrency()" class="w-full p-5 rounded-2xl text-2xl font-bold font-mono outline-none bg-slate-900/50 border border-slate-700 focus:border-cyan-400 transition-all"></div>
                     <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 ml-1 mb-2 block tracking-wider">MONEDA ORIGEN</label><div class="relative"><select id="calcFrom" onchange="app.calcCurrency()" class="w-full p-5 pl-12 rounded-2xl font-bold appearance-none bg-slate-900/50 border border-slate-700 cursor-pointer focus:border-cyan-400 transition-all text-lg"></select><div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" id="flagFrom"></div><i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i></div></div>
                     <div class="pb-5"><button onclick="app.swapCalc()" class="p-3 rounded-full bg-cyan-400 text-black transition-all rotate-90 md:rotate-0"><i data-lucide="arrow-right-left" class="w-5 h-5"></i></button></div>
                     <div class="flex-1 w-full"><label class="text-[10px] font-bold text-slate-500 ml-1 mb-2 block tracking-wider">MONEDA DESTINO</label><div class="relative"><select id="calcTo" onchange="app.calcCurrency()" class="w-full p-5 pl-12 rounded-2xl font-bold appearance-none bg-slate-900/50 border border-slate-700 cursor-pointer focus:border-cyan-400 transition-all text-lg"></select><div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" id="flagTo"></div><i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i></div></div>
@@ -387,7 +338,6 @@
                 <div><h2 class="text-3xl md:text-4xl font-black text-white tracking-tighter flex items-center gap-3"><i data-lucide="bar-chart-big" class="text-emerald-400 w-8 h-8"></i> ASSET SCREENER</h2><p class="text-xs font-mono text-emerald-500 mt-1">ACCIONES • CEDEARS • RENTA FIJA</p></div>
                 <button onclick="app.renderInvestData()" class="bg-slate-900 border border-emerald-500/50 p-3 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-all"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
             </div>
-
             <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Renta Fija Local (Tasas Referencia)</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                 <div class="glass p-6 rounded-3xl border-l-4 border-indigo-500 relative overflow-hidden">
@@ -410,262 +360,211 @@
                     </div>
                 </div>
             </div>
-
             <div class="flex justify-between items-end mb-4 border-b border-white/5 pb-2">
                 <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Equities & CEDEARs (Top 100)</h3>
                 <input type="text" id="investSearch" onkeyup="app.filterInvestments(this.value)" placeholder="BUSCAR TICKER..." class="bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs font-mono text-emerald-400 outline-none w-48 focus:border-emerald-500">
             </div>
-            
             <div class="glass rounded-3xl overflow-hidden border border-white/5">
                 <div class="overflow-x-auto max-h-[600px] custom-scroll">
                     <table class="w-full text-left relative">
                         <thead class="sticky top-0 bg-[#0f172a] z-10 text-[10px] uppercase text-slate-400 font-bold tracking-widest border-b border-slate-700">
-                            <tr>
-                                <th class="px-6 py-4">Ticker</th>
-                                <th class="px-6 py-4">Empresa</th>
-                                <th class="px-6 py-4 text-right">Precio (USD)</th>
-                                <th class="px-6 py-4 text-right">Var. 24h</th>
-                                <th class="px-6 py-4 text-center">Trend</th>
-                            </tr>
+                            <tr><th class="px-6 py-4">Ticker</th><th class="px-6 py-4">Empresa</th><th class="px-6 py-4 text-right">Precio (USD)</th><th class="px-6 py-4 text-right">Var. 24h</th><th class="px-6 py-4 text-center">Trend</th></tr>
                         </thead>
-                        <tbody id="investTableBody" class="divide-y divide-white/5 text-sm font-mono text-slate-200">
-                            </tbody>
+                        <tbody id="investTableBody" class="divide-y divide-white/5 text-sm font-mono text-slate-200"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <footer class="mt-12 pb-8 text-center opacity-60 hover:opacity-100 transition-opacity">
-            <div class="flex items-center justify-center gap-2 mb-2"><i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i><span class="text-[10px] font-black tracking-[0.2em] text-cyan-400">FORJAX ENTERPRISE</span></div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-500 font-mono">© 2026 FORJAX FINANCIAL SYSTEMS. ALL RIGHTS RESERVED.</p>
+            <div class="flex items-center justify-center gap-2 mb-2"><i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i><span class="text-[10px] font-black tracking-[0.2em] text-cyan-400">FORJAX ENTERPRISE CLOUD</span></div>
+            <p class="text-[10px] text-slate-500 dark:text-slate-500 font-mono">© 2026 FORJAX FINANCIAL SYSTEMS.</p>
         </footer>
     </div>
 </div>
 
 <input type="file" id="importFile" class="hidden" accept=".json" onchange="app.restoreData(this)">
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDefpHV0GEwNrf7ae99dYaIpgTYOGeuyEc",
+  authDomain: "forjax.firebaseapp.com",
+  projectId: "forjax",
+  storageBucket: "forjax.firebasestorage.app",
+  messagingSenderId: "779351535663",
+  appId: "1:779351535663:web:38014b64073b8bef3096da"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
 const app = {
     user: localStorage.getItem("currentUser"),
     theme: localStorage.getItem("theme") || 'dark',
     currentTab: 'wallet',
     timeFilter: 'month', 
-    data: { records: [], subs: [], goals: [], searchTerm: '', limits: {} },
+    data: { records: [], subs: [], goals: [], limits: {}, searchTerm: '' },
     rates: {'USD':1, 'ARS':1200, 'EUR':0.92, 'BRL':5.7, 'BTC':95000, 'ETH':2800}, 
     charts: {}, privacy: false,
     defaultCategories: ["Ingreso", "Hogar", "Comida", "Servicios", "Transporte", "Salud", "Educación", "Ropa", "Deudas", "Ahorro", "Ocio", "Viajes", "Otros"],
     currencies: [
         {c:'USD', f:'us', n:'Dólar Americano', type:'fiat'}, {c:'ARS', f:'ar', n:'Peso Argentino (Blue)', type:'fiat'}, {c:'EUR', f:'eu', n:'Euro', type:'fiat'}, {c:'BRL', f:'br', n:'Real Brasileño', type:'fiat'}, {c:'GBP', f:'gb', n:'Libra Esterlina', type:'fiat'}, {c:'JPY', f:'jp', n:'Yen Japonés', type:'fiat'}, {c:'CNY', f:'cn', n:'Yuan Chino', type:'fiat'}, {c:'MXN', f:'mx', n:'Peso Mexicano', type:'fiat'}, {c:'CLP', f:'cl', n:'Peso Chileno', type:'fiat'}, {c:'COP', f:'co', n:'Peso Colombiano', type:'fiat'}, {c:'BTC', f:'un', n:'Bitcoin', type:'crypto'}, {c:'ETH', f:'un', n:'Ethereum', type:'crypto'}, {c:'USDT',f:'un', n:'Tether', type:'crypto'}, {c:'SOL', f:'un', n:'Solana', type:'crypto'}
     ],
-    investList: [],
 
-    init() {
+    async init() {
         this.applyTheme();
         if (!this.user) { document.getElementById("loginScreen").classList.remove("hidden"); return; }
+        
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("mainApp").classList.remove("hidden");
         document.getElementById("mainApp").classList.remove("opacity-0");
-        this.loadData(); 
+        
+        // SINCRONIZACIÓN DESDE LA NUBE
+        await this.syncFromCloud(); 
+        
         this.updateCategoryDropdown(); 
         this.render(); 
         this.renderSubs(); 
         this.renderGoals(); 
         this.fillCalcSelects(); 
         this.fetchFullMarket();
-        this.renderInvestData(); // Agregado para renderizar Inversiones
+        this.renderInvestData();
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
-    loadData() {
-        const p = this.user + "_";
-        this.data.records = JSON.parse(localStorage.getItem(p + "records")) || [];
-        this.data.subs = JSON.parse(localStorage.getItem(p + "subs")) || [];
-        this.data.goals = JSON.parse(localStorage.getItem(p + "goals")) || [];
-        this.data.limits = JSON.parse(localStorage.getItem(p + "limits")) || {};
+    // 🚀 LECTURA DESDE FIREBASE (NUBE)
+    async syncFromCloud() {
+        try {
+            const docRef = doc(db, "users", this.user);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const cloudData = docSnap.data();
+                this.data.records = cloudData.records || [];
+                this.data.subs = cloudData.subs || [];
+                this.data.goals = cloudData.goals || [];
+                this.data.limits = cloudData.limits || {};
+                
+                // Backup local de lo descargado de la nube
+                localStorage.setItem(this.user + "_records", JSON.stringify(this.data.records));
+            } else {
+                // Si en la nube no hay nada (primera vez o borrado), carga de local
+                this.data.records = JSON.parse(localStorage.getItem(this.user + "_records")) || [];
+                this.data.subs = JSON.parse(localStorage.getItem(this.user + "_subs")) || [];
+                this.data.goals = JSON.parse(localStorage.getItem(this.user + "_goals")) || [];
+                this.data.limits = JSON.parse(localStorage.getItem(this.user + "_limits")) || {};
+            }
+        } catch (e) {
+            console.error("Error al sincronizar desde la nube, usando modo local.", e);
+            this.data.records = JSON.parse(localStorage.getItem(this.user + "_records")) || [];
+        }
     },
-    save() {
+
+    // 🚀 ESCRITURA HACIA FIREBASE (NUBE)
+    async save() {
+        // Guardado local de seguridad
         const p = this.user + "_";
         localStorage.setItem(p + "records", JSON.stringify(this.data.records));
         localStorage.setItem(p + "subs", JSON.stringify(this.data.subs));
         localStorage.setItem(p + "goals", JSON.stringify(this.data.goals));
         localStorage.setItem(p + "limits", JSON.stringify(this.data.limits));
         this.render();
-    },
-
-    calculateForecasting() {
-        const rec = this.data.records;
-        const currentBalance = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0) - 
-                               rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
-
-        const now = new Date(); const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(now.getDate() - 30);
-        const recentExpenses = rec.filter(r => {
-            const parts = r.date.split('/'); 
-            const rDate = new Date(parts[2], parts[1]-1, parts[0]);
-            return rDate >= thirtyDaysAgo && r.type === 'expense';
-        });
-
-        const totalRecentExpense = recentExpenses.reduce((a,c) => a + c.amount, 0);
-        const burnRate = totalRecentExpense / 30; 
-        const runway = burnRate > 0 ? Math.floor(currentBalance / burnRate) : 9999;
-
-        const elBurn = document.getElementById("predBurn");
-        const elRun = document.getElementById("predRunway");
-        const elStatus = document.getElementById("predStatus");
-        const elBar = document.getElementById("predBar");
         
-        if(elBurn) {
-            const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-            elBurn.innerText = fmt.format(burnRate) + " / día";
-            if (currentBalance <= 0) {
-                elRun.innerText = "0 DÍAS 💀"; elRun.className = "text-xl font-mono font-bold text-rose-500 animate-pulse"; elStatus.innerText = "ALERTA: QUIEBRA TÉCNICA"; elBar.style.width = "5%"; elBar.className = "h-full bg-rose-500 w-0 transition-all duration-1000";
-            } else {
-                if(runway > 365) elRun.innerText = "+1 AÑO 🚀"; else elRun.innerText = runway + " DÍAS";
-                if(runway < 30) { elRun.className = "text-xl font-mono font-bold text-rose-400"; elStatus.innerText = "CUIDADO: Reserva baja"; elBar.className = "h-full bg-rose-500 transition-all duration-1000"; elBar.style.width = "20%";
-                } else if (runway < 90) { elRun.className = "text-xl font-mono font-bold text-yellow-400"; elStatus.innerText = "ESTABLE: Precaución"; elBar.className = "h-full bg-yellow-400 transition-all duration-1000"; elBar.style.width = "50%";
-                } else { elRun.className = "text-xl font-mono font-bold text-emerald-400"; elStatus.innerText = "SÓLIDO: Crecimiento"; elBar.className = "h-full bg-emerald-400 transition-all duration-1000"; elBar.style.width = "100%"; }
+        // Guardado en la Nube
+        if(this.user) {
+            try {
+                await setDoc(doc(db, "users", this.user), {
+                    records: this.data.records,
+                    subs: this.data.subs,
+                    goals: this.data.goals,
+                    limits: this.data.limits
+                }, { merge: true }); // Merge no sobreescribe la contraseña
+            } catch (e) {
+                console.error("Error al guardar en la nube.", e);
             }
         }
     },
 
-    exportEnterpriseReport() {
-        Swal.fire({
-            title: 'Generando Informe Auditoría',
-            html: 'Analizando flujos, categorías y patrones bio-neuronales...',
-            timerProgressBar: true,
-            didOpen: () => { Swal.showLoading() }
-        });
+    // LOGIN REAL CONTRA LA NUBE
+    async initSession() { 
+        const u = document.getElementById("userInput").value.trim().toUpperCase(); 
+        const pass = document.getElementById("userPass").value.trim();
+        if (u.length < 2) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Ingresá un usuario válido'});
+        if (pass.length < 4) return Swal.fire({toast:true, position:'top', icon:'warning', title:'La contraseña debe tener 4+ caracteres'});
+        
+        const btn = document.getElementById("loginBtn");
+        btn.innerHTML = "⏳ CONECTANDO A MATRIX...";
 
+        try {
+            const docRef = doc(db, "users", u);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                // El usuario existe en la nube, comprobamos contraseña
+                const cloudData = docSnap.data();
+                if (cloudData.password === pass) {
+                    this.completeLogin(u);
+                } else {
+                    Swal.fire({ icon: 'error', title: 'ACCESO DENEGADO', text: 'Contraseña incorrecta en la nube', background: '#050b14', color: '#fff' });
+                    btn.innerHTML = "CONECTAR NUBE";
+                }
+            } else {
+                // Usuario nuevo, lo creamos en la nube
+                Swal.fire({
+                    title: 'NUEVO USUARIO DETECTADO',
+                    text: `¿Querés crear la cuenta "${u}" en la Nube con esta contraseña?`,
+                    icon: 'question', showCancelButton: true, confirmButtonText: 'Sí, Crear',
+                    background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        btn.innerHTML = "CREANDO PERFIL CLOUD...";
+                        await setDoc(docRef, { password: pass, records: [], subs: [], goals: [], limits: {} });
+                        this.completeLogin(u);
+                    } else {
+                        btn.innerHTML = "CONECTAR NUBE";
+                    }
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            Swal.fire({ icon: 'error', title: 'ERROR DE CONEXIÓN', text: 'No se pudo conectar con Firebase.', background: '#050b14', color: '#fff' });
+            btn.innerHTML = "CONECTAR NUBE";
+        }
+    },
+
+    completeLogin(user) {
+        localStorage.setItem("currentUser", user);
+        localStorage.setItem("lastUser", user); 
+        setTimeout(() => location.reload(), 500);
+    },
+
+    logout() {
+        localStorage.removeItem("currentUser");
+        location.reload();
+    },
+
+    // RESTO DE FUNCIONES (INTACTAS)
+    calculateForecasting() {
         const rec = this.data.records;
-        const fmtNum = (v) => ({ v: v, t: 'n', z: '$#,##0.00' });
-        const styleHeader = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } }, alignment: { horizontal: "center" } };
-        const styleSubHeader = { font: { bold: true, color: { rgb: "000000" } }, fill: { fgColor: { rgb: "E2E8F0" } } };
-        const styleTitle = { font: { bold: true, sz: 16, color: { rgb: "00F3FF" } }, fill: { fgColor: { rgb: "050B14" } } };
-
-        const totalInc = rec.filter(r => r.type === 'income').reduce((a, c) => a + c.amount, 0);
-        const totalExp = rec.filter(r => r.type === 'expense').reduce((a, c) => a + c.amount, 0);
-        const netWorth = totalInc - totalExp;
-
-        const months = {};
-        rec.forEach(r => {
-            const [d, m, y] = r.date.split('/');
-            const key = `${y}-${m.padStart(2, '0')}`;
-            if (!months[key]) months[key] = { inc: 0, exp: 0 };
-            if (r.type === 'income') months[key].inc += r.amount;
-            else months[key].exp += r.amount;
-        });
-
-        const cats = {};
-        rec.filter(r => r.type === 'expense').forEach(r => {
-            cats[r.category] = (cats[r.category] || 0) + r.amount;
-        });
-        const sortedCats = Object.entries(cats).sort((a, b) => b[1] - a[1]);
-
-        const bioData = { zen: 0, norm: 0, stress: 0 };
-        rec.filter(r => r.type === 'expense').forEach(r => {
-            if (r.bio === 100) bioData.zen += r.amount;
-            else if (r.bio === 30) bioData.stress += r.amount;
-            else bioData.norm += r.amount;
-        });
-
-        const ws1 = [
-            [{ v: "FORJAX INTELLIGENCE REPORT", s: styleTitle }],
-            [{ v: "AUDITORÍA FINANCIERA INTEGRAL", s: { font: { italic: true, color: { rgb: "64748B" } } } }],
-            [],
-            [{ v: "RESUMEN EJECUTIVO", s: styleSubHeader }],
-            ["Generado el:", new Date().toLocaleDateString()],
-            ["Usuario:", this.user.toUpperCase()],
-            ["Estado Sistema:", "ONLINE"],
-            [],
-            [{ v: "KPIs GLOBALES", s: styleSubHeader }],
-            ["Ingresos Totales", fmtNum(totalInc)],
-            ["Gastos Totales", fmtNum(totalExp)],
-            ["Patrimonio Neto", fmtNum(netWorth)],
-            ["Tasa de Ahorro", { v: totalInc > 0 ? (netWorth / totalInc) : 0, t: 'n', z: '0.00%' }],
-        ];
-
-        const ws2 = [
-            [{ v: "ESTADO DE RESULTADOS MENSUAL (P&L)", s: styleTitle }],
-            [],
-            [
-                { v: "PERIODO", s: styleHeader },
-                { v: "INGRESOS", s: styleHeader },
-                { v: "EGRSOS", s: styleHeader },
-                { v: "RESULTADO", s: styleHeader },
-                { v: "MARGEN", s: styleHeader }
-            ]
-        ];
-        Object.keys(months).sort().forEach(m => {
-            const d = months[m];
-            const net = d.inc - d.exp;
-            ws2.push([
-                m,
-                fmtNum(d.inc),
-                fmtNum(d.exp),
-                { v: net, t: 'n', z: '$#,##0.00', s: { font: { color: { rgb: net >= 0 ? "10B981" : "F43F5E" } } } },
-                { v: d.inc > 0 ? (net / d.inc) : 0, t: 'n', z: '0.0%' }
-            ]);
-        });
-
-        const ws3 = [
-            [{ v: "RANKING DE GASTOS POR CATEGORÍA", s: styleTitle }],
-            [],
-            [{ v: "CATEGORÍA", s: styleHeader }, { v: "TOTAL GASTADO", s: styleHeader }, { v: "% DEL TOTAL", s: styleHeader }]
-        ];
-        sortedCats.forEach(([c, amount]) => {
-            ws3.push([c, fmtNum(amount), { v: totalExp > 0 ? (amount / totalExp) : 0, t: 'n', z: '0.00%' }]);
-        });
-
-        const ws4 = [
-            [{ v: "INFORME DE GASTO EMOCIONAL (Bio-Tagging)", s: styleTitle }],
-            [],
-            [{ v: "La psicología detrás de tus finanzas.", s: { font: { italic: true } } }],
-            [],
-            [{ v: "ESTADO", s: styleHeader }, { v: "MONTO TOTAL", s: styleHeader }, { v: "IMPACTO", s: styleHeader }],
-            ["🧘 ZEN (Consciente)", fmtNum(bioData.zen), { v: totalExp > 0 ? (bioData.zen / totalExp) : 0, t: 'n', z: '0.00%' }],
-            ["😐 NORMAL (Rutina)", fmtNum(bioData.norm), { v: totalExp > 0 ? (bioData.norm / totalExp) : 0, t: 'n', z: '0.00%' }],
-            ["🔥 ESTRÉS (Impulsivo)", fmtNum(bioData.stress), { v: totalExp > 0 ? (bioData.stress / totalExp) : 0, t: 'n', z: '0.00%' }]
-        ];
-
-        const ws5 = [
-            [
-                { v: "ID", s: styleHeader },
-                { v: "FECHA", s: styleHeader },
-                { v: "DESCRIPCIÓN", s: styleHeader },
-                { v: "CATEGORÍA", s: styleHeader },
-                { v: "TIPO", s: styleHeader },
-                { v: "MONTO", s: styleHeader },
-                { v: "BIO-TAG", s: styleHeader }
-            ]
-        ];
-        rec.forEach(r => {
-            ws5.push([
-                r.id,
-                r.date,
-                r.desc,
-                r.category,
-                r.type.toUpperCase(),
-                fmtNum(r.amount),
-                r.bio === 100 ? "ZEN" : (r.bio === 30 ? "ESTRÉS" : "NORMAL")
-            ]);
-        });
-
-        const wb = XLSX.utils.book_new();
-        const createSheet = (data, name, cols) => {
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            if (cols) ws['!cols'] = cols;
-            XLSX.utils.book_append_sheet(wb, ws, name);
-        };
-
-        createSheet(ws1, "1. PORTADA", [{ wch: 25 }, { wch: 20 }]);
-        createSheet(ws2, "2. FLUJO MENSUAL", [{ wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 10 }]);
-        createSheet(ws3, "3. CATEGORÍAS", [{ wch: 20 }, { wch: 15 }, { wch: 10 }]);
-        createSheet(ws4, "4. BIO-AUDITORÍA", [{ wch: 20 }, { wch: 15 }, { wch: 10 }]);
-        createSheet(ws5, "5. DATA LAKE", [{ wch: 15 }, { wch: 12 }, { wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 10 }]);
-
-        setTimeout(() => {
-            XLSX.writeFile(wb, `FORJAX_Enterprise_${this.user}_${new Date().toISOString().split('T')[0]}.xlsx`);
-            Swal.close();
-        }, 1000);
+        const currentBalance = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0) - rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
+        const now = new Date(); const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(now.getDate() - 30);
+        const recentExpenses = rec.filter(r => { const parts = r.date.split('/'); const rDate = new Date(parts[2], parts[1]-1, parts[0]); return rDate >= thirtyDaysAgo && r.type === 'expense'; });
+        const totalRecentExpense = recentExpenses.reduce((a,c) => a + c.amount, 0);
+        const burnRate = totalRecentExpense / 30; 
+        const runway = burnRate > 0 ? Math.floor(currentBalance / burnRate) : 9999;
+        const elBurn = document.getElementById("predBurn"); const elRun = document.getElementById("predRunway"); const elStatus = document.getElementById("predStatus"); const elBar = document.getElementById("predBar");
+        if(elBurn) {
+            const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }); elBurn.innerText = fmt.format(burnRate) + " / día";
+            if (currentBalance <= 0) { elRun.innerText = "0 DÍAS 💀"; elRun.className = "text-xl font-mono font-bold text-rose-500 animate-pulse"; elStatus.innerText = "ALERTA: QUIEBRA TÉCNICA"; elBar.style.width = "5%"; elBar.className = "h-full bg-rose-500 w-0 transition-all duration-1000"; } 
+            else {
+                if(runway > 365) elRun.innerText = "+1 AÑO 🚀"; else elRun.innerText = runway + " DÍAS";
+                if(runway < 30) { elRun.className = "text-xl font-mono font-bold text-rose-400"; elStatus.innerText = "CUIDADO: Reserva baja"; elBar.className = "h-full bg-rose-500 transition-all duration-1000"; elBar.style.width = "20%"; } 
+                else if (runway < 90) { elRun.className = "text-xl font-mono font-bold text-yellow-400"; elStatus.innerText = "ESTABLE: Precaución"; elBar.className = "h-full bg-yellow-400 transition-all duration-1000"; elBar.style.width = "50%"; } 
+                else { elRun.className = "text-xl font-mono font-bold text-emerald-400"; elStatus.innerText = "SÓLIDO: Crecimiento"; elBar.className = "h-full bg-emerald-400 transition-all duration-1000"; elBar.style.width = "100%"; }
+            }
+        }
     },
 
     switchTab(tab) {
@@ -679,33 +578,6 @@ const app = {
     toggleTheme() { this.theme = this.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem("theme", this.theme); this.applyTheme(); },
     applyTheme() { document.documentElement.className = this.theme; const icon = document.getElementById("themeIcon"); if(icon && typeof lucide !== 'undefined') { icon.setAttribute("data-lucide", this.theme === 'dark' ? 'sun' : 'moon'); lucide.createIcons(); } },
     
-    openSettings() {
-        Swal.fire({
-            title: '<div class="flex flex-col items-center gap-3 mb-2"><div class="p-4 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="server" class="w-8 h-8"></i></div><span class="text-2xl font-black tracking-tight">DATA CENTER</span></div>',
-            html: `
-                <div class="grid grid-cols-1 gap-4 mt-4">
-                    <button onclick="app.downloadBackup()" class="group relative w-full text-left outline-none">
-                        <div class="relative bg-slate-900 border border-blue-500/30 group-hover:border-blue-400 p-5 rounded-2xl flex items-center gap-5 transition-all shadow-xl hover:-translate-y-1">
-                            <div class="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="download-cloud" class="w-6 h-6"></i></div>
-                            <div><h3 class="font-bold text-white text-lg">Exportar Backup</h3><p class="text-xs text-slate-400">Guardar mis datos</p></div>
-                        </div>
-                    </button>
-                    <button onclick="document.getElementById('importFile').click()" class="group relative w-full text-left outline-none">
-                        <div class="relative bg-slate-900 border border-purple-500/30 group-hover:border-purple-400 p-5 rounded-2xl flex items-center gap-5 transition-all shadow-xl hover:-translate-y-1">
-                            <div class="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-all"><i data-lucide="upload-cloud" class="w-6 h-6"></i></div>
-                            <div><h3 class="font-bold text-white text-lg">Restaurar Datos</h3><p class="text-xs text-slate-400">Cargar archivo previo</p></div>
-                        </div>
-                    </button>
-                </div>`,
-            showConfirmButton: false, showCloseButton: true,
-            background: this.theme === 'dark' ? '#0f172a' : '#fff', color: this.theme === 'dark' ? '#fff' : '#0f172a', width: '450px', padding: '2em',
-            didOpen: () => { if(typeof lucide !== 'undefined') lucide.createIcons(); }
-        });
-    },
-
-    downloadBackup() { const dateStr = new Date().toISOString().split('T')[0]; const safeUser = this.user.replace(/[^a-z0-9]/gi, '_'); const s = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data)); const a = document.createElement('a'); a.href = s; a.download = `Forjax_${safeUser}_${dateStr}.json`; a.click(); },
-    restoreData(i) { const f = i.files[0]; const r = new FileReader(); r.onload = (e) => { this.data = JSON.parse(e.target.result); this.save(); location.reload(); }; r.readAsText(f); },
-
     updateCategoryDropdown() {
         const select = document.getElementById("transCategory"); if(!select) return;
         const usedCats = [...new Set(this.data.records.map(r => r.category))].filter(c => !this.defaultCategories.includes(c));
@@ -728,7 +600,7 @@ const app = {
         document.getElementById("transDesc").value=""; document.getElementById("transAmount").value="";
         this.save(); this.updateCategoryDropdown();
         document.getElementById("transCategory").value="Ingreso"; document.getElementById("customCategoryInput").classList.add("hidden"); document.getElementById("customCategoryInput").value="";
-        Swal.fire({toast:true, position:'bottom-end', icon:'success', title:'Registro Sincronizado', showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'});
+        Swal.fire({toast:true, position:'bottom-end', icon:'success', title:'Registro guardado en la Nube', showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'});
     },
     
     deleteRecord(id) { this.data.records = this.data.records.filter(r=>r.id!==id); this.save(); },
@@ -736,50 +608,27 @@ const app = {
     getFilteredRecords() {
         let filtered = this.data.records;
         if (this.timeFilter !== 'all') {
-            const now = new Date();
-            const m = now.getMonth();
-            const y = now.getFullYear();
-            filtered = filtered.filter(r => {
-                const [d, rm, ry] = r.date.split('/').map(Number);
-                return (rm - 1) === m && ry === y;
-            });
+            const now = new Date(); const m = now.getMonth(); const y = now.getFullYear();
+            filtered = filtered.filter(r => { const [d, rm, ry] = r.date.split('/').map(Number); return (rm - 1) === m && ry === y; });
         }
         if (this.data.searchTerm) {
             const s = this.data.searchTerm.toLowerCase();
-            filtered = filtered.filter(r => 
-                r.desc.toLowerCase().includes(s) || 
-                r.category.toLowerCase().includes(s) ||
-                r.amount.toString().includes(s)
-            );
+            filtered = filtered.filter(r => r.desc.toLowerCase().includes(s) || r.category.toLowerCase().includes(s) || r.amount.toString().includes(s));
         }
         return filtered;
     },
 
-    applySearch(val) {
-        this.data.searchTerm = val;
-        this.render();
-    },
+    applySearch(val) { this.data.searchTerm = val; this.render(); },
 
     setCategoryLimit() {
         Swal.fire({
             title: 'ESTABLECER LÍMITE',
-            html: `
-                <select id="limitCat" class="swal2-input">
-                    ${this.defaultCategories.map(c => `<option value="${c}">${c}</option>`).join('')}
-                </select>
-                <input id="limitVal" type="number" class="swal2-input" placeholder="Monto Máximo $">
-            `,
+            html: ` <select id="limitCat" class="swal2-input">${this.defaultCategories.map(c => `<option value="${c}">${c}</option>`).join('')}</select><input id="limitVal" type="number" class="swal2-input" placeholder="Monto Máximo $">`,
             confirmButtonText: 'GUARDAR',
-            preConfirm: () => {
-                return {
-                    cat: document.getElementById('limitCat').value,
-                    val: Number(document.getElementById('limitVal').value)
-                }
-            }
+            preConfirm: () => { return { cat: document.getElementById('limitCat').value, val: Number(document.getElementById('limitVal').value) } }
         }).then(result => {
             if (result.isConfirmed && result.value.val > 0) {
-                this.data.limits[result.value.cat] = result.value.val;
-                this.save();
+                this.data.limits[result.value.cat] = result.value.val; this.save();
                 Swal.fire({ icon: 'success', title: 'Límite configurado', background: this.theme==='dark'?'#0f172a':'#fff' });
             }
         });
@@ -787,24 +636,11 @@ const app = {
 
     updateBioTheme() {
         const rec = this.getFilteredRecords().filter(r => r.type === 'expense');
-        if (rec.length === 0) {
-            document.documentElement.style.setProperty('--neon', '#00f3ff');
-            document.body.style.borderTop = "none";
-            return;
-        }
-
-        const avg = rec.reduce((a, b) => a + (b.bio || 70), 0) / rec.length;
-        const root = document.documentElement;
-        if (avg <= 45) { // ESTADO CRÍTICO (ROJO)
-            root.style.setProperty('--neon', '#f43f5e');
-            document.body.style.borderTop = "4px solid #f43f5e";
-        } else if (avg >= 85) { // ESTADO ZEN (VERDE)
-            root.style.setProperty('--neon', '#10b981');
-            document.body.style.borderTop = "4px solid #10b981";
-        } else { // ESTADO NORMAL (CYAN)
-            root.style.setProperty('--neon', '#00f3ff');
-            document.body.style.borderTop = "none";
-        }
+        if (rec.length === 0) { document.documentElement.style.setProperty('--neon', '#00f3ff'); document.body.style.borderTop = "none"; return; }
+        const avg = rec.reduce((a, b) => a + (b.bio || 70), 0) / rec.length; const root = document.documentElement;
+        if (avg <= 45) { root.style.setProperty('--neon', '#f43f5e'); document.body.style.borderTop = "4px solid #f43f5e"; } 
+        else if (avg >= 85) { root.style.setProperty('--neon', '#10b981'); document.body.style.borderTop = "4px solid #10b981"; } 
+        else { root.style.setProperty('--neon', '#00f3ff'); document.body.style.borderTop = "none"; }
     },
 
     render() {
@@ -828,11 +664,7 @@ const app = {
             elInc.parentElement.classList.remove('blur-md', 'select-none', 'grayscale'); elExp.parentElement.classList.remove('blur-md', 'select-none', 'grayscale'); elNet.parentElement.classList.remove('blur-md', 'select-none', 'grayscale');
             elNet.className = `text-3xl font-black blur-sensitive tracking-tight ${bal >= 0 ? 'text-cyan-400' : 'text-rose-400'}`;
             
-            // Calculo de totales por categoria para los limites
-            const catTotals = {};
-            this.data.records.filter(r=>r.type==='expense').forEach(r => {
-                catTotals[r.category] = (catTotals[r.category] || 0) + r.amount;
-            });
+            const catTotals = {}; this.data.records.filter(r=>r.type==='expense').forEach(r => { catTotals[r.category] = (catTotals[r.category] || 0) + r.amount; });
 
             if(rec.length === 0) tb.innerHTML = `<tr><td colspan="5" class="text-center py-12 opacity-30 text-lg font-mono">NO_DATA</td></tr>`;
             else tb.innerHTML = rec.map(r => {
@@ -842,20 +674,9 @@ const app = {
                     <tr class="hover:bg-blue-500/10 transition-all border-b border-white/5 last:border-0 group">
                         <td class="px-6 py-4 opacity-70 text-slate-300 group-hover:text-white font-mono">${r.date}</td>
                         <td class="px-6 py-4 font-bold uppercase text-white tracking-wide">${r.desc}</td>
-                        <td class="px-6 py-4">
-                            <span class="${isOverLimit ? 'bg-rose-600 text-white animate-pulse' : 'bg-blue-500/20 text-blue-300'} border border-blue-500/30 px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider shadow-sm">
-                                ${r.category} ${isOverLimit ? '⚠️' : ''}
-                            </span>
-                            ${r.bio <= 30 ? '<span class="ml-2 text-[10px]">🔥</span>' : ''}
-                        </td>
-                        <td class="px-6 py-4 text-right font-black font-mono ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive text-lg">
-                            ${r.type==='income'?'+':'-'}${fmt.format(r.amount)}
-                        </td>
-                        <td class="text-center">
-                            <button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors p-2 hover:bg-rose-500/10 rounded-full">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </td>
+                        <td class="px-6 py-4"><span class="${isOverLimit ? 'bg-rose-600 text-white animate-pulse' : 'bg-blue-500/20 text-blue-300'} border border-blue-500/30 px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider shadow-sm">${r.category} ${isOverLimit ? '⚠️' : ''}</span>${r.bio <= 30 ? '<span class="ml-2 text-[10px]">🔥</span>' : ''}</td>
+                        <td class="px-6 py-4 text-right font-black font-mono ${r.type==='income'?'text-emerald-400':'text-rose-400'} blur-sensitive text-lg">${r.type==='income'?'+':'-'}${fmt.format(r.amount)}</td>
+                        <td class="text-center"><button onclick="app.deleteRecord(${r.id})" class="text-slate-500 hover:text-rose-500 transition-colors p-2 hover:bg-rose-500/10 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
                     </tr>`;
             }).join('');
         }
@@ -881,7 +702,7 @@ const app = {
     toggleSubForm(){ document.getElementById("subForm").classList.toggle("hidden"); },
     addSub(){ const n=document.getElementById("subName").value, a=Number(document.getElementById("subAmount").value), d=document.getElementById("subDay").value; if(!n || a<=0) return; this.data.subs.push({id:Date.now(), name:n, amount:a, day:d}); this.save(); this.renderSubs(); this.toggleSubForm(); },
     deleteSub(id){ this.data.subs = this.data.subs.filter(x=>x.id!==id); this.save(); this.renderSubs(); },
-    paySub(id) { const s = this.data.subs.find(x => x.id === id); this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString('es-AR'), desc: `Pago Suscripción: ${s.name}`, amount: s.amount, category: 'Servicios', type: 'expense' }); this.save(); Swal.fire({toast:true, position:'bottom-end', icon:'success', title:`Pago registrado: ${s.name}`, showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'}); },
+    paySub(id) { const s = this.data.subs.find(x => x.id === id); this.data.records.unshift({ id: Date.now(), date: new Date().toLocaleDateString('es-AR'), desc: `Pago Suscripción: ${s.name}`, amount: s.amount, category: 'Servicios', type: 'expense' }); this.save(); Swal.fire({toast:true, position:'bottom-end', icon:'success', title:`Pago guardado en Nube`, showConfirmButton:false, timer:1500, background: this.theme==='dark'?'#1e293b':'#fff', color: this.theme==='dark'?'#fff':'#000'}); },
     renderSubs() {
         const grid = document.getElementById("subsGrid"); const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
         if(!this.data.subs.length){ grid.innerHTML=`<div class="col-span-full text-center py-12 opacity-30 font-mono">NO_ACTIVE_SUBSCRIPTIONS</div>`; return; }
@@ -902,313 +723,88 @@ const app = {
     async fetchFullMarket() {
         document.getElementById("spinIcon").classList.add("animate-spin-slow");
         const gc = document.getElementById("marketGridCrypto"); const gf = document.getElementById("marketGridFiat");
-        
-        try { 
-            const r=await fetch("https://dolarapi.com/v1/dolares/blue"); const d=await r.json(); 
-            document.getElementById("dolarVal").innerText=`$${d.venta}`; 
-            this.rates['ARS'] = d.venta; 
-        } catch(e){ console.log("Using offline rate for ARS"); }
-
-        try { const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&sparkline=false"); const d=await r.json(); d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price); gc.innerHTML = d.map(c => `<div class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-default group"><img src="${c.image}" class="w-10 h-10 rounded-full grayscale group-hover:grayscale-0 transition-all"><div><h4 class="font-bold text-white leading-none">${c.symbol.toUpperCase()}</h4><p class="text-[10px] text-slate-500 font-bold group-hover:text-cyan-400">${c.name}</p></div><div class="ml-auto text-right"><p class="font-mono font-bold text-white">$${c.current_price.toLocaleString()}</p><p class="text-[10px] font-bold ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-rose-400'}">${c.price_change_percentage_24h>=0?'▲':'▼'} ${Math.abs(c.price_change_percentage_24h).toFixed(2)}%</p></div></div>`).join(''); } catch(e){ console.log("Using offline rates for Crypto"); }
-
-        try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates, d.rates); const list = [{c:'EUR', n:'Euro', f:'eu'}, {c:'GBP', n:'Libra', f:'gb'}, {c:'JPY', n:'Yen', f:'jp'}, {c:'BRL', n:'Real', f:'br'}, {c:'MXN', n:'Peso MX', f:'mx'}]; gf.innerHTML = list.map(x => `<div class="glass-card p-4 rounded-xl flex flex-col items-center text-center gap-2 group hover:border-cyan-500/30"><span class="fi fi-${x.f} text-3xl rounded shadow-lg grayscale group-hover:grayscale-0 transition-all"></span><div><span class="text-xs font-bold text-slate-500 block">${x.n}</span><span class="font-mono font-black text-current text-xl tracking-tight">${d.rates[x.c] ? d.rates[x.c].toFixed(2) : '-'}</span></div></div>`).join(''); } catch(e){ console.log("Using offline rates for Fiat"); }
-        
+        try { const r=await fetch("https://dolarapi.com/v1/dolares/blue"); const d=await r.json(); document.getElementById("dolarVal").innerText=`$${d.venta}`; this.rates['ARS'] = d.venta; } catch(e){}
+        try { const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&sparkline=false"); const d=await r.json(); d.forEach(c => this.rates[c.symbol.toUpperCase()] = c.current_price); gc.innerHTML = d.map(c => `<div class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-default group"><img src="${c.image}" class="w-10 h-10 rounded-full grayscale group-hover:grayscale-0 transition-all"><div><h4 class="font-bold text-white leading-none">${c.symbol.toUpperCase()}</h4><p class="text-[10px] text-slate-500 font-bold group-hover:text-cyan-400">${c.name}</p></div><div class="ml-auto text-right"><p class="font-mono font-bold text-white">$${c.current_price.toLocaleString()}</p><p class="text-[10px] font-bold ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-rose-400'}">${c.price_change_percentage_24h>=0?'▲':'▼'} ${Math.abs(c.price_change_percentage_24h).toFixed(2)}%</p></div></div>`).join(''); } catch(e){}
+        try { const r=await fetch("https://api.frankfurter.app/latest?from=USD"); const d=await r.json(); Object.assign(this.rates, d.rates); const list = [{c:'EUR', n:'Euro', f:'eu'}, {c:'GBP', n:'Libra', f:'gb'}, {c:'JPY', n:'Yen', f:'jp'}, {c:'BRL', n:'Real', f:'br'}, {c:'MXN', n:'Peso MX', f:'mx'}]; gf.innerHTML = list.map(x => `<div class="glass-card p-4 rounded-xl flex flex-col items-center text-center gap-2 group hover:border-cyan-500/30"><span class="fi fi-${x.f} text-3xl rounded shadow-lg grayscale group-hover:grayscale-0 transition-all"></span><div><span class="text-xs font-bold text-slate-500 block">${x.n}</span><span class="font-mono font-black text-current text-xl tracking-tight">${d.rates[x.c] ? d.rates[x.c].toFixed(2) : '-'}</span></div></div>`).join(''); } catch(e){}
         setTimeout(() => document.getElementById("spinIcon").classList.remove("animate-spin-slow"), 2000);
     },
     fillCalcSelects() { const opts = this.currencies.map(o => `<option value="${o.c}" data-flag="fi-${o.f}">${o.c} - ${o.n}</option>`).join(''); const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); if(s1.innerHTML.length < 50) { s1.innerHTML=opts; s2.innerHTML=opts; s1.value='USD'; s2.value='ARS'; } this.updateFlags(); },
     updateFlags() { const s1=document.getElementById("calcFrom"), s2=document.getElementById("calcTo"); document.getElementById("flagFrom").innerHTML = `<span class="fi fi-${this.currencies.find(c => c.c === s1.value)?.f || 'un'} rounded"></span>`; document.getElementById("flagTo").innerHTML = `<span class="fi fi-${this.currencies.find(c => c.c === s2.value)?.f || 'un'} rounded"></span>`; },
-    
     calcCurrency() { 
-        this.updateFlags(); 
-        const a=parseFloat(document.getElementById("calcAmount").value)||0, f=document.getElementById("calcFrom").value, t=document.getElementById("calcTo").value; 
-        
-        const fromObj = this.currencies.find(x => x.c === f);
-        const toObj = this.currencies.find(x => x.c === t);
-        let rateFrom = this.rates[f]||1, rateTo = this.rates[t]||1; 
-
-        let valInUSD;
-        if(f==='USD') valInUSD = a; else if(f==='ARS') valInUSD = a / rateFrom; else if(fromObj && fromObj.type === 'fiat') valInUSD = a / rateFrom; else valInUSD = a * rateFrom; 
-        let finalVal;
-        if(t==='USD') finalVal = valInUSD; else if(t==='ARS') finalVal = valInUSD * rateTo; else if(toObj && toObj.type === 'fiat') finalVal = valInUSD * rateTo; else finalVal = valInUSD / rateTo; 
-
+        this.updateFlags(); const a=parseFloat(document.getElementById("calcAmount").value)||0, f=document.getElementById("calcFrom").value, t=document.getElementById("calcTo").value; 
+        const fromObj = this.currencies.find(x => x.c === f); const toObj = this.currencies.find(x => x.c === t); let rateFrom = this.rates[f]||1, rateTo = this.rates[t]||1; 
+        let valInUSD; if(f==='USD') valInUSD = a; else if(f==='ARS') valInUSD = a / rateFrom; else if(fromObj && fromObj.type === 'fiat') valInUSD = a / rateFrom; else valInUSD = a * rateFrom; 
+        let finalVal; if(t==='USD') finalVal = valInUSD; else if(t==='ARS') finalVal = valInUSD * rateTo; else if(toObj && toObj.type === 'fiat') finalVal = valInUSD * rateTo; else finalVal = valInUSD / rateTo; 
         document.getElementById("calcResult").innerText = finalVal.toLocaleString(undefined, {maximumFractionDigits: 4}); 
     },
-    
     swapCalc() { const f=document.getElementById("calcFrom"), t=document.getElementById("calcTo"); [f.value, t.value] = [t.value, f.value]; this.calcCurrency(); },
-    togglePrivacy(){ 
-        this.privacy = !this.privacy; 
-        document.body.classList.toggle("privacy-active"); 
-        const icon = document.getElementById("eyeIcon");
-        if(icon) icon.setAttribute("data-lucide", this.privacy ? "eye-off" : "eye");
-        if(typeof lucide !== 'undefined') lucide.createIcons();
-    },
-
-async askAI() {
-        // 1. OBTENER O PEDIR CLAVE
-        let apiKey = localStorage.getItem("forjax_key_final");
-        if (!apiKey) {
-            const { value: key } = await Swal.fire({
-                title: 'CONFIGURAR GEMINI AI',
-                input: 'text',
-                inputPlaceholder: 'Pegá tu API Key de Google AI Studio...',
-                background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff'
-            });
-            if (key) {
-                apiKey = key.trim();
-                localStorage.setItem("forjax_key_final", apiKey);
-            } else return;
-        }
-
-        // 2. PREPARAR INTERFAZ
-        const box = document.getElementById("aiResponseBox");
-        const txt = document.getElementById("aiText");
-        box.classList.remove("hidden");
-        txt.innerHTML = "📡 INICIANDO PROTOCOLO NEURAL...";
-
-        // 3. DATOS PARA LA IA
-        const rec = this.data.records;
-        const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0);
-        const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
-        const prompt = `Soy un asesor financiero cyberpunk. Ingresos: $${totalInc}, Gastos: $${totalExp}. Dame 3 consejos breves y duros (máximo 2 líneas cada uno) con emojis.`;
-
-        // 4. FUNCIÓN INTERNA DE LLAMADA (Para reusar)
-        const callGemini = async (modelName) => {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message || "Error API");
-            return data.candidates[0].content.parts[0].text;
-        };
-
-        // 5. INTENTO PRINCIPAL CON FALLBACK
-        try {
-            let aiMessage = "";
-            try {
-                // Intento A: Modelo Rápido (Flash)
-                txt.innerHTML = "📡 CONECTANDO MOTOR FLASH...";
-                aiMessage = await callGemini("gemini-1.5-flash");
-            } catch (e) {
-                console.warn("Flash falló, probando Pro...", e);
-                // Intento B: Modelo Clásico (Pro) - Si falla el anterior
-                txt.innerHTML = "⚠️ REENRUTANDO A MOTOR PRO...";
-                aiMessage = await callGemini("gemini-pro");
-            }
-
-            // 6. ESCRIBIR RESPUESTA (Efecto Hacker)
-            txt.innerHTML = "";
-            let i = 0;
-            const typeWriter = () => {
-                if (i < aiMessage.length) {
-                    const char = aiMessage.charAt(i);
-                    txt.innerHTML += char === '\n' ? '<br>' : char;
-                    i++;
-                    setTimeout(typeWriter, 15);
-                }
-            };
-            typeWriter();
-
-        } catch (error) {
-            // 7. SI TODO FALLA
-            txt.innerHTML = `❌ ERROR CRÍTICO: La clave API no funciona con ningún modelo.<br><br>
-            <span class="text-rose-500 font-bold">SOLUCIÓN:</span><br>
-            1. Entrá a <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline text-cyan-400">aistudio.google.com</a><br>
-            2. Creá una clave nueva.<br>
-            3. Tocá el botón de abajo para resetear.<br><br>
-            <button onclick="localStorage.removeItem('forjax_key_final'); location.reload();" class="bg-rose-500 text-white px-4 py-2 rounded font-bold">RESETEAR CLAVE AHORA</button>`;
-        }
-    },
-    initSession() { 
-        const u = document.getElementById("userInput").value.trim().toUpperCase(); 
-        const p = document.getElementById("userPass").value.trim();
-        if (u.length < 2) return Swal.fire({toast:true, position:'top', icon:'warning', title:'Ingresá un usuario válido'});
-        if (p.length < 4) return Swal.fire({toast:true, position:'top', icon:'warning', title:'La contraseña debe tener 4+ caracteres'});
-        const savedPass = localStorage.getItem(u + "_password");
-        if (!savedPass) {
-            Swal.fire({
-                title: 'Crear Credenciales',
-                text: `¿Querés registrar "${u}" con esa contraseña?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, Registrar',
-                cancelButtonText: 'Cancelar',
-                background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.setItem(u + "_password", p);
-                    this.completeLogin(u);
-                }
-            });
-        } else {
-            if (p === savedPass) {
-                this.completeLogin(u);
-            } else {
-                Swal.fire({
-                    icon: 'error', title: 'ACCESO DENEGADO', text: 'Contraseña incorrecta',
-                    background: '#050b14', color: '#fff', timer: 2000, showConfirmButton: false
-                });
-            }
-        }
-    },
-
-    completeLogin(user) {
-        localStorage.setItem("currentUser", user);
-        localStorage.setItem("lastUser", user); 
-        const btn = document.querySelector("button[onclick='app.initSession()']");
-        if(btn) btn.innerHTML = "🔓 ACCEDIENDO...";
-        setTimeout(() => location.reload(), 500);
-    },
-
-    logout() {
-        localStorage.removeItem("currentUser");
-        location.reload();
-    },
+    togglePrivacy(){ this.privacy = !this.privacy; document.body.classList.toggle("privacy-active"); const icon = document.getElementById("eyeIcon"); if(icon) icon.setAttribute("data-lucide", this.privacy ? "eye-off" : "eye"); if(typeof lucide !== 'undefined') lucide.createIcons(); },
 
     async bioLogin() {
-        if (!window.PublicKeyCredential) {
-            return Swal.fire({
-                icon: 'info', 
-                title: 'Modo Escritorio', 
-                text: 'Tu dispositivo no tiene lector biométrico detectado. Usá el acceso manual.',
-                background: '#050b14', color:'#fff', confirmButtonColor: '#00f3ff'
-            });
-        }
-
         const lastUser = localStorage.getItem("lastUser");
         if (!lastUser) {
-            return Swal.fire({
-                icon: 'warning', 
-                title: 'Primer Acceso', 
-                text: 'Primero ingresá manualmente una vez para configurar tu huella.',
-                background: '#050b14', color:'#fff', confirmButtonColor: '#00f3ff'
-            });
+            return Swal.fire({ icon: 'warning', title: 'Primer Acceso', text: 'Primero ingresá manualmente una vez para configurar tu huella.', background: '#050b14', color:'#fff', confirmButtonColor: '#00f3ff' });
         }
-
         try {
-            const challenge = new Uint8Array(32);
-            window.crypto.getRandomValues(challenge);
-            
-            const publicKey = {
-                challenge: challenge,
-                rp: { name: "Forjax Financial V50" },
-                user: {
-                    id: new Uint8Array(16),
-                    name: lastUser,
-                    displayName: lastUser.toUpperCase()
-                },
-                pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-                authenticatorSelection: { authenticatorAttachment: "platform" },
-                timeout: 60000,
-                attestation: "direct"
-            };
-
+            const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
+            const publicKey = { challenge: challenge, rp: { name: "Forjax Financial V50" }, user: { id: new Uint8Array(16), name: lastUser, displayName: lastUser.toUpperCase() }, pubKeyCredParams: [{ type: "public-key", alg: -7 }], authenticatorSelection: { authenticatorAttachment: "platform" }, timeout: 60000, attestation: "direct" };
             await navigator.credentials.create({ publicKey });
-            
-            Swal.fire({
-                icon: 'success',
-                title: `HOLA ${lastUser.toUpperCase()}`,
-                text: 'Identidad Biométrica Confirmada',
-                background: '#050b14', color:'#fff',
-                timer: 1000, showConfirmButton: false
-            });
-
-            localStorage.setItem("currentUser", lastUser);
-            setTimeout(() => location.reload(), 1000);
-
+            Swal.fire({ icon: 'success', title: `HOLA ${lastUser.toUpperCase()}`, text: 'Identidad Biométrica Confirmada', background: '#050b14', color:'#fff', timer: 1000, showConfirmButton: false });
+            localStorage.setItem("currentUser", lastUser); setTimeout(() => location.reload(), 1000);
         } catch (error) {
-            console.error(error);
-            Swal.fire({
-                toast: true, position: 'bottom', icon: 'error', 
-                title: 'No se pudo verificar la huella', 
-                showConfirmButton: false, timer: 2000,
-                background: '#1e293b', color:'#fff'
-            });
+            Swal.fire({ toast: true, position: 'bottom', icon: 'error', title: 'No se pudo verificar la huella', showConfirmButton: false, timer: 2000, background: '#1e293b', color:'#fff' });
         }
     },
 
-    // ======== NUEVAS FUNCIONES INVEST ======== //
     renderInvestData() {
-        const tbody = document.getElementById("investTableBody");
-        if(!tbody) return;
-        
-        // Simulación de 100 Tickers reales de Wall Street / CEDEARs
-        const companies = [
-            {t:'AAPL', n:'Apple Inc.', p: 189.50}, {t:'MSFT', n:'Microsoft Corp.', p: 415.20}, {t:'NVDA', n:'NVIDIA Corp.', p: 890.10},
-            {t:'AMZN', n:'Amazon.com', p: 178.30}, {t:'META', n:'Meta Platforms', p: 505.40}, {t:'GOOGL', n:'Alphabet Inc.', p: 145.20},
-            {t:'TSLA', n:'Tesla Inc.', p: 175.90}, {t:'MELI', n:'MercadoLibre', p: 1540.00}, {t:'YPF', n:'YPF S.A.', p: 18.50},
-            {t:'GGAL', n:'Grupo Fin. Galicia', p: 25.10}, {t:'BABA', n:'Alibaba Group', p: 72.40}, {t:'V', n:'Visa Inc.', p: 285.30},
-            {t:'JPM', n:'JPMorgan Chase', p: 195.60}, {t:'WMT', n:'Walmart Inc.', p: 60.20}, {t:'DIS', n:'Walt Disney Co.', p: 112.80},
-            {t:'NFLX', n:'Netflix Inc.', p: 610.50}, {t:'KO', n:'Coca-Cola Co.', p: 60.10}, {t:'MCD', n:'McDonalds', p: 280.90}
-        ];
-
-        // Llenar el resto hasta 100 con tickers dinámicos
-        for(let i=companies.length; i<100; i++) {
-            companies.push({ 
-                t: 'STK' + i, 
-                n: 'Global Corp ' + i, 
-                p: (Math.random() * 500) + 10 
-            });
-        }
-
-        // Generar la tabla con fluctuaciones en tiempo real simuladas
+        const tbody = document.getElementById("investTableBody"); if(!tbody) return;
+        const companies = [ {t:'AAPL', n:'Apple Inc.', p: 189.50}, {t:'MSFT', n:'Microsoft Corp.', p: 415.20}, {t:'NVDA', n:'NVIDIA Corp.', p: 890.10}, {t:'AMZN', n:'Amazon.com', p: 178.30}, {t:'META', n:'Meta Platforms', p: 505.40}, {t:'GOOGL', n:'Alphabet Inc.', p: 145.20}, {t:'TSLA', n:'Tesla Inc.', p: 175.90}, {t:'MELI', n:'MercadoLibre', p: 1540.00}, {t:'YPF', n:'YPF S.A.', p: 18.50}, {t:'GGAL', n:'Grupo Fin. Galicia', p: 25.10}, {t:'BABA', n:'Alibaba Group', p: 72.40}, {t:'V', n:'Visa Inc.', p: 285.30}, {t:'JPM', n:'JPMorgan Chase', p: 195.60}, {t:'WMT', n:'Walmart Inc.', p: 60.20}, {t:'DIS', n:'Walt Disney Co.', p: 112.80}, {t:'NFLX', n:'Netflix Inc.', p: 610.50}, {t:'KO', n:'Coca-Cola Co.', p: 60.10}, {t:'MCD', n:'McDonalds', p: 280.90} ];
+        for(let i=companies.length; i<100; i++) { companies.push({ t: 'STK' + i, n: 'Global Corp ' + i, p: (Math.random() * 500) + 10 }); }
         this.investList = companies.map(c => {
-            const changePct = (Math.random() * 6) - 3; // Variación entre -3% y +3%
-            const isUp = changePct >= 0;
-            const currentPrice = c.p * (1 + (changePct/100));
-            
-            return `
-                <tr class="hover:bg-emerald-500/5 transition-all group invest-row border-b border-slate-800 last:border-0">
-                    <td class="px-6 py-4 font-black text-white group-hover:text-emerald-400 transition-colors">${c.t}</td>
-                    <td class="px-6 py-4 text-xs font-sans text-slate-400 font-bold">${c.n}</td>
-                    <td class="px-6 py-4 text-right font-bold">$${currentPrice.toFixed(2)}</td>
-                    <td class="px-6 py-4 text-right font-bold ${isUp ? 'text-emerald-400' : 'text-rose-400'}">${isUp ? '+' : ''}${changePct.toFixed(2)}%</td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="w-16 h-4 bg-slate-800 rounded mx-auto overflow-hidden relative">
-                            <div class="absolute top-0 bottom-0 left-0 bg-gradient-to-r ${isUp ? 'from-transparent to-emerald-500' : 'from-rose-500 to-transparent'}" style="width: ${Math.abs(changePct)*10 + 30}%"></div>
-                        </div>
-                    </td>
-                </tr>
-            `;
+            const changePct = (Math.random() * 6) - 3; const isUp = changePct >= 0; const currentPrice = c.p * (1 + (changePct/100));
+            return `<tr class="hover:bg-emerald-500/5 transition-all group invest-row border-b border-slate-800 last:border-0"><td class="px-6 py-4 font-black text-white group-hover:text-emerald-400 transition-colors">${c.t}</td><td class="px-6 py-4 text-xs font-sans text-slate-400 font-bold">${c.n}</td><td class="px-6 py-4 text-right font-bold">$${currentPrice.toFixed(2)}</td><td class="px-6 py-4 text-right font-bold ${isUp ? 'text-emerald-400' : 'text-rose-400'}">${isUp ? '+' : ''}${changePct.toFixed(2)}%</td><td class="px-6 py-4 text-center"><div class="w-16 h-4 bg-slate-800 rounded mx-auto overflow-hidden relative"><div class="absolute top-0 bottom-0 left-0 bg-gradient-to-r ${isUp ? 'from-transparent to-emerald-500' : 'from-rose-500 to-transparent'}" style="width: ${Math.abs(changePct)*10 + 30}%"></div></div></td></tr>`;
         });
-
         tbody.innerHTML = this.investList.join('');
     },
 
     filterInvestments(term) {
-        const rows = document.querySelectorAll('.invest-row');
-        term = term.toLowerCase();
-        rows.forEach(row => {
-            const ticker = row.querySelector('td:nth-child(1)').innerText.toLowerCase();
-            const name = row.querySelector('td:nth-child(2)').innerText.toLowerCase();
-            if(ticker.includes(term) || name.includes(term)) row.style.display = '';
-            else row.style.display = 'none';
-        });
+        const rows = document.querySelectorAll('.invest-row'); term = term.toLowerCase();
+        rows.forEach(row => { const ticker = row.querySelector('td:nth-child(1)').innerText.toLowerCase(); const name = row.querySelector('td:nth-child(2)').innerText.toLowerCase(); if(ticker.includes(term) || name.includes(term)) row.style.display = ''; else row.style.display = 'none'; });
+    },
+    
+    // Función de Gemini
+    async askAI() {
+        let apiKey = localStorage.getItem("forjax_key_final");
+        if (!apiKey) {
+            const { value: key } = await Swal.fire({ title: 'CONFIGURAR GEMINI AI', input: 'text', inputPlaceholder: 'Pegá tu API Key...', background: '#050b14', color: '#fff', confirmButtonColor: '#00f3ff' });
+            if (key) { apiKey = key.trim(); localStorage.setItem("forjax_key_final", apiKey); } else return;
+        }
+        const box = document.getElementById("aiResponseBox"); const txt = document.getElementById("aiText"); box.classList.remove("hidden"); txt.innerHTML = "📡 INICIANDO PROTOCOLO NEURAL...";
+        const rec = this.data.records; const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0); const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
+        const prompt = `Soy un asesor financiero cyberpunk. Ingresos: $${totalInc}, Gastos: $${totalExp}. Dame 3 consejos breves y duros (máximo 2 líneas cada uno) con emojis.`;
+        const callGemini = async (modelName) => { const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`; const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }); const data = await response.json(); if (data.error) throw new Error(data.error.message || "Error API"); return data.candidates[0].content.parts[0].text; };
+        try {
+            let aiMessage = "";
+            try { txt.innerHTML = "📡 CONECTANDO MOTOR FLASH..."; aiMessage = await callGemini("gemini-1.5-flash"); } 
+            catch (e) { txt.innerHTML = "⚠️ REENRUTANDO A MOTOR PRO..."; aiMessage = await callGemini("gemini-pro"); }
+            txt.innerHTML = ""; let i = 0; const typeWriter = () => { if (i < aiMessage.length) { const char = aiMessage.charAt(i); txt.innerHTML += char === '\n' ? '<br>' : char; i++; setTimeout(typeWriter, 15); } }; typeWriter();
+        } catch (error) {
+            txt.innerHTML = `❌ ERROR CRÍTICO. <button onclick="localStorage.removeItem('forjax_key_final'); location.reload();" class="bg-rose-500 text-white px-4 py-2 rounded font-bold">RESETEAR CLAVE AHORA</button>`;
+        }
     }
 };
 
+// Exponer las funciones globalmente para que el HTML (onclick) pueda acceder a ellas
+window.app = app;
+window.calculateInvestment = calculateInvestment;
+
 app.init();
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('App lista para instalar: ', reg.scope))
-            .catch(err => console.log('Error SW: ', err));
-    });
-}
-
 function calculateInvestment() {
-    let capital = parseFloat(document.getElementById('investCapital').value);
-    let days = parseFloat(document.getElementById('investDays').value);
-    let rate = parseFloat(document.getElementById('investRate').value);
-
-    if (!capital || !days || !rate) { Swal.fire({ icon: 'error', title: 'Faltan datos', text: 'Completá todos los campos.' }); return; }
-    let interest = (capital * rate * days) / 36500; 
-    let total = capital + interest;
-    document.getElementById('showInterest').innerText = "+ $" + interest.toLocaleString('es-AR', {minimumFractionDigits: 2});
-    document.getElementById('showTotal').innerText = "$" + total.toLocaleString('es-AR', {minimumFractionDigits: 2});
+    let capital = parseFloat(document.getElementById('investCapital').value); let days = parseFloat(document.getElementById('investDays').value); let rate = parseFloat(document.getElementById('investRate').value);
+    if (!capital || !days || !rate) { Swal.fire({ icon: 'error', title: 'Faltan datos', text: 'Completá todos los campos.', background: '#050b14', color: '#fff' }); return; }
+    let interest = (capital * rate * days) / 36500; let total = capital + interest;
+    document.getElementById('showInterest').innerText = "+ $" + interest.toLocaleString('es-AR', {minimumFractionDigits: 2}); document.getElementById('showTotal').innerText = "$" + total.toLocaleString('es-AR', {minimumFractionDigits: 2});
     let resultBox = document.getElementById('resultBox'); resultBox.classList.remove('hidden');
     if(typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 }
