@@ -760,7 +760,7 @@ const app = {
         const prompt = `Soy un asesor financiero cyberpunk. Ingresos: $${totalInc}, Gastos: $${totalExp}. Dame 3 consejos breves y duros (máximo 2 líneas cada uno) con emojis.`;
         
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`; 
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
             const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }); 
             const data = await response.json(); 
             
