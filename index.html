@@ -160,6 +160,7 @@
         <button onclick="app.switchTab('subs')" id="btnSubs" class="nav-btn"><i data-lucide="zap" class="w-4 h-4"></i> SUBS</button>
         <button onclick="app.switchTab('goals')" id="btnGoals" class="nav-btn"><i data-lucide="crosshair" class="w-4 h-4"></i> METAS</button>
         <button onclick="app.switchTab('market')" id="btnMarket" class="nav-btn"><i data-lucide="globe-2" class="w-4 h-4"></i> MARKET</button>
+        <button onclick="app.switchTab('invest')" id="btnInvest" class="nav-btn text-emerald-400 hover:text-emerald-300"><i data-lucide="bar-chart-big" class="w-4 h-4"></i> INVEST</button>
         <div class="w-px h-5 bg-slate-500 opacity-30 mx-1"></div>
         <button onclick="app.togglePrivacy()" id="btnPrivacy" class="nav-btn px-3"><i id="eyeIcon" data-lucide="eye" class="w-4 h-4"></i></button>
         <button onclick="app.toggleTheme()" class="nav-btn px-3 hover:text-yellow-400"><i id="themeIcon" data-lucide="sun" class="w-4 h-4"></i></button>
@@ -381,6 +382,59 @@
              <div id="marketGridFiat" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"></div>
         </div>
 
+        <div id="viewInvest" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-8">
+                <div><h2 class="text-3xl md:text-4xl font-black text-white tracking-tighter flex items-center gap-3"><i data-lucide="bar-chart-big" class="text-emerald-400 w-8 h-8"></i> ASSET SCREENER</h2><p class="text-xs font-mono text-emerald-500 mt-1">ACCIONES • CEDEARS • RENTA FIJA</p></div>
+                <button onclick="app.renderInvestData()" class="bg-slate-900 border border-emerald-500/50 p-3 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-all"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
+            </div>
+
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Renta Fija Local (Tasas Referencia)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <div class="glass p-6 rounded-3xl border-l-4 border-indigo-500 relative overflow-hidden">
+                    <i data-lucide="shield-check" class="absolute right-4 top-4 w-16 h-16 text-indigo-500/10"></i>
+                    <h4 class="text-lg font-black text-white mb-1">Cauciones Bursátiles</h4>
+                    <p class="text-[10px] text-slate-500 font-mono mb-4">BYMA - GARANTIZADO</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-black/30 p-3 rounded-xl text-center border border-white/5"><span class="block text-[10px] text-slate-400 font-bold">1 DÍA</span><span class="text-lg font-black text-indigo-400 mono">32.5%</span></div>
+                        <div class="bg-black/30 p-3 rounded-xl text-center border border-white/5"><span class="block text-[10px] text-slate-400 font-bold">7 DÍAS</span><span class="text-lg font-black text-indigo-400 mono">33.2%</span></div>
+                        <div class="bg-black/30 p-3 rounded-xl text-center border border-white/5"><span class="block text-[10px] text-slate-400 font-bold">30 DÍAS</span><span class="text-lg font-black text-indigo-400 mono">35.0%</span></div>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-3xl border-l-4 border-cyan-500 relative overflow-hidden">
+                    <i data-lucide="landmark" class="absolute right-4 top-4 w-16 h-16 text-cyan-500/10"></i>
+                    <h4 class="text-lg font-black text-white mb-1">Plazos Fijos BCRA</h4>
+                    <p class="text-[10px] text-slate-500 font-mono mb-4">TNA PROMEDIO BANCOS TOP 10</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-black/30 p-3 rounded-xl flex justify-between items-center border border-white/5"><span class="text-xs text-slate-400 font-bold">BNA / Macro</span><span class="text-lg font-black text-cyan-400 mono">39.0%</span></div>
+                        <div class="bg-black/30 p-3 rounded-xl flex justify-between items-center border border-white/5"><span class="text-xs text-slate-400 font-bold">Galicia / BBVA</span><span class="text-lg font-black text-cyan-400 mono">37.5%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end mb-4 border-b border-white/5 pb-2">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Equities & CEDEARs (Top 100)</h3>
+                <input type="text" id="investSearch" onkeyup="app.filterInvestments(this.value)" placeholder="BUSCAR TICKER..." class="bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs font-mono text-emerald-400 outline-none w-48 focus:border-emerald-500">
+            </div>
+            
+            <div class="glass rounded-3xl overflow-hidden border border-white/5">
+                <div class="overflow-x-auto max-h-[600px] custom-scroll">
+                    <table class="w-full text-left relative">
+                        <thead class="sticky top-0 bg-[#0f172a] z-10 text-[10px] uppercase text-slate-400 font-bold tracking-widest border-b border-slate-700">
+                            <tr>
+                                <th class="px-6 py-4">Ticker</th>
+                                <th class="px-6 py-4">Empresa</th>
+                                <th class="px-6 py-4 text-right">Precio (USD)</th>
+                                <th class="px-6 py-4 text-right">Var. 24h</th>
+                                <th class="px-6 py-4 text-center">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="investTableBody" class="divide-y divide-white/5 text-sm font-mono text-slate-200">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <footer class="mt-12 pb-8 text-center opacity-60 hover:opacity-100 transition-opacity">
             <div class="flex items-center justify-center gap-2 mb-2"><i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i><span class="text-[10px] font-black tracking-[0.2em] text-cyan-400">FORJAX ENTERPRISE</span></div>
             <p class="text-[10px] text-slate-500 dark:text-slate-500 font-mono">© 2026 FORJAX FINANCIAL SYSTEMS. ALL RIGHTS RESERVED.</p>
@@ -403,6 +457,7 @@ const app = {
     currencies: [
         {c:'USD', f:'us', n:'Dólar Americano', type:'fiat'}, {c:'ARS', f:'ar', n:'Peso Argentino (Blue)', type:'fiat'}, {c:'EUR', f:'eu', n:'Euro', type:'fiat'}, {c:'BRL', f:'br', n:'Real Brasileño', type:'fiat'}, {c:'GBP', f:'gb', n:'Libra Esterlina', type:'fiat'}, {c:'JPY', f:'jp', n:'Yen Japonés', type:'fiat'}, {c:'CNY', f:'cn', n:'Yuan Chino', type:'fiat'}, {c:'MXN', f:'mx', n:'Peso Mexicano', type:'fiat'}, {c:'CLP', f:'cl', n:'Peso Chileno', type:'fiat'}, {c:'COP', f:'co', n:'Peso Colombiano', type:'fiat'}, {c:'BTC', f:'un', n:'Bitcoin', type:'crypto'}, {c:'ETH', f:'un', n:'Ethereum', type:'crypto'}, {c:'USDT',f:'un', n:'Tether', type:'crypto'}, {c:'SOL', f:'un', n:'Solana', type:'crypto'}
     ],
+    investList: [],
 
     init() {
         this.applyTheme();
@@ -417,6 +472,7 @@ const app = {
         this.renderGoals(); 
         this.fillCalcSelects(); 
         this.fetchFullMarket();
+        this.renderInvestData(); // Agregado para renderizar Inversiones
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
@@ -613,7 +669,7 @@ const app = {
     },
 
     switchTab(tab) {
-        ['viewWallet', 'viewSubs', 'viewGoals', 'viewMarket'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        ['viewWallet', 'viewSubs', 'viewGoals', 'viewMarket', 'viewInvest'].forEach(id => document.getElementById(id).classList.add('hidden'));
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('view' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
         document.getElementById('btn' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
@@ -1071,6 +1127,65 @@ async askAI() {
                 background: '#1e293b', color:'#fff'
             });
         }
+    },
+
+    // ======== NUEVAS FUNCIONES INVEST ======== //
+    renderInvestData() {
+        const tbody = document.getElementById("investTableBody");
+        if(!tbody) return;
+        
+        // Simulación de 100 Tickers reales de Wall Street / CEDEARs
+        const companies = [
+            {t:'AAPL', n:'Apple Inc.', p: 189.50}, {t:'MSFT', n:'Microsoft Corp.', p: 415.20}, {t:'NVDA', n:'NVIDIA Corp.', p: 890.10},
+            {t:'AMZN', n:'Amazon.com', p: 178.30}, {t:'META', n:'Meta Platforms', p: 505.40}, {t:'GOOGL', n:'Alphabet Inc.', p: 145.20},
+            {t:'TSLA', n:'Tesla Inc.', p: 175.90}, {t:'MELI', n:'MercadoLibre', p: 1540.00}, {t:'YPF', n:'YPF S.A.', p: 18.50},
+            {t:'GGAL', n:'Grupo Fin. Galicia', p: 25.10}, {t:'BABA', n:'Alibaba Group', p: 72.40}, {t:'V', n:'Visa Inc.', p: 285.30},
+            {t:'JPM', n:'JPMorgan Chase', p: 195.60}, {t:'WMT', n:'Walmart Inc.', p: 60.20}, {t:'DIS', n:'Walt Disney Co.', p: 112.80},
+            {t:'NFLX', n:'Netflix Inc.', p: 610.50}, {t:'KO', n:'Coca-Cola Co.', p: 60.10}, {t:'MCD', n:'McDonalds', p: 280.90}
+        ];
+
+        // Llenar el resto hasta 100 con tickers dinámicos
+        for(let i=companies.length; i<100; i++) {
+            companies.push({ 
+                t: 'STK' + i, 
+                n: 'Global Corp ' + i, 
+                p: (Math.random() * 500) + 10 
+            });
+        }
+
+        // Generar la tabla con fluctuaciones en tiempo real simuladas
+        this.investList = companies.map(c => {
+            const changePct = (Math.random() * 6) - 3; // Variación entre -3% y +3%
+            const isUp = changePct >= 0;
+            const currentPrice = c.p * (1 + (changePct/100));
+            
+            return `
+                <tr class="hover:bg-emerald-500/5 transition-all group invest-row border-b border-slate-800 last:border-0">
+                    <td class="px-6 py-4 font-black text-white group-hover:text-emerald-400 transition-colors">${c.t}</td>
+                    <td class="px-6 py-4 text-xs font-sans text-slate-400 font-bold">${c.n}</td>
+                    <td class="px-6 py-4 text-right font-bold">$${currentPrice.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-right font-bold ${isUp ? 'text-emerald-400' : 'text-rose-400'}">${isUp ? '+' : ''}${changePct.toFixed(2)}%</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="w-16 h-4 bg-slate-800 rounded mx-auto overflow-hidden relative">
+                            <div class="absolute top-0 bottom-0 left-0 bg-gradient-to-r ${isUp ? 'from-transparent to-emerald-500' : 'from-rose-500 to-transparent'}" style="width: ${Math.abs(changePct)*10 + 30}%"></div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = this.investList.join('');
+    },
+
+    filterInvestments(term) {
+        const rows = document.querySelectorAll('.invest-row');
+        term = term.toLowerCase();
+        rows.forEach(row => {
+            const ticker = row.querySelector('td:nth-child(1)').innerText.toLowerCase();
+            const name = row.querySelector('td:nth-child(2)').innerText.toLowerCase();
+            if(ticker.includes(term) || name.includes(term)) row.style.display = '';
+            else row.style.display = 'none';
+        });
     }
 };
 
