@@ -782,17 +782,21 @@ const app = {
         const box = document.getElementById("aiResponseBox"); const txt = document.getElementById("aiText"); box.classList.remove("hidden"); txt.innerHTML = "📡 INICIANDO PROTOCOLO NEURAL...";
         const rec = this.data.records; const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0); const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
         const prompt = `Soy un asesor financiero cyberpunk. Ingresos: $${totalInc}, Gastos: $${totalExp}. Dame 3 consejos breves y duros (máximo 2 líneas cada uno) con emojis.`;
-        const callGemini = async (modelName) => { const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`; const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }); const data = await response.json(); if (data.error) throw new Error(data.error.message || "Error API"); return data.candidates[0].content.parts[0].text; };
+        
         try {
-            let aiMessage = "";
-            try { txt.innerHTML = "📡 CONECTANDO MOTOR FLASH..."; aiMessage = await callGemini("gemini-1.5-flash"); } 
-            catch (e) { txt.innerHTML = "⚠️ REENRUTANDO A MOTOR PRO..."; aiMessage = await callGemini("gemini-pro"); }
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`; 
+            const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }); 
+            const data = await response.json(); 
+            
+            if (data.error) throw new Error(data.error.message || "Error en los servidores de Google"); 
+            
+            let aiMessage = data.candidates[0].content.parts[0].text;
             txt.innerHTML = ""; let i = 0; const typeWriter = () => { if (i < aiMessage.length) { const char = aiMessage.charAt(i); txt.innerHTML += char === '\n' ? '<br>' : char; i++; setTimeout(typeWriter, 15); } }; typeWriter();
         } catch (error) {
-            txt.innerHTML = `❌ ERROR CRÍTICO. <button onclick="localStorage.removeItem('forjax_key_final'); location.reload();" class="bg-rose-500 text-white px-4 py-2 rounded font-bold">RESETEAR CLAVE AHORA</button>`;
+            console.error("Error capturado:", error);
+            txt.innerHTML = `❌ ERROR CRÍTICO DETALLADO: <br><br><span class="text-rose-400 font-mono text-xs bg-black/50 p-2 rounded block">${error.message}</span><br><br><button onclick="localStorage.removeItem('forjax_key_final'); location.reload();" class="bg-rose-500 text-white px-4 py-2 rounded font-bold hover:bg-rose-400">RESETEAR CLAVE AHORA</button>`;
         }
     }
-};
 
 // Exponer las funciones globalmente para que el HTML (onclick) pueda acceder a ellas
 window.app = app;
