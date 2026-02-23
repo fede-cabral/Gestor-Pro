@@ -7,6 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -252,7 +253,10 @@
                                 <h3 class="font-bold flex items-center gap-2 text-white"><i data-lucide="list-video"></i> Registros</h3>
                                 <div class="relative flex-1 md:w-64"><i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="tableSearch" onkeyup="app.applySearch(this.value)" placeholder="BUSCAR REGISTRO..." class="w-full pl-10 pr-4 py-2 bg-black/40 border border-white/10 rounded-lg text-xs font-mono text-cyan-400 focus:border-cyan-400 outline-none uppercase"></div>
                             </div>
-                            </div>
+                            <button onclick="app.exportEnterpriseReport()" class="w-full md:w-auto bg-gradient-to-r from-emerald-500 to-emerald-400 text-black px-4 py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2 hover:from-emerald-400 hover:to-emerald-300 transition-all shadow-neon-blue border border-emerald-400/50">
+                                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> REPORTE ENTERPRISE
+                            </button>
+                        </div>
                         <div class="overflow-x-auto max-h-[400px] custom-scroll">
                             <table class="w-full text-left">
                                 <thead class="sticky top-0 bg-[#0f172a] z-10 text-[10px] uppercase text-slate-400 font-bold tracking-widest border-b border-slate-700">
@@ -409,7 +413,67 @@ const app = {
     currencies: [
         {c:'USD', f:'us', n:'Dólar Americano', type:'fiat'}, {c:'ARS', f:'ar', n:'Peso Argentino (Blue)', type:'fiat'}, {c:'EUR', f:'eu', n:'Euro', type:'fiat'}, {c:'BRL', f:'br', n:'Real Brasileño', type:'fiat'}, {c:'GBP', f:'gb', n:'Libra Esterlina', type:'fiat'}, {c:'JPY', f:'jp', n:'Yen Japonés', type:'fiat'}, {c:'CNY', f:'cn', n:'Yuan Chino', type:'fiat'}, {c:'MXN', f:'mx', n:'Peso Mexicano', type:'fiat'}, {c:'CLP', f:'cl', n:'Peso Chileno', type:'fiat'}, {c:'COP', f:'co', n:'Peso Colombiano', type:'fiat'}, {c:'BTC', f:'un', n:'Bitcoin', type:'crypto'}, {c:'ETH', f:'un', n:'Ethereum', type:'crypto'}, {c:'USDT',f:'un', n:'Tether', type:'crypto'}, {c:'SOL', f:'un', n:'Solana', type:'crypto'}
     ],
+exportEnterpriseReport() {
+        if (!this.data.records || this.data.records.length === 0) {
+            return Swal.fire({ icon: 'warning', title: 'Sin Datos', text: 'No hay registros para exportar.', background: '#050b14', color: '#fff' });
+        }
 
+        Swal.fire({ title: 'Generando Reporte...', text: 'Compilando datos de la matriz', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#050b14', color: '#fff' });
+
+        setTimeout(() => {
+            const rec = this.getFilteredRecords();
+            const totalInc = rec.filter(r => r.type === 'income').reduce((a, c) => a + c.amount, 0);
+            const totalExp = rec.filter(r => r.type === 'expense').reduce((a, c) => a + c.amount, 0);
+            const net = totalInc - totalExp;
+
+            // 1. HOJA DE RESUMEN
+            const wsSummaryData = [
+                [{ v: "FORJAX ENTERPRISE CLOUD", s: { font: { bold: true, sz: 16, color: { rgb: "00F3FF" } }, fill: { fgColor: { rgb: "050B14" } } } }],
+                [""],
+                [{ v: "Reporte Ejecutivo Financiero", s: { font: { bold: true, sz: 12 } } }],
+                ["Fecha de Emisión:", new Date().toLocaleDateString('es-AR')],
+                ["Usuario / ID:", this.user.toUpperCase()],
+                [""],
+                [{ v: "Ingresos Totales:", s: { font: { bold: true } } }, { v: totalInc, t: 'n', z: '"$"#,##0.00', s: { font: { color: { rgb: "10B981" }, bold: true } } }],
+                [{ v: "Gastos Totales:", s: { font: { bold: true } } }, { v: totalExp, t: 'n', z: '"$"#,##0.00', s: { font: { color: { rgb: "F43F5E" }, bold: true } } }],
+                [{ v: "BALANCE NETO:", s: { font: { bold: true } } }, { v: net, t: 'n', z: '"$"#,##0.00', s: { font: { bold: true } } }]
+            ];
+            const wsSummary = XLSX.utils.aoa_to_sheet(wsSummaryData);
+            wsSummary['!cols'] = [{ wch: 20 }, { wch: 20 }];
+
+            // 2. HOJA DE DETALLES
+            const headers = [
+                { v: "FECHA", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } } } },
+                { v: "DESCRIPCIÓN", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } } } },
+                { v: "CATEGORÍA", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } } } },
+                { v: "TIPO", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } } } },
+                { v: "MONTO", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } } } }
+            ];
+
+            const wsData = [headers];
+            rec.forEach(r => {
+                const isInc = r.type === 'income';
+                wsData.push([
+                    r.date, 
+                    r.desc.toUpperCase(), 
+                    r.category, 
+                    isInc ? 'INGRESO' : 'GASTO', 
+                    { v: r.amount, t: 'n', z: '"$"#,##0.00', s: { font: { color: { rgb: isInc ? "10B981" : "F43F5E" } } } }
+                ]);
+            });
+
+            const wsDetalle = XLSX.utils.aoa_to_sheet(wsData);
+            wsDetalle['!cols'] = [{ wch: 12 }, { wch: 30 }, { wch: 15 }, { wch: 12 }, { wch: 15 }];
+
+            // CREAR EXCEL Y DESCARGAR
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, wsSummary, "Resumen Ejecutivo");
+            XLSX.utils.book_append_sheet(wb, wsDetalle, "Detalle de Transacciones");
+            
+            XLSX.writeFile(wb, `FORJAX_Reporte_${this.user}_${new Date().getTime()}.xlsx`);
+            Swal.close();
+        }, 800);
+    },
     async init() {
         this.applyTheme();
         if (!this.user) { document.getElementById("loginScreen").classList.remove("hidden"); return; }
@@ -418,6 +482,7 @@ const app = {
         document.getElementById("mainApp").classList.remove("hidden");
         document.getElementById("mainApp").classList.remove("opacity-0");
         
+        // SINCRONIZACIÓN DESDE LA NUBE
         await this.syncFromCloud(); 
         
         this.updateCategoryDropdown(); 
@@ -430,6 +495,7 @@ const app = {
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
+    // 🚀 LECTURA DESDE FIREBASE (NUBE)
     async syncFromCloud() {
         try {
             const docRef = doc(db, "users", this.user);
@@ -440,8 +506,11 @@ const app = {
                 this.data.subs = cloudData.subs || [];
                 this.data.goals = cloudData.goals || [];
                 this.data.limits = cloudData.limits || {};
+                
+                // Backup local de lo descargado de la nube
                 localStorage.setItem(this.user + "_records", JSON.stringify(this.data.records));
             } else {
+                // Si en la nube no hay nada (primera vez o borrado), carga de local
                 this.data.records = JSON.parse(localStorage.getItem(this.user + "_records")) || [];
                 this.data.subs = JSON.parse(localStorage.getItem(this.user + "_subs")) || [];
                 this.data.goals = JSON.parse(localStorage.getItem(this.user + "_goals")) || [];
@@ -453,24 +522,32 @@ const app = {
         }
     },
 
+    // 🚀 ESCRITURA HACIA FIREBASE (NUBE)
     async save() {
+        // Guardado local de seguridad
         const p = this.user + "_";
         localStorage.setItem(p + "records", JSON.stringify(this.data.records));
         localStorage.setItem(p + "subs", JSON.stringify(this.data.subs));
         localStorage.setItem(p + "goals", JSON.stringify(this.data.goals));
         localStorage.setItem(p + "limits", JSON.stringify(this.data.limits));
         this.render();
+        
+        // Guardado en la Nube
         if(this.user) {
             try {
                 await setDoc(doc(db, "users", this.user), {
-                    records: this.data.records, subs: this.data.subs, goals: this.data.goals, limits: this.data.limits
-                }, { merge: true }); 
+                    records: this.data.records,
+                    subs: this.data.subs,
+                    goals: this.data.goals,
+                    limits: this.data.limits
+                }, { merge: true }); // Merge no sobreescribe la contraseña
             } catch (e) {
                 console.error("Error al guardar en la nube.", e);
             }
         }
     },
 
+    // LOGIN REAL CONTRA LA NUBE
     async initSession() { 
         const u = document.getElementById("userInput").value.trim().toUpperCase(); 
         const pass = document.getElementById("userPass").value.trim();
@@ -485,6 +562,7 @@ const app = {
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
+                // El usuario existe en la nube, comprobamos contraseña
                 const cloudData = docSnap.data();
                 if (cloudData.password === pass) {
                     this.completeLogin(u);
@@ -493,6 +571,7 @@ const app = {
                     btn.innerHTML = "CONECTAR NUBE";
                 }
             } else {
+                // Usuario nuevo, lo creamos en la nube
                 Swal.fire({
                     title: 'NUEVO USUARIO DETECTADO',
                     text: `¿Querés crear la cuenta "${u}" en la Nube con esta contraseña?`,
@@ -521,8 +600,12 @@ const app = {
         setTimeout(() => location.reload(), 500);
     },
 
-    logout() { localStorage.removeItem("currentUser"); location.reload(); },
+    logout() {
+        localStorage.removeItem("currentUser");
+        location.reload();
+    },
 
+    // RESTO DE FUNCIONES (INTACTAS)
     calculateForecasting() {
         const rec = this.data.records;
         const currentBalance = rec.filter(r=>r.type==='income').reduce((a,c)=>a+c.amount,0) - rec.filter(r=>r.type==='expense').reduce((a,c)=>a+c.amount,0);
@@ -749,6 +832,7 @@ const app = {
         rows.forEach(row => { const ticker = row.querySelector('td:nth-child(1)').innerText.toLowerCase(); const name = row.querySelector('td:nth-child(2)').innerText.toLowerCase(); if(ticker.includes(term) || name.includes(term)) row.style.display = ''; else row.style.display = 'none'; });
     },
     
+    // Función de Gemini
     async askAI() {
         let apiKey = localStorage.getItem("forjax_key_final");
         if (!apiKey) {
@@ -758,23 +842,19 @@ const app = {
         const box = document.getElementById("aiResponseBox"); const txt = document.getElementById("aiText"); box.classList.remove("hidden"); txt.innerHTML = "📡 INICIANDO PROTOCOLO NEURAL...";
         const rec = this.data.records; const totalInc = rec.filter(r => r.type === 'income').reduce((a,c)=>a+c.amount,0); const totalExp = rec.filter(r => r.type === 'expense').reduce((a,c)=>a+c.amount,0);
         const prompt = `Soy un asesor financiero cyberpunk. Ingresos: $${totalInc}, Gastos: $${totalExp}. Dame 3 consejos breves y duros (máximo 2 líneas cada uno) con emojis.`;
-        
+        const callGemini = async (modelName) => { const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`; const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }); const data = await response.json(); if (data.error) throw new Error(data.error.message || "Error API"); return data.candidates[0].content.parts[0].text; };
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-            const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }); 
-            const data = await response.json(); 
-            
-            if (data.error) throw new Error(data.error.message || "Error en los servidores de Google"); 
-            
-            let aiMessage = data.candidates[0].content.parts[0].text;
+            let aiMessage = "";
+            try { txt.innerHTML = "📡 CONECTANDO MOTOR FLASH..."; aiMessage = await callGemini("gemini-1.5-flash"); } 
+            catch (e) { txt.innerHTML = "⚠️ REENRUTANDO A MOTOR PRO..."; aiMessage = await callGemini("gemini-pro"); }
             txt.innerHTML = ""; let i = 0; const typeWriter = () => { if (i < aiMessage.length) { const char = aiMessage.charAt(i); txt.innerHTML += char === '\n' ? '<br>' : char; i++; setTimeout(typeWriter, 15); } }; typeWriter();
         } catch (error) {
-            console.error("Error capturado:", error);
-            txt.innerHTML = `❌ ERROR CRÍTICO DETALLADO: <br><br><span class="text-rose-400 font-mono text-xs bg-black/50 p-2 rounded block">${error.message}</span><br><br><button onclick="localStorage.removeItem('forjax_key_final'); location.reload();" class="bg-rose-500 text-white px-4 py-2 rounded font-bold hover:bg-rose-400">RESETEAR CLAVE AHORA</button>`;
+            txt.innerHTML = `❌ ERROR CRÍTICO. <button onclick="localStorage.removeItem('forjax_key_final'); location.reload();" class="bg-rose-500 text-white px-4 py-2 rounded font-bold">RESETEAR CLAVE AHORA</button>`;
         }
     }
 };
 
+// Exponer las funciones globalmente para que el HTML (onclick) pueda acceder a ellas
 window.app = app;
 window.calculateInvestment = calculateInvestment;
 
