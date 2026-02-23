@@ -13,7 +13,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap');
 
         body {
-            background-color: #05030a; /* Fondo más oscuro, toque púrpura */
+            background-color: #05030a; 
             color: #e2e8f0;
             font-family: 'Inter', sans-serif;
             height: 100dvh;
@@ -26,7 +26,6 @@
 
         .mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* PANELES VIDRIO CÓSMICO */
         .panel {
             background: linear-gradient(180deg, rgba(30, 20, 50, 0.4) 0%, rgba(10, 5, 20, 0.6) 100%);
             border: 1px solid rgba(139, 92, 246, 0.2);
@@ -38,7 +37,6 @@
         .up { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
         .down { color: #f43f5e; text-shadow: 0 0 10px rgba(244, 63, 94, 0.4); }
 
-        /* BOTONES */
         .footer-btn {
             background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
             border: 1px solid #4c1d95;
@@ -58,7 +56,6 @@
 
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(225, 29, 72, 0); } 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
 
-        /* TRADE MODAL */
         #tradeModal {
             position: fixed; bottom: -100%; left: 0; width: 100%;
             background: #0b0714; border-top: 1px solid #4c1d95;
@@ -68,11 +65,9 @@
         }
         #tradeModal.open { bottom: 0; }
 
-        /* LEVERAGE BUTTONS */
         .lev-btn { background: #1e1b4b; border: 1px solid #4c1d95; color: #a78bfa; border-radius: 6px; padding: 4px; font-size: 10px; font-weight: bold; transition: all 0.2s; }
         .lev-btn.active { background: #7c3aed; color: #fff; border-color: #a78bfa; box-shadow: 0 0 10px rgba(124, 58, 237, 0.5); }
 
-        /* TOAST NOTIFICATIONS */
         #toastContainer { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 8px; width: 90%; pointer-events: none; }
         .toast {
             background: rgba(15, 10, 30, 0.95); border: 1px solid #4c1d95; backdrop-filter: blur(10px);
@@ -81,16 +76,26 @@
         }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* SENTIMENT BAR */
         .sentiment-track { width: 100%; height: 4px; background: #1e1b4b; border-radius: 2px; overflow: hidden; position: relative; }
         .sentiment-fill { height: 100%; background: linear-gradient(90deg, #f43f5e, #a78bfa, #10b981); position: absolute; left: 0; transition: width 0.3s; }
         .sentiment-marker { position: absolute; top: -2px; width: 2px; height: 8px; background: #fff; box-shadow: 0 0 5px #fff; transition: left 0.3s; }
 
-        /* PRIVACY LAYER */
         #privacyLayer { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.95); backdrop-filter: blur(25px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         #privacyLayer.active { opacity: 1; pointer-events: auto; }
         .scan-line { width: 100%; height: 2px; background: #c084fc; position: absolute; top: 0; left: 0; animation: scan 2s linear infinite; opacity: 0.5; box-shadow: 0 0 10px #c084fc; }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* CLI TERMINAL STYLES */
+        #cliContainer { display: flex; flex-direction: column; height: 90px; }
+        #cliLog { flex: 1; overflow-y: auto; padding: 4px; font-size: 10px; font-family: 'JetBrains Mono', monospace; line-height: 1.4; scrollbar-width: none; }
+        #cliLog::-webkit-scrollbar { display: none; }
+        .cli-input-wrapper { display: flex; align-items: center; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(139, 92, 246, 0.3); padding: 4px 8px; }
+        .cli-prompt { color: #00f3ff; font-weight: bold; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-right: 8px; }
+        #cliInput { background: transparent; border: none; outline: none; color: #a78bfa; font-family: 'JetBrains Mono', monospace; font-size: 12px; flex: 1; text-transform: lowercase; }
+        .log-sys { color: #a78bfa; }
+        .log-alert { color: #f43f5e; }
+        .log-ok { color: #10b981; }
+        .log-user { color: #00f3ff; }
     </style>
 </head>
 <body class="p-2 pb-safe">
@@ -117,8 +122,8 @@
             <div>
                 <h1 class="text-xs font-black text-slate-100 tracking-wider">FORJAX <span class="text-purple-400">ANGEL</span></h1>
                 <div class="flex items-center gap-1.5">
-                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
-                    <span class="text-[9px] text-emerald-500 font-mono font-bold tracking-widest">NEURAL LINK ACTIVE</span>
+                    <div id="linkStatusDot" class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse shadow-[0_0_8px_#eab308]"></div>
+                    <span id="linkStatusTxt" class="text-[9px] text-yellow-500 font-mono font-bold tracking-widest">ESTABLISHING LINK...</span>
                 </div>
             </div>
         </div>
@@ -127,37 +132,37 @@
         </div>
     </header>
 
-    <div class="grid grid-cols-2 gap-2 mb-2 h-24">
+    <div class="grid grid-cols-2 gap-2 mb-2 h-20">
         <div class="grid grid-rows-2 gap-2">
-            <div class="panel p-2 flex justify-between items-center">
+            <div class="panel px-2 flex justify-between items-center">
                 <div class="flex flex-col">
-                    <span class="text-[9px] text-purple-300/70 font-bold tracking-widest">USD BLUE</span>
-                    <span id="dolarVal" class="text-xs font-bold text-white mono mt-0.5">...</span>
+                    <span class="text-[8px] text-purple-300/70 font-bold tracking-widest">USD BLUE</span>
+                    <span id="dolarVal" class="text-[11px] font-bold text-white mono mt-0.5">...</span>
                 </div>
-                <i data-lucide="dollar-sign" class="w-4 h-4 text-purple-500 opacity-50"></i>
+                <i data-lucide="dollar-sign" class="w-3 h-3 text-purple-500 opacity-50"></i>
             </div>
-            <div class="panel p-2 flex justify-between items-center border-purple-500/30 bg-purple-900/10">
+            <div class="panel px-2 flex justify-between items-center border-emerald-500/30 bg-emerald-900/10">
                 <div class="flex flex-col">
-                    <span class="text-[9px] text-purple-400 font-bold tracking-widest">LIQUIDEZ REAL</span>
-                    <span id="netVal" class="text-xs font-bold text-white mono mt-0.5">...</span>
+                    <span class="text-[8px] text-emerald-400 font-bold tracking-widest">REAL LIQUIDITY (CLOUD)</span>
+                    <span id="netVal" class="text-[11px] font-bold text-emerald-300 mono mt-0.5">...</span>
                 </div>
-                <i data-lucide="wallet" class="w-4 h-4 text-purple-400 opacity-50"></i>
+                <i data-lucide="cloud" class="w-3 h-3 text-emerald-400 opacity-50"></i>
             </div>
         </div>
         <div class="grid grid-rows-2 gap-2">
-            <div class="panel p-2 flex justify-between items-center">
+            <div class="panel px-2 flex justify-between items-center">
                 <div class="flex flex-col">
-                    <span class="text-[9px] text-purple-300/70 font-bold tracking-widest">BTC/USD</span>
-                    <span id="btcVal" class="text-xs font-bold text-white mono mt-0.5">...</span>
+                    <span class="text-[8px] text-purple-300/70 font-bold tracking-widest">BTC/USD</span>
+                    <span id="btcVal" class="text-[11px] font-bold text-white mono mt-0.5">...</span>
                 </div>
-                <span id="btcPct" class="text-[10px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5">...</span>
+                <span id="btcPct" class="text-[9px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5">...</span>
             </div>
-            <div class="panel p-2 flex justify-between items-center">
+            <div class="panel px-2 flex justify-between items-center">
                 <div class="flex flex-col">
-                    <span class="text-[9px] text-purple-300/70 font-bold tracking-widest">ETH/USD</span>
-                    <span id="ethVal" class="text-xs font-bold text-white mono mt-0.5">...</span>
+                    <span class="text-[8px] text-purple-300/70 font-bold tracking-widest">ETH/USD</span>
+                    <span id="ethVal" class="text-[11px] font-bold text-white mono mt-0.5">...</span>
                 </div>
-                <span id="ethPct" class="text-[10px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5">...</span>
+                <span id="ethPct" class="text-[9px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5">...</span>
             </div>
         </div>
     </div>
@@ -182,26 +187,37 @@
         </div>
     </div>
 
-    <div class="panel p-3 mb-2 h-20 flex justify-between items-center relative overflow-hidden">
+    <div class="panel mb-2" id="cliContainer">
+        <div id="cliLog">
+            <div class="log-sys">ANGEL OS [Versión 50.0.1]</div>
+            <div class="log-sys">Conectando a FORJAX Enterprise Cloud...</div>
+        </div>
+        <div class="cli-input-wrapper">
+            <span class="cli-prompt">F:\>_</span>
+            <input type="text" id="cliInput" autocomplete="off" spellcheck="false">
+        </div>
+    </div>
+
+    <div class="panel p-2 mb-2 h-16 flex justify-between items-center relative overflow-hidden">
         <div id="liqWarning" class="absolute inset-0 bg-rose-600/20 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
         
         <div class="flex gap-4 z-10">
             <div>
-                <p class="text-[9px] text-purple-300 font-bold tracking-wider mb-1">PAPER BALANCE</p>
-                <p id="paperUsd" class="text-lg font-black text-white mono">$0.00</p>
+                <p class="text-[8px] text-purple-300 font-bold tracking-wider mb-1">PAPER BALANCE</p>
+                <p id="paperUsd" class="text-sm font-black text-white mono">$0.00</p>
             </div>
             <div class="w-px bg-purple-900/50"></div>
             <div>
-                <p class="text-[9px] text-purple-300 font-bold tracking-wider mb-1">BTC EXPOSURE</p>
+                <p class="text-[8px] text-purple-300 font-bold tracking-wider mb-1">BTC EXPOSURE</p>
                 <div class="flex items-baseline gap-1">
-                    <p id="paperBtc" class="text-lg font-black text-purple-400 mono">0.0000</p>
+                    <p id="paperBtc" class="text-sm font-black text-purple-400 mono">0.0000</p>
                     <span id="activeLev" class="text-[8px] text-emerald-400 border border-emerald-500/30 px-1 rounded hidden">x10</span>
                 </div>
             </div>
         </div>
         <div class="text-right z-10">
-            <p class="text-[9px] text-purple-300 font-bold tracking-wider mb-1">MARGIN P&L</p>
-            <p id="paperPnl" class="text-sm font-black mono text-slate-500">+$0.00</p>
+            <p class="text-[8px] text-purple-300 font-bold tracking-wider mb-1">MARGIN P&L</p>
+            <p id="paperPnl" class="text-xs font-black mono text-slate-500">+$0.00</p>
         </div>
     </div>
 
@@ -266,17 +282,31 @@
         <p class="text-center text-[9px] text-purple-500/70 mt-4 mono font-bold">SIMULATION ENGINE • LIQUIDATION ACTIVE</p>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDefpHV0GEwNrf7ae99dYaIpgTYOGeuyEc",
+            authDomain: "forjax.firebaseapp.com",
+            projectId: "forjax",
+            storageBucket: "forjax.firebasestorage.app",
+            messagingSenderId: "779351535663",
+            appId: "1:779351535663:web:38014b64073b8bef3096da"
+        };
+        const firebaseApp = initializeApp(firebaseConfig);
+        const db = getFirestore(firebaseApp);
+
         const user = localStorage.getItem("currentUser") || "GUEST";
-        const p = user + "_";
         let isPanic = localStorage.getItem("forjax_panic_mode") === "true";
         let currentBtcPrice = 96000;
         let selectedLeverage = 1;
+        let cloudNet = 0;
         
         // AUDIO ENGINE (V2)
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let ctx;
-        const sfx = {
+        window.sfx = {
             play: (freq, type, dur, vol) => {
                 if(!ctx) { ctx = new AudioCtx(); }
                 if(ctx.state === 'suspended') ctx.resume();
@@ -287,20 +317,72 @@
                 osc.connect(gain); gain.connect(ctx.destination);
                 osc.start(); osc.stop(ctx.currentTime + dur);
             },
-            success: () => { sfx.play(800, 'sine', 0.1, 0.1); setTimeout(()=>sfx.play(1600, 'sine', 0.15, 0.1), 100); },
-            error: () => { sfx.play(200, 'sawtooth', 0.2, 0.1); setTimeout(()=>sfx.play(150, 'sawtooth', 0.3, 0.1), 150); },
-            tap: () => sfx.play(1000, 'square', 0.03, 0.05),
+            success: () => { window.sfx.play(800, 'sine', 0.1, 0.1); setTimeout(()=>window.sfx.play(1600, 'sine', 0.15, 0.1), 100); },
+            error: () => { window.sfx.play(200, 'sawtooth', 0.2, 0.1); setTimeout(()=>window.sfx.play(150, 'sawtooth', 0.3, 0.1), 150); },
+            tap: () => window.sfx.play(1000, 'square', 0.03, 0.05),
             liquidated: () => { 
-                sfx.play(150, 'sawtooth', 0.5, 0.2); 
-                setTimeout(()=>sfx.play(100, 'sawtooth', 0.8, 0.2), 200);
+                window.sfx.play(150, 'sawtooth', 0.5, 0.2); 
+                setTimeout(()=>window.sfx.play(100, 'sawtooth', 0.8, 0.2), 200);
                 if(navigator.vibrate) navigator.vibrate([200,100,300]);
             }
         };
 
-        // TRADING LOGIC (MARGIN)
-        // marginUsd: Plata real bloqueada. btcSize: Exposición total (con leverage)
-        let portfolio = JSON.parse(localStorage.getItem('forjax_angel_portfolio')) || { usd: 10000, btcSize: 0, marginUsd: 0, entryPrice: 0, lev: 1 };
+        // TERMINAL CLI ENGINE
+        const cliLog = document.getElementById('cliLog');
+        const cliInput = document.getElementById('cliInput');
         
+        function writeLog(text, type = 'sys') {
+            const el = document.createElement('div');
+            el.className = `log-${type}`;
+            const time = new Date().toLocaleTimeString('es-AR', {hour12:false});
+            el.innerText = `[${time}] ${text}`;
+            cliLog.appendChild(el);
+            cliLog.scrollTop = cliLog.scrollHeight;
+        }
+
+        cliInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const cmd = this.value.trim().toLowerCase();
+                if(cmd === '') return;
+                writeLog(`F:\\>_ ${cmd}`, 'user');
+                this.value = '';
+                
+                if(cmd === '/help') { writeLog('Cmds: /balance, /lock, /clear, /trade, /ping', 'ok'); }
+                else if(cmd === '/clear') { cliLog.innerHTML = ''; writeLog('Terminal limpiada.', 'sys'); }
+                else if(cmd === '/lock') { window.togglePanic(); writeLog('Protocolo de bloqueo accionado.', 'alert'); }
+                else if(cmd === '/trade') { window.openTrade(); writeLog('Abriendo interfaz de margen...', 'sys'); }
+                else if(cmd === '/ping') { writeLog('PONG. Latencia: 14ms', 'ok'); }
+                else if(cmd === '/balance') { writeLog(`FONDOS REALES (NUBE): $${cloudNet.toLocaleString('es-AR')}`, 'ok'); }
+                else { writeLog(`Comando no reconocido: '${cmd}'. Escribe /help`, 'alert'); }
+            }
+        });
+
+        // FIREBASE LIVE LISTENER
+        let isFirstLoad = true;
+        if(user !== "GUEST") {
+            onSnapshot(doc(db, "users", user), (snapshot) => {
+                if(snapshot.exists()) {
+                    const data = snapshot.data();
+                    const recs = data.records || [];
+                    cloudNet = recs.reduce((a,c) => c.type === 'income' ? a+c.amount : a-c.amount, 0);
+                    document.getElementById('netVal').innerText = "$" + cloudNet.toLocaleString('es-AR', { notation: "compact" });
+                    
+                    document.getElementById('linkStatusDot').className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]";
+                    document.getElementById('linkStatusTxt').innerText = "LIVE CLOUD LINK";
+                    document.getElementById('linkStatusTxt').className = "text-[9px] text-emerald-500 font-mono font-bold tracking-widest";
+
+                    if(!isFirstLoad) {
+                        const last = recs[0]; // El mas nuevo
+                        writeLog(`NUEVO DATO MATRIZ: ${last.type==='income'?'+':'-'}$${last.amount} (${last.category})`, 'ok');
+                        window.sfx.success();
+                    }
+                    isFirstLoad = false;
+                }
+            });
+        }
+
+        // TRADING LOGIC
+        let portfolio = JSON.parse(localStorage.getItem('forjax_angel_portfolio')) || { usd: 10000, btcSize: 0, marginUsd: 0, entryPrice: 0, lev: 1 };
         function savePortfolio() { localStorage.setItem('forjax_angel_portfolio', JSON.stringify(portfolio)); updatePortfolioUI(); }
 
         function updatePortfolioUI() {
@@ -312,46 +394,30 @@
             if(portfolio.btcSize > 0) {
                 levBadge.style.display = 'inline-block';
                 levBadge.innerText = `x${portfolio.lev}`;
-                
-                // PnL = (Current - Entry) * BTC_Amount
                 const pnl = (currentBtcPrice - portfolio.entryPrice) * portfolio.btcSize;
                 
-                // LIQUIDATION CHECK
-                if (pnl <= -portfolio.marginUsd) {
-                    liquidatePosition();
-                    return;
-                }
+                if (pnl <= -portfolio.marginUsd) { liquidatePosition(); return; }
 
                 const el = document.getElementById('paperPnl');
                 el.innerText = `${pnl >= 0 ? '+' : ''}$${pnl.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                el.className = `text-sm font-black mono ${pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+                el.className = `text-xs font-black mono ${pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
                 
-                // Visual Warning if close to liquidation (loss > 70% of margin)
                 const liqWarn = document.getElementById('liqWarning');
-                if (pnl < -(portfolio.marginUsd * 0.7)) {
-                    liqWarn.style.opacity = '1';
-                } else {
-                    liqWarn.style.opacity = '0';
-                }
+                if (pnl < -(portfolio.marginUsd * 0.7)) liqWarn.style.opacity = '1'; else liqWarn.style.opacity = '0';
             } else {
                 levBadge.style.display = 'none';
                 document.getElementById('paperPnl').innerText = "$0.00";
-                document.getElementById('paperPnl').className = "text-sm font-black mono text-slate-500";
+                document.getElementById('paperPnl').className = "text-xs font-black mono text-slate-500";
                 document.getElementById('liqWarning').style.opacity = '0';
             }
         }
 
         function liquidatePosition() {
-            sfx.liquidated();
+            window.sfx.liquidated(); writeLog('LIQUIDACIÓN FORZADA. Margen perdido.', 'alert');
             showToast('🚨 POSITION LIQUIDATED! MARGIN LOST', 'error');
-            // Pierde el margen. El USD balance ya había sido descontado, así que solo reseteamos la posición.
-            portfolio.btcSize = 0;
-            portfolio.marginUsd = 0;
-            portfolio.entryPrice = 0;
-            savePortfolio();
+            portfolio.btcSize = 0; portfolio.marginUsd = 0; portfolio.entryPrice = 0; savePortfolio();
         }
 
-        // UI & UTILS
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -365,49 +431,26 @@
             setTimeout(() => { toast.style.animation = 'slideDown 0.3s reverse forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // INIT
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            startClock();
-            loadUserLiquidity();
-            initTradingView();
-            fetchMarket();
-            updatePortfolioUI();
-            
-            if(isPanic) { document.getElementById('privacyLayer').classList.add('active'); document.getElementById('btnPanic').classList.add('active'); }
-        });
-
-        function loadUserLiquidity() {
-            const rec = JSON.parse(localStorage.getItem(p + "records")) || [];
-            const net = rec.reduce((a,c) => c.type === 'income' ? a+c.amount : a-c.amount, 0);
-            document.getElementById('netVal').innerText = "$" + net.toLocaleString('es-AR', { notation: "compact" });
-        }
-
         async function fetchMarket() {
             try {
                 const r1 = await fetch("https://dolarapi.com/v1/dolares/blue");
                 const d1 = await r1.json();
                 document.getElementById('dolarVal').innerText = `$${d1.venta}`;
-                
                 const r2 = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true");
                 const d2 = await r2.json();
-                
                 currentBtcPrice = d2.bitcoin.usd;
                 document.getElementById('btcVal').innerText = `$${currentBtcPrice.toLocaleString()}`;
                 const btcChg = d2.bitcoin.usd_24h_change.toFixed(2);
                 document.getElementById('btcPct').innerText = `${btcChg}%`;
-                document.getElementById('btcPct').className = `text-[10px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5 ${btcChg>=0?'up':'down'}`;
-
+                document.getElementById('btcPct').className = `text-[9px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5 ${btcChg>=0?'up':'down'}`;
                 document.getElementById('ethVal').innerText = `$${d2.ethereum.usd.toLocaleString()}`;
                 const ethChg = d2.ethereum.usd_24h_change.toFixed(2);
                 document.getElementById('ethPct').innerText = `${ethChg}%`;
-                document.getElementById('ethPct').className = `text-[10px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5 ${ethChg>=0?'up':'down'}`;
-                
+                document.getElementById('ethPct').className = `text-[9px] mono font-bold bg-black/40 px-1 py-0.5 rounded border border-white/5 ${ethChg>=0?'up':'down'}`;
                 updatePortfolioUI();
             } catch(e) {}
         }
 
-        // CHART & SMA ENGINE
         function initTradingView() {
             const container = document.getElementById('chartContainer');
             const chart = LightweightCharts.createChart(container, {
@@ -417,59 +460,27 @@
                 rightPriceScale: { borderVisible: false },
                 timeScale: { borderVisible: false, timeVisible: true, secondsVisible: false },
             });
-
-            const series = chart.addCandlestickSeries({
-                upColor: '#10b981', downColor: '#f43f5e', borderVisible: false, wickUpColor: '#10b981', wickDownColor: '#f43f5e',
-            });
-            
-            // SMA Line (Angel touch)
+            const series = chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#f43f5e', borderVisible: false, wickUpColor: '#10b981', wickDownColor: '#f43f5e' });
             const smaSeries = chart.addLineSeries({ color: 'rgba(192, 132, 252, 0.8)', lineWidth: 2, crosshairMarkerVisible: false });
 
-            let data = [];
-            let smaData = [];
-            let time = Math.floor(Date.now() / 1000) - 100 * 60;
-            let open = 95000;
-            
-            // Generate Data
+            let data = []; let smaData = []; let time = Math.floor(Date.now() / 1000) - 100 * 60; let open = 95000;
             for (let i = 0; i < 100; i++) {
-                let close = open + (Math.random() - 0.5) * 300;
-                let high = Math.max(open, close) + Math.random() * 50;
-                let low = Math.min(open, close) - Math.random() * 50;
-                data.push({ time: time + i * 60, open, high, low, close });
-                open = close;
+                let close = open + (Math.random() - 0.5) * 300; let high = Math.max(open, close) + Math.random() * 50; let low = Math.min(open, close) - Math.random() * 50;
+                data.push({ time: time + i * 60, open, high, low, close }); open = close;
             }
-
-            // Calc SMA (10 periods)
             for (let i = 0; i < data.length; i++) {
-                if(i < 9) continue;
-                let sum = 0;
-                for(let j=0; j<10; j++) sum += data[i-j].close;
+                if(i < 9) continue; let sum = 0; for(let j=0; j<10; j++) sum += data[i-j].close;
                 smaData.push({ time: data[i].time, value: sum/10 });
             }
+            series.setData(data); smaSeries.setData(smaData);
 
-            series.setData(data);
-            smaSeries.setData(smaData);
-
-            // Live Update Loop
             setInterval(() => {
-                const last = data[data.length - 1];
-                let nextClose = last.close + (Math.random() - 0.5) * 60;
-                let newCandle = {
-                    time: last.time + 60,
-                    open: last.close, high: Math.max(last.close, nextClose)+15, low: Math.min(last.close, nextClose)-15, close: nextClose
-                };
-                series.update(newCandle);
-                
-                // Update SMA
-                data.push(newCandle);
-                data.shift(); // keep size 100
-                let sum = 0;
-                for(let j=data.length-1; j>=data.length-10; j--) sum += data[j].close;
+                const last = data[data.length - 1]; let nextClose = last.close + (Math.random() - 0.5) * 60;
+                let newCandle = { time: last.time + 60, open: last.close, high: Math.max(last.close, nextClose)+15, low: Math.min(last.close, nextClose)-15, close: nextClose };
+                series.update(newCandle); data.push(newCandle); data.shift();
+                let sum = 0; for(let j=data.length-1; j>=data.length-10; j--) sum += data[j].close;
                 smaSeries.update({ time: newCandle.time, value: sum/10 });
-
-                currentBtcPrice = nextClose;
-                updatePortfolioUI();
-                updateSentiment(data);
+                currentBtcPrice = nextClose; updatePortfolioUI(); updateSentiment(data);
             }, 1000);
             
             new ResizeObserver(entries => {
@@ -478,107 +489,64 @@
             }).observe(container);
         }
 
-        // SENTIMENT AI
         function updateSentiment(data) {
-            // Analiza las ultimas 5 velas
-            let bullishCount = 0;
-            for(let i=data.length-1; i>=data.length-5; i--) {
-                if(data[i].close > data[i].open) bullishCount++;
-            }
-            // Add some randomness
-            let pct = (bullishCount / 5) * 100;
-            pct = pct + (Math.random()*10 - 5);
+            let bullishCount = 0; for(let i=data.length-1; i>=data.length-5; i--) { if(data[i].close > data[i].open) bullishCount++; }
+            let pct = (bullishCount / 5) * 100; pct = pct + (Math.random()*10 - 5);
             if(pct < 5) pct = 5; if(pct > 95) pct = 95;
-
             document.getElementById('sentimentMarker').style.left = `${pct}%`;
-            
             let txt = "NEUTRAL"; let col = "#fff";
-            if(pct > 65) { txt = "BULLISH (BUY)"; col = "#10b981"; }
-            else if(pct < 35) { txt = "BEARISH (SELL)"; col = "#f43f5e"; }
-            
-            const el = document.getElementById('sentimentText');
-            el.innerText = `AI: ${txt}`;
-            el.style.color = col;
+            if(pct > 65) { txt = "BULLISH (BUY)"; col = "#10b981"; } else if(pct < 35) { txt = "BEARISH (SELL)"; col = "#f43f5e"; }
+            const el = document.getElementById('sentimentText'); el.innerText = `AI: ${txt}`; el.style.color = col;
         }
 
-        // TRADE UI
-        function openTrade() { sfx.tap(); document.getElementById('tradeModal').classList.add('open'); }
-        function closeTrade() { sfx.tap(); document.getElementById('tradeModal').classList.remove('open'); }
-        
-        function setLev(val) {
-            sfx.tap();
-            selectedLeverage = val;
+        // GLOBALS FOR UI BUTTONS
+        window.openTrade = () => { window.sfx.tap(); document.getElementById('tradeModal').classList.add('open'); };
+        window.closeTrade = () => { window.sfx.tap(); document.getElementById('tradeModal').classList.remove('open'); };
+        window.setLev = (val) => {
+            window.sfx.tap(); selectedLeverage = val;
             [1, 10, 50, 100].forEach(l => {
                 const b = document.getElementById(`btnLev${l}`);
                 if(l === val) b.classList.add('active'); else b.classList.remove('active');
             });
-            if(val === 100) showToast('⚠️ EXTREME RISK ACTIVATED', 'info');
-        }
-
-        function executeTrade(type) {
+            if(val === 100) { showToast('⚠️ EXTREME RISK ACTIVATED', 'info'); writeLog('Protocolo de alto riesgo (x100) activado', 'alert'); }
+        };
+        window.executeTrade = (type) => {
             if(type === 'sell') {
-                // CLOSE POSITION
-                if(portfolio.btcSize <= 0) { sfx.error(); showToast('NO ACTIVE POSITIONS', 'error'); return; }
-                
+                if(portfolio.btcSize <= 0) { window.sfx.error(); showToast('NO ACTIVE POSITIONS', 'error'); return; }
                 const pnl = (currentBtcPrice - portfolio.entryPrice) * portfolio.btcSize;
-                // Devolvemos el margen original + la ganancia/perdida
-                portfolio.usd += (portfolio.marginUsd + pnl);
-                portfolio.btcSize = 0;
-                portfolio.marginUsd = 0;
-                portfolio.entryPrice = 0;
-                
-                sfx.success();
-                showToast(`POSITION CLOSED. P&L: $${pnl.toFixed(2)}`, pnl >= 0 ? 'success' : 'error');
-                savePortfolio();
-                closeTrade();
-                return;
+                portfolio.usd += (portfolio.marginUsd + pnl); portfolio.btcSize = 0; portfolio.marginUsd = 0; portfolio.entryPrice = 0;
+                window.sfx.success(); showToast(`POSITION CLOSED. P&L: $${pnl.toFixed(2)}`, pnl >= 0 ? 'success' : 'error');
+                writeLog(`Trade cerrado. P&L: $${pnl.toFixed(2)}`, 'ok');
+                savePortfolio(); closeTrade(); return;
             }
+            if(portfolio.btcSize > 0) { window.sfx.error(); showToast('CLOSE ACTIVE POSITION FIRST', 'error'); return; }
+            const amountUsd = parseFloat(document.getElementById('tradeAmount').value);
+            if(isNaN(amountUsd) || amountUsd <= 0) { window.sfx.error(); showToast('INVALID AMOUNT', 'error'); return; }
+            if(amountUsd > portfolio.usd) { window.sfx.error(); showToast('INSUFFICIENT FUNDS', 'error'); return; }
 
-            // BUY / LONG
-            if(portfolio.btcSize > 0) {
-                sfx.error(); showToast('CLOSE ACTIVE POSITION FIRST', 'error'); return;
-            }
-
-            const amountUsd = parseFloat(document.getElementById('tradeAmount').value); // This is MARGIN
-            if(isNaN(amountUsd) || amountUsd <= 0) { sfx.error(); showToast('INVALID AMOUNT', 'error'); return; }
-            if(amountUsd > portfolio.usd) { sfx.error(); showToast('INSUFFICIENT FUNDS', 'error'); return; }
-
-            // Apply Leverage
-            const exposureUsd = amountUsd * selectedLeverage;
-            const btcBought = exposureUsd / currentBtcPrice;
+            const exposureUsd = amountUsd * selectedLeverage; const btcBought = exposureUsd / currentBtcPrice;
+            portfolio.marginUsd = amountUsd; portfolio.usd -= amountUsd; portfolio.btcSize = btcBought;
+            portfolio.entryPrice = currentBtcPrice; portfolio.lev = selectedLeverage;
             
-            portfolio.marginUsd = amountUsd;
-            portfolio.usd -= amountUsd; // Bloqueamos el margen
-            portfolio.btcSize = btcBought;
-            portfolio.entryPrice = currentBtcPrice;
-            portfolio.lev = selectedLeverage;
-            
-            sfx.success();
-            showToast(`LONG ${selectedLeverage}x OPENED (${btcBought.toFixed(3)} BTC)`, 'success');
-            savePortfolio();
-            closeTrade();
-        }
+            window.sfx.success(); showToast(`LONG ${selectedLeverage}x OPENED (${btcBought.toFixed(3)} BTC)`, 'success');
+            writeLog(`Trade ejecutado: LONG x${selectedLeverage}`, 'sys');
+            savePortfolio(); closeTrade();
+        };
 
-        // PANIC
-        function togglePanic() {
-            sfx.tap();
-            isPanic = !isPanic;
-            localStorage.setItem("forjax_panic_mode", isPanic);
-            
-            const layer = document.getElementById('privacyLayer');
-            const btn = document.getElementById('btnPanic');
+        window.togglePanic = () => {
+            window.sfx.tap(); isPanic = !isPanic; localStorage.setItem("forjax_panic_mode", isPanic);
+            const layer = document.getElementById('privacyLayer'); const btn = document.getElementById('btnPanic');
+            if(isPanic) { layer.classList.add('active'); btn.classList.add('active'); if(navigator.vibrate) navigator.vibrate([100,50,100]); writeLog('SISTEMA BLOQUEADO.', 'alert'); } 
+            else { layer.classList.remove('active'); btn.classList.remove('active'); if(navigator.vibrate) navigator.vibrate(50); showToast('BIOMETRIC OVERRIDE ACCEPTED', 'success'); writeLog('Acceso restaurado.', 'ok'); }
+        };
 
-            if(isPanic) {
-                layer.classList.add('active'); btn.classList.add('active');
-                if(navigator.vibrate) navigator.vibrate([100,50,100]);
-            } else {
-                layer.classList.remove('active'); btn.classList.remove('active');
-                if(navigator.vibrate) navigator.vibrate(50);
-                showToast('BIOMETRIC OVERRIDE ACCEPTED', 'success');
-            }
-        }
-
-        function startClock() { setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000); }
+        // INITIALIZE
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
+            initTradingView(); fetchMarket(); updatePortfolioUI();
+            if(isPanic) { document.getElementById('privacyLayer').classList.add('active'); document.getElementById('btnPanic').classList.add('active'); }
+        });
     </script>
 </body>
 </html>
